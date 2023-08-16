@@ -4,14 +4,9 @@ import com.google.gson.JsonObject;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
 import vn.vietdefi.common.BaseResponse;
-import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
-import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.string.StringUtil;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class AuthTest {
     @BeforeAll

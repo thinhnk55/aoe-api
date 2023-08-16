@@ -58,6 +58,22 @@ public class OkHttpUtil {
         }
         return null;
     }
+    public static Response callRequestFullResponse(Request request) {
+        try {
+            OkHttpClient client;
+            if (request.url().isHttps()) {
+                client = httpsClient();
+            } else {
+                client = httpClient();
+            }
+            Response response = client.newCall(request).execute();
+            return response;
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+        }
+        return null;
+    }
 
     public static JsonObject get(String url) {
         try {
@@ -85,6 +101,24 @@ public class OkHttpUtil {
                     .build();
             return callRequest(request);
         } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+        }
+        return null;
+    }
+    public static Response postFullResponse(String url, String jsonBody, Map<String, String> headers) {
+        if(headers==null) {
+            headers = new HashMap<>();
+        }
+        try {
+            RequestBody body = RequestBody.create(jsonBody, MediaType.parse("application/json; charset=utf-8"));
+            Request request = new Request.Builder()
+                    .url(url)
+                    .headers(Headers.of(headers))
+                    .post(body)
+                    .build();
+            return callRequestFullResponse(request);
+        }catch (Exception e){
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
         }
