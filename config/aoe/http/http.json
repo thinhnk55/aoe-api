@@ -1,0 +1,6 @@
+{
+  "name": "aoe",
+  "url_prefix": "/aoe",
+  "http_port": 8000,
+  "websocket_port": 9000
+}

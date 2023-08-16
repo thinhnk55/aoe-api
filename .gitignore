@@ -1,0 +1,13 @@
+/bin/
+/.gradle/
+/.idea/
+/gradle/
+/logs/
+/build/
+*.zip
+*.jar
+*.log
+/file-uploads/
+build.gradle.kts
+gradlew
+gradlew.bat

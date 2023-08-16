@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "name": "aoefan",
+    "jdbcUrl": "jdbc:mariadb://103.145.63.98:3306/aoefan",
+    "dataSource.database": "aoefan",
+    "dataSource.user": "aoefan",
+    "dataSource.password": "NJ$!@8943kjalq"
+  }
+]
