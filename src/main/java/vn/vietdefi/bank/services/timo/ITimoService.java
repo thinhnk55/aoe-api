@@ -14,4 +14,10 @@ public interface ITimoService {
      */
     void updateOther(JsonObject other);
 
+
+    void getMissNotification(JsonObject nextAccount);
+
+    void updateTokenBank(JsonObject data, int id);
+
+    JsonObject getInfoLogin(long id);
 }

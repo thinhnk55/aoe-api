@@ -106,4 +106,27 @@ public class TimoService implements ITimoService {
     public void updateOther(JsonObject other) {
 
     }
+
+    @Override
+    public void getMissNotification(JsonObject nextAccount) {
+
+    }
+
+    @Override
+    public void updateTokenBank(JsonObject data, int id) {
+
+    }
+
+    @Override
+    public JsonObject getInfoLogin(long id) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT username,password FROM timo_account WHERE id = ?";
+            JsonObject authAccount = bridge.queryOne(query, id);
+            return BaseResponse.createFullMessageResponse(0, "success", authAccount);
+        } catch (Exception e) {
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
 }

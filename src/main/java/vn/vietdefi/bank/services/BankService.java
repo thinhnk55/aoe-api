@@ -1,8 +1,10 @@
 package vn.vietdefi.bank.services;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.bank.logic.BalanceTransaction;
+import vn.vietdefi.bank.logic.BankAccountState;
 import vn.vietdefi.bank.logic.BankCode;
 import vn.vietdefi.bank.services.timo.ITimoService;
 import vn.vietdefi.bank.services.timo.TimoService;
@@ -65,18 +67,47 @@ public class BankService implements IBankService {
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
+
     }
 
     @Override
     public JsonObject getActiveBanks() {
-        return null;
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM bank_account WHERE state = ?";
+            JsonArray data = bridge.query(query, BankAccountState.WORKING);
+            if (data.isEmpty()) {
+                query = "SELECT * FROM bank_account WHERE state = ?";
+                JsonObject nextAccount = bridge.queryOne(query,BankAccountState.ACTIVE);
+                JsonObject authAccount = login(timoService.getInfoLogin(nextAccount.get("bank_account_id").getAsLong()));
+                if (authAccount.get("error").getAsInt() == 200) {
+                    // update state + token
+                    timoService.updateTokenBank(authAccount.get("data").getAsJsonObject(), nextAccount.get("id").getAsInt());
+                    nextAccount.addProperty("other",authAccount.get("data").getAsJsonObject().get("token").getAsString());
+                    timoService.getMissNotification(nextAccount);
+                } else {
+                    long id = nextAccount.get("id").getAsLong();
+                    updateBankState(id,BankAccountState.DISABLE);
+                }
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
     }
 
     @Override
-    public JsonObject updateBankState(long id, int state) {
-        return null;
+    public void updateBankState(long id, int state) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE bank_account SET state = ? WHERE id = ?";
+            bridge.update(query, state, id);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+        }
     }
-
+    
     @Override
     public JsonObject createBalanceTransaction(JsonObject data) {
         //Neu ton tai transaction roi thi van tra ve thanh cong

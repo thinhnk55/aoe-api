@@ -7,7 +7,7 @@ public interface IBankService {
     JsonObject commit(JsonObject data);
     JsonObject createBankAccount(JsonObject data);
     JsonObject getActiveBanks();
-    public JsonObject updateBankState(long id, int state);
+    void updateBankState(long id, int state);
 
     JsonObject createBalanceTransaction(JsonObject data);
 }
