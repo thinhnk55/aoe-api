@@ -51,7 +51,9 @@ public class AuthTest {
         public void test1(){
             String s = "plus://plus.vn/SpendTransList/expand?refNo=003dTF230812216736764";
             DebugLogger.info(s.substring(s.length()-17, s.length()-1));
-            DebugLogger.info(s.substring(10));
+            s = "Mô tả: MBVCB.4049553539.071571.0915434549 Donate KD15.CT tu 1029707411 NGUYEN DUY KHANH toi 0915434549 NGUYEN DUY KHANH tai Timo by Ban Viet Bank";
+            int index = s.indexOf(":");
+            DebugLogger.info(s.substring(index+2));
         }
         @Test
         public void test2(){

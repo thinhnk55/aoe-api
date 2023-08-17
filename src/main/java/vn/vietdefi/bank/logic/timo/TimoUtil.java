@@ -3,7 +3,6 @@ package vn.vietdefi.bank.logic.timo;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import vn.vietdefi.bank.logic.BankAccount;
-import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.string.StringUtil;
 
 import java.util.regex.Matcher;
@@ -55,7 +54,8 @@ public class TimoUtil {
         String fullContent = data.get("content").getAsString();
         String[] lines = fullContent.split("\n");
         String description = lines[2];
-        String note = description.substring(10);
+        int index = description.indexOf(":");
+        String note = description.substring(index+2);
         transactionInfo.addProperty("note", note);
 
         String deeplink = data.get("deeplink").getAsString();
