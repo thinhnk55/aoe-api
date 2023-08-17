@@ -10,16 +10,6 @@ public interface ITimoService {
     JsonObject getAccountById(long id);
     JsonObject getAccountByUsername(String username);
     void retryLogin(JsonObject other);
-    /**
-     *
-     * @param other = {"token":"","last_notification_id":0,"force_update_notification":true}
-     */
-    void updateOther(JsonObject other);
-
-
-    void getMissNotification(JsonObject nextAccount);
-
-    void updateTokenBank(JsonObject data, int id);
-
-    JsonObject getInfoLogin(long id);
+    void updateOther(long id, JsonObject other);
+    void updateBankAccountId(long id, long bankAccountId);
 }

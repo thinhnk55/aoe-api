@@ -47,7 +47,9 @@ public class TimoApi {
                 lastNotificationId = notificationList.get(0).getAsJsonObject().get("iD").getAsLong();
                 TimoUtil.updateLastNofiticationId(account, lastNotificationId);
                 TimoUtil.cancelForceUpdate(account);
-                BankServices.timoService.updateOther(account.bank_detail.getAsJsonObject("other"));
+                long id = account.bank_detail.get("id").getAsLong();
+                JsonObject other = account.bank_detail.getAsJsonObject("other");
+                BankServices.timoService.updateOther(id, other);
                 return;
             }
             JsonArray notificationToProcess = new JsonArray();
@@ -110,7 +112,9 @@ public class TimoApi {
         //Danh dau da xu li den notification id nao
         TimoUtil.updateLastNofiticationId(account, last);
         TimoUtil.cancelForceUpdate(account);
-        BankServices.timoService.updateOther(account.bank_detail.getAsJsonObject("other"));
+        long id = account.bank_detail.get("id").getAsLong();
+        JsonObject other = account.bank_detail.getAsJsonObject("other");
+        BankServices.timoService.updateOther(id, other);
     }
 
     private static JsonObject getCurrentNotification(BankAccount account) {
@@ -215,7 +219,7 @@ public class TimoApi {
         }
     }
 
-    public static JsonObject bankInfo(String token) {
+    public static JsonObject getBankInfo(String token) {
         try {
             Map<String, String> headers = new HashMap<>();
             headers.put("token", token);
@@ -225,7 +229,7 @@ public class TimoApi {
                     JsonObject res = GsonUtil.toJsonObject(responseBody);
                     return BaseResponse.createFullMessageResponse(0, "success", res.get("data").getAsJsonObject());
                 }
-                return BaseResponse.createFullMessageResponse(401, "unauthorized");
+                return BaseResponse.createFullMessageResponse(2, "unauthorized");
             }
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

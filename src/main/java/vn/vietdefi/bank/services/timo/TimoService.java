@@ -129,8 +129,8 @@ public class TimoService implements ITimoService {
             String query = "UPDATE timo_account SET token = ? WHERE id = ?";
             bridge.update(query, token, id);
             return BaseResponse.createFullMessageResponse(0, "success");
-        } catch (Exception exception) {
-            String stacktrace = ExceptionUtils.getStackTrace(exception);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
@@ -176,29 +176,26 @@ public class TimoService implements ITimoService {
     }
 
     @Override
-    public void updateOther(JsonObject other) {
-
-    }
-
-    @Override
-    public void getMissNotification(JsonObject nextAccount) {
-
-    }
-
-    @Override
-    public void updateTokenBank(JsonObject data, int id) {
-
-    }
-
-    @Override
-    public JsonObject getInfoLogin(long id) {
+    public void updateOther(long id, JsonObject other) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT username,password FROM timo_account WHERE id = ?";
-            JsonObject authAccount = bridge.queryOne(query, id);
-            return BaseResponse.createFullMessageResponse(0, "success", authAccount);
+            String query = "UPDATE timo_account SET other = ? WHERE id = ?";
+            bridge.update(query, other, id);
         } catch (Exception e) {
-            return BaseResponse.createFullMessageResponse(1, "system_error");
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+        }
+    }
+
+    @Override
+    public void updateBankAccountId(long id, long bankAccountId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE timo_account SET bank_account_id = ? WHERE id = ?";
+            bridge.update(query, bankAccountId, id);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
         }
     }
 

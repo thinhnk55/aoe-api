@@ -32,7 +32,7 @@ public class BankController {
         }else{
             bankWorkers.clear();
         }
-        JsonObject response = BankServices.bankService.getActiveBanks();
+        JsonObject response = BankServices.bankService.getWorkingBanks();
         if(BaseResponse.isSuccessFullMessage(response)){
             JsonArray array = response.getAsJsonArray("data");
             for(int i = 0; i < array.size(); i++){
