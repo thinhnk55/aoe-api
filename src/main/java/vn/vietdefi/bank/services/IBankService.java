@@ -10,4 +10,7 @@ public interface IBankService {
     void updateBankState(long id, int state);
 
     JsonObject createBalanceTransaction(JsonObject data);
+
+    void createBankAccountFromTimoAccount(JsonObject data);
+
 }

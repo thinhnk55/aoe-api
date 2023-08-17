@@ -1,5 +1,8 @@
 package vn.vietdefi.util.string;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Random;
 import java.util.UUID;
@@ -17,6 +20,22 @@ public class StringUtil {
             return sb.toString();
         } catch (Exception e) {
             return "";
+        }
+    }
+
+    public static String sha512(String src) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-512");
+            byte[] hash = digest.digest(src.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hashPassword = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hashPassword.append('0');
+                hashPassword.append(hex);
+            }
+            return hashPassword.toString();
+        } catch (Exception exception) {
+            return null;
         }
     }
 

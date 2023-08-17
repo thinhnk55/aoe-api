@@ -159,7 +159,6 @@ public class TimoApi {
             JsonObject body = new JsonObject();
             body.addProperty("username", username);
             body.addProperty("password", password);
-
             Map<String, String> headers = new HashMap<>();
             headers.put("x-timo-devicereg", device);
             try (Response response = OkHttpUtil.postFullResponse(TimoConfig.URL_LOGIN, body.toString(), headers)) {
@@ -168,17 +167,19 @@ public class TimoApi {
                     JsonObject res = GsonUtil.toJsonObject(responseBody);
                     if (res.get("code").getAsInt() == 6001) {
                         JsonObject data = res.get("data").getAsJsonObject();
-                        return BaseResponse.createFullMessageResponse(6001, "not_commit", data);
+                        return BaseResponse.createFullMessageResponse(TimoConfig.ERROR_LOGIN_TIMO_ACCOUNT_NOT_COMMIT,
+                                "not_commit", data);
                     }
                     if (res.get("code").getAsInt() == 200) {
                         JsonObject data = res.get("data").getAsJsonObject();
-                        return BaseResponse.createFullMessageResponse(200, "login_success", data);
+                        return BaseResponse.createFullMessageResponse(0, "success", data);
                     }
                     if (res.get("code").getAsInt() == 401) {
-                        return BaseResponse.createFullMessageResponse(401, "account_invalid");
+                        return BaseResponse.createFullMessageResponse(TimoConfig.ERROR_LOGIN_TIMO_ACCOUNT_INVALID,
+                                "account_invalid");
                     }
                 }
-                return BaseResponse.createFullMessageResponse(1, "system_error");
+                return BaseResponse.createFullMessageResponse(12, "failure");
             }
         } catch (Exception e) {
             e.printStackTrace();

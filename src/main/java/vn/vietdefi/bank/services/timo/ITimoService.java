@@ -4,9 +4,11 @@ import com.google.gson.JsonObject;
 
 public interface ITimoService {
     JsonObject loginTimo(String username, String password);
-    JsonObject commitTimo(String token, String refNo, String otp, long timoId);
+    JsonObject updateToken(long timoId, String token);
+    JsonObject commitTimo(long id, String otp);
 
     JsonObject getAccountById(long id);
+    JsonObject getAccountByUsername(String username);
     void retryLogin(JsonObject other);
     /**
      *

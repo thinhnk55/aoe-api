@@ -38,22 +38,23 @@ public class BankService implements IBankService {
 
     @Override
     public JsonObject commit(JsonObject data) {
-        try {
-            int bankCode = data.get("bank_code").getAsInt();
-            String otp = data.get("otp").getAsString();
-            String token = data.get("token").getAsString();
-            switch (bankCode) {
-                case BankCode.TIMO:
-                    String refNo = data.get("refNo").getAsString();
-                    long timoId = data.get("timoId").getAsLong();
-                    return timoService.commitTimo(token, refNo, otp, timoId);
-            }
-            return BaseResponse.createFullMessageResponse(10, "bank_un_support");
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
+//        try {
+//            int bankCode = data.get("bank_code").getAsInt();
+//            String otp = data.get("otp").getAsString();
+//            String token = data.get("token").getAsString();
+//            switch (bankCode) {
+//                case BankCode.TIMO:
+//                    String refNo = data.get("refNo").getAsString();
+//                    long timoId = data.get("timoId").getAsLong();
+//                    return timoService.commitTimo(token, refNo, otp, timoId);
+//            }
+//            return BaseResponse.createFullMessageResponse(10, "bank_un_support");
+//        } catch (Exception e) {
+//            String stacktrace = ExceptionUtils.getStackTrace(e);
+//            DebugLogger.error(stacktrace);
+//            return BaseResponse.createFullMessageResponse(1, "system_error");
+//        }
+        return null;
     }
 
     @Override
@@ -112,5 +113,11 @@ public class BankService implements IBankService {
     public JsonObject createBalanceTransaction(JsonObject data) {
         //Neu ton tai transaction roi thi van tra ve thanh cong
         return null;
+    }
+
+    @Override
+    public void createBankAccountFromTimoAccount(JsonObject data) {
+        //Check xem da ton tai chua
+        //Neu ton tai roi thi update lai thong tin
     }
 }

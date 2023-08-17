@@ -6,8 +6,9 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CorsHandler;
-import vn.vietdefi.api.vertx.ApiGameConfig;
+import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.AuthHttpAPI;
+import vn.vietdefi.bank.vertx.BankHttpAPI;
 import vn.vietdefi.websocket.WebsocketServer;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,14 +23,15 @@ public class AoeVerticle extends AbstractVerticle {
         Router router = Router.router(vertx);
         crossAccessControl(router);
         AuthHttpAPI.configAPI(router);
+        BankHttpAPI.configAPI(router);
         AoeAPI.configAPI(router);
-        router.get(ApiGameConfig.instance().getPath("/test")).handler(this::test);
+        router.get(ApiConfig.instance().getPath("/test")).handler(this::test);
         httpServer = vertx.createHttpServer()
                 .requestHandler(router)
-                .listen(ApiGameConfig.instance().http_port).result();
+                .listen(ApiConfig.instance().http_port).result();
         websocket = vertx.createHttpServer()
                 .webSocketHandler(WebsocketServer::handle)
-                .listen(ApiGameConfig.instance().websocket_port).result();
+                .listen(ApiConfig.instance().websocket_port).result();
     }
 
     @Override

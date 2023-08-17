@@ -3,15 +3,15 @@ package vn.vietdefi.api.vertx;
 import com.google.gson.JsonObject;
 import vn.vietdefi.util.file.FileUtil;
 
-public class ApiGameConfig {
-    private static ApiGameConfig ins = null;
-    public static ApiGameConfig instance() {
+public class ApiConfig {
+    private static ApiConfig ins = null;
+    public static ApiConfig instance() {
         if (ins == null) {
-            ins = new ApiGameConfig();
+            ins = new ApiConfig();
         }
         return ins;
     }
-    private ApiGameConfig(){
+    private ApiConfig(){
 
     }
 

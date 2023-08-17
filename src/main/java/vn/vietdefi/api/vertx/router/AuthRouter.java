@@ -1,4 +1,4 @@
-package vn.vietdefi.api.router;
+package vn.vietdefi.api.vertx.router;
 
 import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;

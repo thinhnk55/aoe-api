@@ -5,7 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import org.apache.log4j.xml.DOMConfigurator;
 import vn.vietdefi.aoe.vertx.AoeVerticle;
-import vn.vietdefi.api.vertx.ApiGameConfig;
+import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 
@@ -26,7 +26,7 @@ public class AoeLauncher {
         DOMConfigurator.configure("config/aoe/log/log4j.xml");
         HikariClients.instance().init("config/aoe/sql/databases.json"
                 ,"config/aoe/sql/hikari.properties");
-        ApiGameConfig.instance().init("config/aoe/http/http.json");
+        ApiConfig.instance().init("config/aoe/http/http.json");
     }
 
     public static void startHttpServer() {

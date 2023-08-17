@@ -1,6 +1,8 @@
 package vn.vietdefi.bank.logic.timo;
 
 public class TimoConfig {
+    public static final int ERROR_LOGIN_TIMO_ACCOUNT_NOT_COMMIT = 6001;
+    public static final int ERROR_LOGIN_TIMO_ACCOUNT_INVALID = 401;
 
     public static final String xTimoDevice = "367268af89462456da6c98b49ee98a56:WEB:WEB:176:WEB:desktop:chrome";
     public static final String URL_LOGIN = "https://app2.timo.vn/login";
