@@ -8,6 +8,9 @@ import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
 import vn.vietdefi.util.string.StringUtil;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class AuthTest {
     @BeforeAll
     static void init(){
@@ -46,7 +49,21 @@ public class AuthTest {
         }
         @Test
         public void test1(){
-
+            String s = "plus://plus.vn/SpendTransList/expand?refNo=003dTF230812216736764";
+            DebugLogger.info(s.substring(s.length()-17, s.length()-1));
+            DebugLogger.info(s.substring(10));
+        }
+        @Test
+        public void test2(){
+            String s = "Số dư tài khoản vừa giảm 100.0 VND vào 12/08/2023 08:49 VN ";
+            String regex = "\\d+([.]\\d+)*";
+            Pattern accountBalancePattern = Pattern.compile(regex);
+            Matcher matcher = accountBalancePattern.matcher(s);
+            String data = "not_found";
+            if (matcher.find()) {
+                data = matcher.group(0);
+            }
+            DebugLogger.info(data);
         }
     }
 

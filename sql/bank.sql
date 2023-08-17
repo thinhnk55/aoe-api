@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS timo_account
     device VARCHAR(64),
     token VARCHAR(2048),
     bank_account_id BIGINT,
-    detail VARCHAR(4096),
+    other VARCHAR(4096),
     state INT NOT NULL DEFAULT 0
 );
 

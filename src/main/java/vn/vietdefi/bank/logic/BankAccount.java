@@ -10,7 +10,7 @@ public class BankAccount {
     public String account_number;
     public String account_owner;
     public int state;
-    public JsonObject other;
+    public JsonObject bank_detail;
 
     public BankAccount(JsonObject json) {
         this.id = json.get("id").getAsLong();
@@ -18,11 +18,11 @@ public class BankAccount {
         this.account_number = json.get("bank_name").getAsString();
         this.account_owner = json.get("account_number").getAsString();
         this.state = json.get("state").getAsInt();
-        long refer_id = json.get("refer_id").getAsLong();
+        long bank_detail_id = json.get("bank_detail_id").getAsLong();
         if(this.bank_code == BankCode.TIMO){
-            JsonObject response = BankServices.timoService.getAccountById(refer_id);
+            JsonObject response = BankServices.timoService.getAccountById(bank_detail_id);
             if(BaseResponse.isSuccessFullMessage(response)){
-                this.other = response.getAsJsonObject("data");
+                this.bank_detail = response.getAsJsonObject("data");
             }
         }
     }

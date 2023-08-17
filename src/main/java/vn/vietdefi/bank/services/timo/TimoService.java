@@ -86,4 +86,9 @@ public class TimoService implements ITimoService {
     public void retryLogin(JsonObject other) {
 
     }
+
+    @Override
+    public void updateOther(JsonObject other) {
+
+    }
 }

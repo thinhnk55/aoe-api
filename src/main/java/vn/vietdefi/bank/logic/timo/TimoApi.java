@@ -1,13 +1,13 @@
 package vn.vietdefi.bank.logic.timo;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import okhttp3.Response;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.bank.logic.BankAccount;
 import vn.vietdefi.bank.logic.BankController;
+import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
@@ -19,9 +19,140 @@ import static vn.vietdefi.bank.logic.timo.TimoUtil.*;
 
 public class TimoApi {
     public static void loop(BankAccount account) {
-        int numberOfNotifications = getNumberOfNotification(account);
-        if(numberOfNotifications > 0){
+        //Neu login lai thi phai set sang trang thai force update notification
+        //Neu truong hop binh thuong thi kiem tra xem co thong bao moi thi moi cap nhat
+        boolean updateNotificationFlag = TimoUtil.checkForceUpdateNotification(account);
+        if(!updateNotificationFlag){
+            int numberOfNotifications = getNumberOfNotification(account);
+            if(numberOfNotifications > 0){
+                updateNotificationFlag = true;
+            }
+        }
+        if(updateNotificationFlag){
+            long lastNotificationId = TimoUtil.getLastNotificationId(account);
+            updateNotification(account, lastNotificationId);
+        }
+    }
 
+    private static void updateNotification(BankAccount account, long lastNotificationId) {
+        JsonObject response = getCurrentNotification(account);
+        if(BaseResponse.isSuccessFullMessage(response)){
+            if(response.get("error").getAsInt() == 10){
+                handleFailure(account);
+            }
+            return;
+        }
+        if(BaseResponse.isSuccessFullMessage(response)){
+            JsonObject data = response.getAsJsonObject("data");
+            JsonArray notificationList = TimoUtil.getNotificationListFromResponse(data);
+            if(lastNotificationId == 0){
+                lastNotificationId = notificationList.get(0).getAsJsonObject().get("iD").getAsLong();
+                TimoUtil.updateLastNofiticationId(account, lastNotificationId);
+                TimoUtil.cancelForceUpdate(account);
+                BankServices.timoService.updateOther(account.bank_detail.getAsJsonObject("other"));
+                return;
+            }
+            JsonArray notificationToProcess = new JsonArray();
+            for(int i = 0; i < notificationList.size(); i++){
+                JsonObject json = notificationList.get(i).getAsJsonObject();
+                long id = json.get("iD").getAsLong();
+                if(id > lastNotificationId){
+                    String group = json.get("group").getAsString();
+                    if(group.equals("transfer")) {
+                        notificationToProcess.add(json);
+                    }
+                }else{
+                    break;
+                }
+            }
+            long currentNotificationId = TimoUtil.getNotificationIdFromResponse(data);
+            while (currentNotificationId > lastNotificationId){
+                response = getNotificationByNotificationId(account, currentNotificationId);
+                if(!BaseResponse.isSuccessFullMessage(response)){
+                    if(response.get("error").getAsInt() == 10){
+                        handleFailure(account);
+                    }
+                    return;
+                }
+                data = response.getAsJsonObject("data");
+                notificationList = TimoUtil.getNotificationListFromResponse(data);
+                for(int i = 0; i < notificationList.size(); i++){
+                    JsonObject json = notificationList.get(i).getAsJsonObject();
+                    long id = json.get("iD").getAsLong();
+                    if(id > lastNotificationId){
+                        String group = json.get("group").getAsString();
+                        if(group.equals("transfer")) {
+                            notificationToProcess.add(json);
+                        }
+                    }else{
+                        break;
+                    }
+                }
+                currentNotificationId = TimoUtil.getNotificationIdFromResponse(data);
+            }
+            processNotificationList(account, notificationToProcess, lastNotificationId);
+        }
+    }
+
+    private static void processNotificationList(BankAccount account,
+                                                JsonArray notificationToProcess,
+                                                long lastNotificationId) {
+        long last = lastNotificationId;
+        for(int i = notificationToProcess.size()-1; i >= 0; i--){
+            JsonObject json = notificationToProcess.get(i).getAsJsonObject();
+            String group = json.get("group").getAsString();
+            if(group.equals("transfer")) {
+                JsonObject transactionInfo = TimoUtil.extractBalanceTransactionFromNotification(json);
+                JsonObject response = BankServices.bankService.createBalanceTransaction(transactionInfo);
+                if(BaseResponse.isSuccessFullMessage(response)){
+                    last = json.get("iD").getAsLong();
+                }
+            }
+        }
+        //Danh dau da xu li den notification id nao
+        TimoUtil.updateLastNofiticationId(account, last);
+        TimoUtil.cancelForceUpdate(account);
+        BankServices.timoService.updateOther(account.bank_detail.getAsJsonObject("other"));
+    }
+
+    private static JsonObject getCurrentNotification(BankAccount account) {
+        try {
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Token", TimoUtil.getToken(account));
+            String url = TimoConfig.URL_NOTIFICATION_VN;
+            Response response = OkHttpUtil.getFullResponse(url, headers);
+            if (response.code() == 200) {
+                String data = response.body().string();
+                response.body().close();
+                JsonObject jsonResponse = GsonUtil.toJsonObject(data);
+                return BaseResponse.createFullMessageResponse(0, "success", jsonResponse);
+            } else {
+                return BaseResponse.createFullMessageResponse(10, "failure");
+            }
+        }catch (Exception e){
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+    private static JsonObject getNotificationByNotificationId(BankAccount account, long notificationId) {
+        try {
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Token", TimoUtil.getToken(account));
+            String url = new StringBuilder(TimoConfig.URL_NOTIFICATION_VN)
+                    .append("?idIndex=")
+                    .append(notificationId).toString();
+            Response response = OkHttpUtil.getFullResponse(url, headers);
+            if (response.code() == 200) {
+                String data = response.body().string();
+                response.body().close();
+                JsonObject jsonResponse = GsonUtil.toJsonObject(data);
+                return BaseResponse.createFullMessageResponse(0, "success", jsonResponse);
+            } else {
+                return BaseResponse.createFullMessageResponse(10, "failure");
+            }
+        }catch (Exception e){
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
@@ -50,11 +181,12 @@ public class TimoApi {
         }
     }
 
+
     private static void handleFailure(BankAccount account) {
         //Dua ra khoi vong loop
         BankController.instance().removeBankAccount(account);
         //Thong bao cho admin
         //Thong bao cho Timo Service de retry
-        BankServices.timoService.retryLogin(account.other);
+        BankServices.timoService.retryLogin(account.bank_detail);
     }
 }

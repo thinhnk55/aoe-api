@@ -10,9 +10,7 @@ import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.thread.ThreadPoolWorker;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -28,9 +26,6 @@ public class BankController {
         updateActiveBank();
     }
 
-    /**
-     *
-     */
     public void updateActiveBank() {
         if(bankWorkers == null){
             bankWorkers = new HashMap<>();

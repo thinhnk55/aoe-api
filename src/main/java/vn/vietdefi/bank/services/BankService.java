@@ -57,4 +57,10 @@ public class BankService implements IBankService{
     public JsonObject updateBankState(long id, int state) {
         return null;
     }
+
+    @Override
+    public JsonObject createBalanceTransaction(JsonObject data) {
+        //Neu ton tai transaction roi thi van tra ve thanh cong
+        return null;
+    }
 }
