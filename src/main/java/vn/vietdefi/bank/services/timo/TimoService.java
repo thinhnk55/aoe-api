@@ -16,6 +16,7 @@ public class TimoService implements ITimoService {
     @Override
     public JsonObject loginTimo(String username, String password) {
         try {
+            password = StringUtil.sha512(password);
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject response = getAccountByUsername(username);
             JsonObject data;
@@ -23,7 +24,6 @@ public class TimoService implements ITimoService {
             if(!BaseResponse.isSuccessFullMessage(response)){
                 data = new JsonObject();
                 data.addProperty("username", username);
-                password = StringUtil.sha512(password);
                 DebugLogger.info("username {} passsword {}", username, password);
                 data.addProperty("password", password);
                 device = TimoUtil.generateRandomTimoDevice();
@@ -37,6 +37,7 @@ public class TimoService implements ITimoService {
             if(BaseResponse.isSuccessFullMessage(response)){
                 JsonObject timoResponse = response.getAsJsonObject("data");
                 String token = timoResponse.get("token").getAsString();
+                data.addProperty("token", token);
                 JsonObject other = data.getAsJsonObject("other");
                 if(other == null){
                     other = createOther();
@@ -45,9 +46,12 @@ public class TimoService implements ITimoService {
                     other.addProperty("force_update_notification", true);
                 }
                 long id = data.get("id").getAsLong();
-                String query = "UPDATE timo_account SET token = ?, other = ? state = ? WHERE id = ?";
-                bridge.update(query, token, other, TimoAccountState.COMMIT, id);
-                BankServices.bankService.createBankAccountFromTimoAccount(data);
+                String query = "UPDATE timo_account SET password = ?, token = ?, other = ?, state = ? WHERE id = ?";
+                bridge.update(query, password, token, other, TimoAccountState.COMMIT, id);
+                response = BankServices.bankService.createBankAccountFromTimoAccount(data);
+                if(BaseResponse.isSuccessFullMessage(response)){
+                    data.addProperty("bank_account_id", response.getAsJsonObject("data").get("id").getAsLong());
+                }
                 return BaseResponse.createFullMessageResponse(0, "success", data);
             }else if(response.get("error").getAsInt() == TimoConfig.ERROR_LOGIN_TIMO_ACCOUNT_NOT_COMMIT){
                 JsonObject timoResponse = response.getAsJsonObject("data");
@@ -62,8 +66,8 @@ public class TimoService implements ITimoService {
                     other.addProperty("login_refNo", refNo);
                 }
                 long id = data.get("id").getAsLong();
-                String query = "UPDATE timo_account SET token = ?, other = ?, state = ? WHERE id = ?";
-                bridge.update(query, token, other, TimoAccountState.NOT_COMMIT, id);
+                String query = "UPDATE timo_account SET password = ?, token = ?, other = ?, state = ? WHERE id = ?";
+                bridge.update(query, password, token, other, TimoAccountState.NOT_COMMIT, id);
                 return BaseResponse.createFullMessageResponse(10, "require_otp", data);
             }else{
                 return BaseResponse.createFullMessageResponse(11, "login_failed");
@@ -104,6 +108,7 @@ public class TimoService implements ITimoService {
                 return BaseResponse.createFullMessageResponse(11, "otp_invalid");
             }
             String newToken = timoResponse.getAsJsonObject("data").get("token").getAsString();
+            data.addProperty("token", newToken);
             JsonObject other = data.getAsJsonObject("other");
             if(other == null){
                 other = createOther();
@@ -114,7 +119,10 @@ public class TimoService implements ITimoService {
             data.addProperty("state", TimoAccountState.COMMIT);
             String query = "UPDATE timo_account SET token = ?, other = ?, state = ? WHERE id = ?";
             bridge.update(query, newToken, other, TimoAccountState.COMMIT, id);
-            BankServices.bankService.createBankAccountFromTimoAccount(data);
+            response = BankServices.bankService.createBankAccountFromTimoAccount(data);
+            if(BaseResponse.isSuccessFullMessage(response)){
+                data.addProperty("bank_account_id", response.getAsJsonObject("data").get("id").getAsLong());
+            }
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception exception) {
             String stacktrace = ExceptionUtils.getStackTrace(exception);
