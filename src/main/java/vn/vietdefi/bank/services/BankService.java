@@ -7,6 +7,7 @@ import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.bank.logic.BankAccountState;
 import vn.vietdefi.bank.logic.BankCode;
 import vn.vietdefi.bank.logic.timo.TimoApi;
+import vn.vietdefi.bank.services.util.Constants;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -17,7 +18,7 @@ public class BankService implements IBankService {
     public JsonObject createBankAccount(int bankCode, String accountOwner, String accountNumber, long bankDetailId) {
         try {
             JsonObject response = getBankAccount(bankCode, accountNumber);
-            if(BaseResponse.isSuccessFullMessage(response)){
+            if (BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             }
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
@@ -41,9 +42,9 @@ public class BankService implements IBankService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM bank_account WHERE bank_code = ? AND account_number = ?";
             JsonObject data = bridge.queryOne(query, bankCode, accountNumber);
-            if(data == null){
+            if (data == null) {
                 return BaseResponse.createFullMessageResponse(1, "bank_account_not_found");
-            }else{
+            } else {
                 return BaseResponse.createFullMessageResponse(0, "success", data);
             }
         } catch (Exception e) {
@@ -74,7 +75,7 @@ public class BankService implements IBankService {
             DebugLogger.error(stacktrace);
         }
     }
-    
+
     @Override
     public JsonObject createBalanceTransaction(JsonObject data) {
         try {
@@ -90,25 +91,25 @@ public class BankService implements IBankService {
     public JsonObject createBankAccountFromTimoAccount(JsonObject data) {
         try {
             long bank_account_id = data.get("bank_account_id").getAsLong();
-            if(bank_account_id == 0){
+            if (bank_account_id == 0) {
                 String token = data.get("token").getAsString();
                 JsonObject response = TimoApi.getBankInfo(token);
-                if(BaseResponse.isSuccessFullMessage(response)){
+                if (BaseResponse.isSuccessFullMessage(response)) {
                     JsonObject bankInfo = response.getAsJsonObject("data");
                     String accountNumber = bankInfo.get("accountNumber").getAsString();
                     String accountOwner = bankInfo.get("fullName").getAsString();
                     long id = data.get("id").getAsLong();
                     response = createBankAccount(BankCode.TIMO,
                             accountOwner, accountNumber, id);
-                    if(BaseResponse.isSuccessFullMessage(response)) {
+                    if (BaseResponse.isSuccessFullMessage(response)) {
                         bank_account_id = response.getAsJsonObject("data").get("id").getAsLong();
                         BankServices.timoService.updateBankAccountId(id, bank_account_id);
                     }
                     return response;
-                }else{
+                } else {
                     return BaseResponse.createFullMessageResponse(10, "api_failure");
                 }
-            }else{
+            } else {
                 updateBankState(bank_account_id, BankAccountState.ACTIVE);
                 return getAccountById(bank_account_id);
             }
@@ -121,16 +122,95 @@ public class BankService implements IBankService {
 
     @Override
     public JsonObject getAccountById(long id) {
-        try{
+        try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM bank_account WHERE id = ?";
             JsonObject data = bridge.queryOne(query, id);
-            if(data == null){
+            if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "bank_account_not_found");
             }
             return BaseResponse.createFullMessageResponse(0, "success", data);
-        } catch (Exception exception) {
-            String stacktrace = ExceptionUtils.getStackTrace(exception);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject getListBank(int page) {
+        try {
+            int offset = (page - 1) * Constants.SIZE_DEFAULT;
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT id, bank_code, account_number, account_owner, state FROM bank_account LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, Constants.SIZE_DEFAULT, offset);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject addBank(JsonObject data) {
+        try {
+            int bankCode = data.get("bankCode").getAsInt();
+            String username = data.get("username").getAsString();
+            String password = data.get("password").getAsString();
+            switch (bankCode) {
+                case BankCode.TIMO:
+                    if(BankServices.timoService.isExistedByUsername(username)){
+                        return BaseResponse.createFullMessageResponse(12, "account_existed");
+                    }else {
+                        return BankServices.timoService.loginTimo(username, password);
+                    }
+            }
+            return BaseResponse.createFullMessageResponse(10, "bank_un_support");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject updateBank(JsonObject data) {
+        try {
+            int bankCode = data.get("bankCode").getAsInt();
+            String username = data.get("username").getAsString();
+            String password = data.get("password").getAsString();
+            switch (bankCode) {
+                case BankCode.TIMO:
+                    if(BankServices.timoService.isExistedByUsername(username)){
+                        return BankServices.timoService.loginTimo(username, password);
+                    }else {
+                        return BaseResponse.createFullMessageResponse(12, "account_not_found");
+                    }
+            }
+            return BaseResponse.createFullMessageResponse(10, "bank_un_support");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject selectBank(long id) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE bank_account SET state = ? WHERE id = ?";
+            int row = bridge.update(query, BankAccountState.WORKING, id);
+            if (row == 0) {
+                return BaseResponse.createFullMessageResponse(10, "bank_not_found");
+            } else {
+                query = "UPDATE bank_account SET state = ? WHERE id <> ?";
+                bridge.update(query, BankAccountState.ACTIVE, id);
+            }
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }

@@ -11,4 +11,12 @@ public interface IBankService {
     JsonObject getBankAccount(int bankCode, String accountNumber);
     JsonObject getAccountById(long id);
 
+    JsonObject getListBank(int page);
+
+    JsonObject addBank(JsonObject data);
+
+    JsonObject updateBank(JsonObject data);
+
+    JsonObject selectBank(long id);
+
 }

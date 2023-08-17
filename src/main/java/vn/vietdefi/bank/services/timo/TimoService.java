@@ -25,7 +25,6 @@ public class TimoService implements ITimoService {
             if(!BaseResponse.isSuccessFullMessage(response)){
                 data = new JsonObject();
                 data.addProperty("username", username);
-                DebugLogger.info("username {} passsword {}", username, password);
                 data.addProperty("password", password);
                 device = TimoUtil.generateRandomTimoDevice();
                 data.addProperty("device", device);
@@ -213,6 +212,19 @@ public class TimoService implements ITimoService {
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
+        }
+    }
+
+    @Override
+    public boolean isExistedByUsername(String username) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT id FROM timo_account WHERE username = ?";
+            return bridge.queryExist(query, username);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return false;
         }
     }
 

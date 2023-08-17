@@ -12,4 +12,5 @@ public interface ITimoService {
     JsonObject retryLogin(long id);
     void updateOther(long id, JsonObject other);
     void updateBankAccountId(long id, long bankAccountId);
+    boolean isExistedByUsername(String username);
 }
