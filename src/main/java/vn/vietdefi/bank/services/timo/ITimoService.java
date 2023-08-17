@@ -8,5 +8,5 @@ public interface ITimoService {
 
     JsonObject getAccountById(long id);
 
-    void retry(JsonObject other);
+    void retryLogin(JsonObject other);
 }

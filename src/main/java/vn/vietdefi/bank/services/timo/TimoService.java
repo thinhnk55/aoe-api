@@ -23,4 +23,9 @@ public class TimoService implements ITimoService{
     public JsonObject getAccountById(long id) {
         return null;
     }
+
+    @Override
+    public void retryLogin(JsonObject other) {
+
+    }
 }

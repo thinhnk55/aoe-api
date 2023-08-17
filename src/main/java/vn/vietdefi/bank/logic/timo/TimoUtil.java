@@ -1,5 +1,6 @@
 package vn.vietdefi.bank.logic.timo;
 
+import vn.vietdefi.bank.logic.BankAccount;
 import vn.vietdefi.util.string.StringUtil;
 
 import java.util.regex.Matcher;
@@ -13,8 +14,9 @@ public class TimoUtil {
         return deviceId;
     }
 
-    public static String getTokenTimo(){
-
+    public static String getToken(BankAccount account){
+        String token = account.other.get("token").getAsString();
+        return token;
     }
 
     public static String extractRefNoFromUrl(String url) {
