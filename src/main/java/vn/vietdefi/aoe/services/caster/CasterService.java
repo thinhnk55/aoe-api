@@ -111,4 +111,9 @@ public class CasterService implements ICasterService{
         }
     }
 
+    @Override
+    public JsonObject getInfoCaster(long casterId) {
+        return null;
+    }
+
 }

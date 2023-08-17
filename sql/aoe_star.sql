@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS aoe_star_transaction (
     refer_id BIGINT NOT NULL DEFAULT 0,
     amount INT  NOT NULL,									#Số sao giao dịch
     balance INT NOT NULL,									#số dư hiện tại
-    create_time BIGINT  NOT NULL,							#thời gian giao dịch
+    create_time BIGINT  NOT NULL							#thời gian giao dịch
 );
 
 
