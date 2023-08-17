@@ -8,6 +8,7 @@ public class TimoConfig {
     public static final String URL_NOTIFICATION_CHECK = "https://app2.timo.vn/user/notification/check";
     public static final String URL_TRANSACTION_DETAIL = "https://app2.timo.vn/user/account/transaction/receipt";
     public static final String URL_TRANSACTION_LIST = "https://app2.timo.vn/user/account/transaction/list";
+    public static final String URL_BANK_INFO = "https://app2.timo.vn/user/bankinfo";
     /**
      * body
      * {action: "R", id: "ALL"}
