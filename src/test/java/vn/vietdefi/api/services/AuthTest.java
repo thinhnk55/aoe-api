@@ -56,6 +56,7 @@ public class AuthTest {
         @Test
         public void test2(){
             String s = "Số dư tài khoản vừa giảm 100.0 VND vào 12/08/2023 08:49 VN ";
+            s = "Số dư tài khoản vừa tăng 1.000 vào 17/08/2023 16:40 VN";
             String regex = "\\d+([.]\\d+)*";
             Pattern accountBalancePattern = Pattern.compile(regex);
             Matcher matcher = accountBalancePattern.matcher(s);

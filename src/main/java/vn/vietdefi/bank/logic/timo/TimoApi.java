@@ -6,12 +6,14 @@ import okhttp3.Response;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.bank.logic.BankAccount;
+import vn.vietdefi.bank.logic.BankAccountState;
 import vn.vietdefi.bank.logic.BankController;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +36,7 @@ public class TimoApi {
 
     private static void updateNotification(BankAccount account, long lastNotificationId) {
         JsonObject response = getCurrentNotification(account);
-        if(BaseResponse.isSuccessFullMessage(response)){
+        if(!BaseResponse.isSuccessFullMessage(response)){
             if(response.get("error").getAsInt() == 10){
                 handleFailure(account);
             }
@@ -57,10 +59,7 @@ public class TimoApi {
                 JsonObject json = notificationList.get(i).getAsJsonObject();
                 long id = json.get("iD").getAsLong();
                 if(id > lastNotificationId){
-                    String group = json.get("group").getAsString();
-                    if(group.equals("transfer")) {
-                        notificationToProcess.add(json);
-                    }
+                    notificationToProcess.add(json);
                 }else{
                     break;
                 }
@@ -80,10 +79,7 @@ public class TimoApi {
                     JsonObject json = notificationList.get(i).getAsJsonObject();
                     long id = json.get("iD").getAsLong();
                     if(id > lastNotificationId){
-                        String group = json.get("group").getAsString();
-                        if(group.equals("transfer")) {
-                            notificationToProcess.add(json);
-                        }
+                        notificationToProcess.add(json);
                     }else{
                         break;
                     }
@@ -98,23 +94,42 @@ public class TimoApi {
                                                 JsonArray notificationToProcess,
                                                 long lastNotificationId) {
         long last = lastNotificationId;
+        boolean hasTransaction = false;
         for(int i = notificationToProcess.size()-1; i >= 0; i--){
             JsonObject json = notificationToProcess.get(i).getAsJsonObject();
             String group = json.get("group").getAsString();
-            if(group.equals("transfer")) {
+            if(group.equals("Transfer")) {
                 JsonObject transactionInfo = TimoUtil.extractBalanceTransactionFromNotification(json);
+                transactionInfo.addProperty("receiver_bankcode", account.bank_code);
+                transactionInfo.addProperty("receiver_bank_account", account.account_number);
+                transactionInfo.addProperty("receiver_name", account.account_owner);
                 JsonObject response = BankServices.bankService.createBalanceTransaction(transactionInfo);
                 if(BaseResponse.isSuccessFullMessage(response)){
                     last = json.get("iD").getAsLong();
+                    hasTransaction = true;
+                }else{
+                    break;
                 }
             }
         }
-        //Danh dau da xu li den notification id nao
-        TimoUtil.updateLastNofiticationId(account, last);
         TimoUtil.cancelForceUpdate(account);
-        long id = account.bank_detail.get("id").getAsLong();
-        JsonObject other = account.bank_detail.getAsJsonObject("other");
-        BankServices.timoService.updateOther(id, other);
+        commitReadNotification(account);
+        if(hasTransaction){
+            TimoUtil.updateLastNofiticationId(account, last);
+            long id = account.bank_detail.get("id").getAsLong();
+            JsonObject other = account.bank_detail.getAsJsonObject("other");
+            BankServices.timoService.updateOther(id, other);
+        }
+        //Danh dau da xu li den notification id nao
+    }
+
+    private static void commitReadNotification(BankAccount account) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Token", TimoUtil.getToken(account));
+        JsonObject payload = new JsonObject();
+        payload.addProperty("action", "R");
+        payload.addProperty("id", "ALL");
+        OkHttpUtil.postJson(TimoConfig.URL_NOTIFICATION_UPDATE, payload.toString(), headers);
     }
 
     private static JsonObject getCurrentNotification(BankAccount account) {
@@ -238,34 +253,35 @@ public class TimoApi {
         }
     }
 
-    public static int getNumberOfNotification(BankAccount account) {
-        try {
-            Map<String, String> headers = new HashMap<>();
-            headers.put("Token", TimoUtil.getToken(account));
-            Response response = OkHttpUtil.getFullResponse(TimoConfig.URL_NOTIFICATION_CHECK, headers);
-            if (response.code() == 200) {
+    public static int getNumberOfNotification(BankAccount account){
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Token", TimoUtil.getToken(account));
+        Response response = OkHttpUtil.getFullResponse(TimoConfig.URL_NOTIFICATION_CHECK, headers);
+        if (response!= null && response.code() == 200) {
+            try {
                 String data = response.body().string();
                 response.body().close();
                 JsonObject jsonResponse = GsonUtil.toJsonObject(data);
                 //Lay so luong thong bao moi
                 int numberOfNotifications = jsonResponse.get("data").getAsJsonObject().get("numberOfNotification").getAsInt();
                 return numberOfNotifications;
-            }else {
-                handleFailure(account);
+            }catch (Exception e){
                 return -1;
             }
-        }catch (Exception e){
-            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+        }else {
+            handleFailure(account);
             return -1;
         }
     }
 
 
     private static void handleFailure(BankAccount account) {
-        //Dua ra khoi vong loop
         BankController.instance().removeBankAccount(account);
-        //Thong bao cho admin
-        //Thong bao cho Timo Service de retry
-        BankServices.timoService.retryLogin(account.bank_detail);
+        long id = account.bank_detail.get("id").getAsLong();
+        JsonObject response = BankServices.timoService.retryLogin(id);
+        if(BaseResponse.isSuccessFullMessage(response)){
+            BankServices.bankService.updateBankState(account.id, BankAccountState.WORKING);
+            BankController.instance().updateWorkingBank();
+        }
     }
 }

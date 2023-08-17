@@ -3,6 +3,7 @@ package vn.vietdefi.bank.services.timo;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.bank.BankServices;
+import vn.vietdefi.bank.logic.BankController;
 import vn.vietdefi.bank.logic.timo.TimoApi;
 import vn.vietdefi.bank.logic.timo.TimoConfig;
 import vn.vietdefi.bank.logic.timo.TimoUtil;
@@ -16,7 +17,7 @@ public class TimoService implements ITimoService {
     @Override
     public JsonObject loginTimo(String username, String password) {
         try {
-            password = StringUtil.sha512(password);
+            String hashedPassword = StringUtil.sha512(password);
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject response = getAccountByUsername(username);
             JsonObject data;
@@ -33,7 +34,7 @@ public class TimoService implements ITimoService {
                 data = response.getAsJsonObject("data");
                 device = data.get("device").getAsString();
             }
-            response = TimoApi.login(username, password, device);
+            response = TimoApi.login(username, hashedPassword, device);
             if(BaseResponse.isSuccessFullMessage(response)){
                 JsonObject timoResponse = response.getAsJsonObject("data");
                 String token = timoResponse.get("token").getAsString();
@@ -179,8 +180,16 @@ public class TimoService implements ITimoService {
     }
 
     @Override
-    public void retryLogin(JsonObject other) {
-
+    public JsonObject retryLogin(long id) {
+        JsonObject response = getAccountById(id);
+        if(!BaseResponse.isSuccessFullMessage(response)){
+            return response;
+        }
+        JsonObject data = response.getAsJsonObject("data");
+        String username = data.get("username").getAsString();
+        String password = data.get("password").getAsString();
+        response = loginTimo(username, password);
+        return response;
     }
 
     @Override

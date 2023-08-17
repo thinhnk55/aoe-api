@@ -6,6 +6,7 @@ import io.vertx.core.VertxOptions;
 import org.apache.log4j.xml.DOMConfigurator;
 import vn.vietdefi.aoe.vertx.AoeVerticle;
 import vn.vietdefi.api.vertx.ApiConfig;
+import vn.vietdefi.bank.logic.BankController;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 
@@ -17,6 +18,7 @@ public class AoeLauncher {
     public static void run(){
         try {
             initConfig();
+            BankController.instance().startLoop();
             startHttpServer();
         } catch (Exception e) {
             e.printStackTrace();

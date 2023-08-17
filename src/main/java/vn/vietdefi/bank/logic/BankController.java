@@ -23,10 +23,10 @@ public class BankController {
         return ins;
     }
     private BankController(){
-        updateActiveBank();
+        updateWorkingBank();
     }
 
-    public void updateActiveBank() {
+    public void updateWorkingBank() {
         if(bankWorkers == null){
             bankWorkers = new HashMap<>();
         }else{
@@ -46,8 +46,9 @@ public class BankController {
     Map<Long, BankWorker> bankWorkers;
     private void loop() {
         try {
-            DebugLogger.info("BankController loop");
+            DebugLogger.info("BankController loop {} ", bankWorkers.size());
             for (Map.Entry<Long, BankWorker> entry : bankWorkers.entrySet()) {
+                //update acc
                 BankWorker worker = entry.getValue();
                 worker.loop();
             }

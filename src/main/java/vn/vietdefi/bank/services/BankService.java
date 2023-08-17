@@ -77,8 +77,13 @@ public class BankService implements IBankService {
     
     @Override
     public JsonObject createBalanceTransaction(JsonObject data) {
-        //Neu ton tai transaction roi thi van tra ve thanh cong
-        return null;
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            bridge.insertObjectToDB("bank_transaction", data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
     }
 
     @Override

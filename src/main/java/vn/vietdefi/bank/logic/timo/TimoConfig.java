@@ -11,11 +11,6 @@ public class TimoConfig {
     public static final String URL_TRANSACTION_DETAIL = "https://app2.timo.vn/user/account/transaction/receipt";
     public static final String URL_TRANSACTION_LIST = "https://app2.timo.vn/user/account/transaction/list";
     public static final String URL_BANK_INFO = "https://app2.timo.vn/user/bankinfo";
-    /**
-     * body
-     * {action: "R", id: "ALL"}
-     * post
-     */
     public static final String URL_NOTIFICATION_UPDATE = "https://app2.timo.vn/notification/update"; //update notification had been read
     public static final String URL_LOGIN_COMMIT = "https://app2.timo.vn/login/commit";
     public static final String URL_FAST_TRANSFER_GET_INFO = "https://app2.timo.vn/user/fastTransfer/getInfo";

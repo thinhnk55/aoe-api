@@ -15,8 +15,8 @@ public class BankAccount {
     public BankAccount(JsonObject json) {
         this.id = json.get("id").getAsLong();
         this.bank_code = json.get("bank_code").getAsInt();
-        this.account_number = json.get("bank_name").getAsString();
-        this.account_owner = json.get("account_number").getAsString();
+        this.account_number = json.get("account_number").getAsString();
+        this.account_owner = json.get("account_owner").getAsString();
         this.state = json.get("state").getAsInt();
         long bank_detail_id = json.get("bank_detail_id").getAsLong();
         if(this.bank_code == BankCode.TIMO){

@@ -26,16 +26,14 @@ CREATE TABLE IF NOT EXISTS bank_transaction
     bank_transaction_id   VARCHAR(64)              NOT NULL,
     receiver_bankcode     INT          DEFAULT 0   NOT NULL,
     receiver_bank_account VARCHAR(64)  DEFAULT ''  NOT NULL,
-    receiver_bank_name    VARCHAR(256) DEFAULT ''  NOT NULL,
     receiver_name         VARCHAR(64)  DEFAULT ''  NOT NULL,
     note                  VARCHAR(256)         DEFAULT ''  NOT NULL,
     amount                BIGINT       DEFAULT 0   NOT NULL,
     sender_bankcode       INT          DEFAULT 0   NOT NULL,
     sender_bank_account   VARCHAR(64)  DEFAULT ''  NOT NULL,
-    sender_bank_name      VARCHAR(256) DEFAULT ''  NOT NULL,
     sender_name           VARCHAR(256) DEFAULT ''  NOT NULL,
     create_time           BIGINT       DEFAULT 0   NOT NULL,
-    status                INT          DEFAULT 0   NOT NULL,
+    state                INT          DEFAULT 0   NOT NULL,
     star_transaction_id   BIGINT       DEFAULT -1  NOT NULL
 );
 CREATE INDEX bank_transaction_create_time_index ON bank_transaction (create_time);

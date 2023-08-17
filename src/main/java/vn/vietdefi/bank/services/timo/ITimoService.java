@@ -9,7 +9,7 @@ public interface ITimoService {
 
     JsonObject getAccountById(long id);
     JsonObject getAccountByUsername(String username);
-    void retryLogin(JsonObject other);
+    JsonObject retryLogin(long id);
     void updateOther(long id, JsonObject other);
     void updateBankAccountId(long id, long bankAccountId);
 }

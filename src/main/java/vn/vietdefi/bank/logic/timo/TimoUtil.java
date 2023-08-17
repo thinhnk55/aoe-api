@@ -62,12 +62,13 @@ public class TimoUtil {
         String bank_transaction_id = deeplink.substring(deeplink.length()-17, deeplink.length()-1);
         transactionInfo.addProperty("bank_transaction_id", bank_transaction_id);
 
+        String line = lines[0];
         String regex = "\\d+([.]\\d+)*";
         Pattern accountBalancePattern = Pattern.compile(regex);
-        Matcher matcher = accountBalancePattern.matcher(lines[0]);
+        Matcher matcher = accountBalancePattern.matcher(line);
         long amount = 0;
         if (matcher.find()) {
-            String money = matcher.group(0).replaceAll(".","");
+            String money = matcher.group(0).replaceAll("\\.","");
             amount = Long.parseLong(money);
         }
         transactionInfo.addProperty("amount", amount);
