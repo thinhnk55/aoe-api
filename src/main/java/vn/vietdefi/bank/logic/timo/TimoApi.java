@@ -15,8 +15,6 @@ import vn.vietdefi.util.network.OkHttpUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static vn.vietdefi.bank.logic.timo.TimoUtil.*;
-
 public class TimoApi {
     public static void loop(BankAccount account) {
         //Neu login lai thi phai set sang trang thai force update notification
@@ -158,9 +156,6 @@ public class TimoApi {
 
     public static int getNumberOfNotification(BankAccount account){
         try {
-            if(account == null){
-                return null;
-            }
             Map<String, String> headers = new HashMap<>();
             headers.put("Token", TimoUtil.getToken(account));
             Response response = OkHttpUtil.getFullResponse(TimoConfig.URL_NOTIFICATION_CHECK, headers);
