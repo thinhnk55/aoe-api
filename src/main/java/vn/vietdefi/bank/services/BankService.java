@@ -1,16 +1,21 @@
 package vn.vietdefi.bank.services;
 
 import com.google.gson.JsonObject;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.bank.logic.BalanceTransaction;
 import vn.vietdefi.bank.logic.BankCode;
 import vn.vietdefi.bank.services.timo.ITimoService;
 import vn.vietdefi.bank.services.timo.TimoService;
 import vn.vietdefi.common.BaseResponse;
+import vn.vietdefi.util.log.DebugLogger;
+import vn.vietdefi.util.sql.HikariClients;
+import vn.vietdefi.util.sql.SQLJavaBridge;
 
 import java.util.List;
 
-public class BankService implements IBankService{
+public class BankService implements IBankService {
     private final ITimoService timoService = new TimoService();
+
     @Override
     public JsonObject login(JsonObject data) {
         try {
@@ -23,6 +28,8 @@ public class BankService implements IBankService{
             }
             return BaseResponse.createFullMessageResponse(10, "bank_un_support");
         } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
@@ -36,18 +43,30 @@ public class BankService implements IBankService{
             switch (bankCode) {
                 case BankCode.TIMO:
                     String refNo = data.get("refNo").getAsString();
-                    return timoService.commitTimo(token,refNo,otp);
+                    long timoId = data.get("timoId").getAsLong();
+                    return timoService.commitTimo(token, refNo, otp, timoId);
             }
             return BaseResponse.createFullMessageResponse(10, "bank_un_support");
         } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
     @Override
     public JsonObject createBankAccount(JsonObject data) {
-        return null;
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            bridge.insertObjectToDB("bank_account", data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
     }
+
     @Override
     public JsonObject getActiveBanks() {
         return null;

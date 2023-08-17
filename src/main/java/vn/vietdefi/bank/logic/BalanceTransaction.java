@@ -5,21 +5,21 @@ import com.google.gson.JsonObject;
 /**
  * CREATE TABLE IF NOT EXISTS bank_transaction
  * (
- *     id                    BIGINT       PRIMARY KEY AUTO_INCREMENT,
- *     bank_transaction_id   VARCHAR(50)              NOT NULL,
- *     receiver_bankcode     INT          DEFAULT 0   NOT NULL,
- *     receiver_bank_account VARCHAR(50)  DEFAULT ''  NOT NULL,
- *     receiver_bank_name    VARCHAR(200) DEFAULT ''  NOT NULL,
- *     receiver_name         VARCHAR(50)  DEFAULT ''  NOT NULL,
- *     note                  TEXT         DEFAULT ''  NOT NULL,
- *     amount                BIGINT       DEFAULT 0   NOT NULL,
- *     sender_bankcode       INT          DEFAULT 0   NOT NULL,
- *     sender_bank_account   VARCHAR(50)  DEFAULT ''  NOT NULL,
- *     sender_bank_name      VARCHAR(252) DEFAULT ''  NOT NULL,
- *     sender_name           VARCHAR(252) DEFAULT ''  NOT NULL,
- *     create_time           BIGINT       DEFAULT 0   NOT NULL,
- *     status                INT          DEFAULT 0   NOT NULL,
- *     star_transaction_id   BIGINT       DEFAULT -1  NOT NULL
+ * id                    BIGINT       PRIMARY KEY AUTO_INCREMENT,
+ * bank_transaction_id   VARCHAR(50)              NOT NULL,
+ * receiver_bankcode     INT          DEFAULT 0   NOT NULL,
+ * receiver_bank_account VARCHAR(50)  DEFAULT ''  NOT NULL,
+ * receiver_bank_name    VARCHAR(200) DEFAULT ''  NOT NULL,
+ * receiver_name         VARCHAR(50)  DEFAULT ''  NOT NULL,
+ * note                  TEXT         DEFAULT ''  NOT NULL,
+ * amount                BIGINT       DEFAULT 0   NOT NULL,
+ * sender_bankcode       INT          DEFAULT 0   NOT NULL,
+ * sender_bank_account   VARCHAR(50)  DEFAULT ''  NOT NULL,
+ * sender_bank_name      VARCHAR(252) DEFAULT ''  NOT NULL,
+ * sender_name           VARCHAR(252) DEFAULT ''  NOT NULL,
+ * create_time           BIGINT       DEFAULT 0   NOT NULL,
+ * status                INT          DEFAULT 0   NOT NULL,
+ * star_transaction_id   BIGINT       DEFAULT -1  NOT NULL
  * );
  */
 public class BalanceTransaction {
@@ -55,5 +55,13 @@ public class BalanceTransaction {
         create_time = data.get("create_time").getAsLong();
         status = data.get("status").getAsInt();
         star_transaction_id = data.get("star_transaction_id").getAsLong();
+    }
+
+    public int getReceiverBankCode() {
+        return 0;
+    }
+
+    public String getNote() {
+        return null;
     }
 }

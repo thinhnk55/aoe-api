@@ -154,7 +154,86 @@ public class TimoApi {
         }
     }
 
-    public static int getNumberOfNotification(BankAccount account){
+    public static JsonObject login(String username, String password, String device) {
+        try {
+            JsonObject body = new JsonObject();
+            body.addProperty("username", username);
+            body.addProperty("password", password);
+
+            Map<String, String> headers = new HashMap<>();
+            headers.put("x-timo-devicereg", device);
+            try (Response response = OkHttpUtil.postFullResponse(TimoConfig.URL_LOGIN, body.toString(), headers)) {
+                if (response.code() == 200) {
+                    String responseBody = response.body().string();
+                    JsonObject res = GsonUtil.toJsonObject(responseBody);
+                    if (res.get("code").getAsInt() == 6001) {
+                        JsonObject data = res.get("data").getAsJsonObject();
+                        return BaseResponse.createFullMessageResponse(6001, "not_commit", data);
+                    }
+                    if (res.get("code").getAsInt() == 200) {
+                        JsonObject data = res.get("data").getAsJsonObject();
+                        return BaseResponse.createFullMessageResponse(200, "login_success", data);
+                    }
+                    if (res.get("code").getAsInt() == 401) {
+                        return BaseResponse.createFullMessageResponse(401, "account_invalid");
+                    }
+                }
+                return BaseResponse.createFullMessageResponse(1, "system_error");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    public static JsonObject commit(String token, JsonObject body) {
+        try {
+            Map<String, String> headers = new HashMap<>();
+            headers.put("token", token);
+            try (Response response = OkHttpUtil.postFullResponse(TimoConfig.URL_LOGIN_COMMIT, body.toString(), headers)) {
+                if (response.code() == 200) {
+                    String responseBody = response.body().string();
+                    JsonObject res = GsonUtil.toJsonObject(responseBody);
+                    if (res.get("code").getAsInt() == 8102) {
+                        return BaseResponse.createFullMessageResponse(8102, "otp_invalid");
+                    }
+                    if (res.get("code").getAsInt() == 8106) {
+                        return BaseResponse.createFullMessageResponse(8106, "otp_expire");
+                    }
+                    if (res.get("code").getAsInt() == 200) {
+                        JsonObject data = res.get("data").getAsJsonObject();
+                        return BaseResponse.createFullMessageResponse(0, "success", data);
+                    }
+                }
+                return BaseResponse.createFullMessageResponse(401, "unauthorized");
+            }
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    public static JsonObject bankInfo(String token) {
+        try {
+            Map<String, String> headers = new HashMap<>();
+            headers.put("token", token);
+            try(Response response = OkHttpUtil.getFullResponse(TimoConfig.URL_BANK_INFO, headers)){
+                if(response.code() == 200){
+                    String responseBody = response.body().string();
+                    JsonObject res = GsonUtil.toJsonObject(responseBody);
+                    return BaseResponse.createFullMessageResponse(0, "success", res.get("data").getAsJsonObject());
+                }
+                return BaseResponse.createFullMessageResponse(401, "unauthorized");
+            }
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    public static int getNumberOfNotification(BankAccount account) {
         try {
             Map<String, String> headers = new HashMap<>();
             headers.put("Token", TimoUtil.getToken(account));

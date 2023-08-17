@@ -3,8 +3,9 @@ package vn.vietdefi.bank.services.timo;
 import com.google.gson.JsonObject;
 
 public interface ITimoService {
-    JsonObject login(String username, String password);
-    JsonObject commit(String username, String password, String otp);
+    JsonObject loginTimo(String username, String password);
+    JsonObject commitTimo(String token, String refNo, String otp, long timoId);
+
     JsonObject getAccountById(long id);
     void retryLogin(JsonObject other);
     /**
