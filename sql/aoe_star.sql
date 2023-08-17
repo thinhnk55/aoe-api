@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS aoe_star (
      user_id BIGINT  PRIMARY KEY NOT NULL,
-     username VARCHAR NOT NULL,
-     balance INT  NOT NULL DEFAULT 0
-) ;
+     username VARCHAR(128) NOT NULL,
+     balance INT NOT NULL DEFAULT 0
+);
 
 CREATE TABLE IF NOT EXISTS aoe_star_transaction (
     id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,

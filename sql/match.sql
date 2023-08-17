@@ -9,6 +9,6 @@ CREATE TABLE IF NOT EXISTS aoe_match  (
      state INT,               #1:trận đấu chưa đủ sao, 2:trận đấu đủ số sao để bắt đầu (Chuẩn bị diễn ra) , 3 trận đấu đang diễn ra , 4 trận đấu đã kết thúc
      create_time BIGINT NOT NULL,
      suggester_id BIGINT NOT NULL,
-     team_player_id TEXT NOT NULL,
+     team_player TEXT NOT NULL,
      caster_id BIGINT NOT NULL default 0
 ) ;

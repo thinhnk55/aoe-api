@@ -1,9 +1,9 @@
 package vn.vietdefi.aoe.services;
 
-import vn.vietdefi.aoe.services.caster.CasterService;
-import vn.vietdefi.aoe.services.caster.ICasterService;
-import vn.vietdefi.aoe.services.gamer.GamerService;
-import vn.vietdefi.aoe.services.gamer.IGamerService;
+import vn.vietdefi.aoe.services.user.caster.CasterService;
+import vn.vietdefi.aoe.services.user.caster.ICasterService;
+import vn.vietdefi.aoe.services.user.gamer.GamerService;
+import vn.vietdefi.aoe.services.user.gamer.IGamerService;
 import vn.vietdefi.aoe.services.match.IMatchService;
 import vn.vietdefi.aoe.services.match.MatchService;
 import vn.vietdefi.aoe.services.star.IStarService;

@@ -6,5 +6,5 @@ public class MatchConstants {
     public static final int MATCH_ONGOING = 3;
     public static final int MATCH_FINISHED = 4;
     public static final int MATCH_CANCELLED = 5;
-    public static final int itemsPerPage = 15;
+    public static final int ITEMS_PER_PAGE = 15;
 }

@@ -44,7 +44,7 @@ public class AuthService implements IAuthService {
                 return BaseResponse.createFullMessageResponse(10, "user_not_exist");
             }
             data.remove("password");
-            return BaseResponse.createFullMessageResponse(0, "sucess", data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         }catch (Exception e){
             e.printStackTrace();
             return BaseResponse.createFullMessageResponse(1, "system_error");

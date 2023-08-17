@@ -1,4 +1,4 @@
-package vn.vietdefi.aoe.services.caster;
+package vn.vietdefi.aoe.services.user.caster;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -11,7 +11,7 @@ import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
 import vn.vietdefi.util.string.StringUtil;
 
-public class CasterService implements ICasterService{
+public class CasterService implements ICasterService {
     @Override
     public JsonObject createCaster(JsonObject json) {
         try {

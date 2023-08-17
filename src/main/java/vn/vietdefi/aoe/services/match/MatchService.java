@@ -66,11 +66,11 @@ public class MatchService implements IMatchService{
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
 
-            long offset = (long) (page - 1) * MatchConstants.itemsPerPage;
+            long offset = (long) (page - 1) * MatchConstants.ITEMS_PER_PAGE;
             // Query to get the total number of pages
             String countQuery = "SELECT COUNT(*) AS total_rows FROM `match` WHERE `state ` = ?";
             JsonObject result = new JsonObject();
-            result.addProperty("total_page", bridge.queryInteger(countQuery, state )/MatchConstants.itemsPerPage + 1);
+            result.addProperty("total_page", bridge.queryInteger(countQuery, state )/MatchConstants.ITEMS_PER_PAGE + 1);
             // Query to get data for the current page
             StringBuilder dataQuery = new StringBuilder("SELECT * FROM `match` WHERE `state ` = ? ");
             if(state  < 5){
@@ -78,7 +78,7 @@ public class MatchService implements IMatchService{
             }else {
                 dataQuery.append("ORDER BY time_expired DESC LIMIT ? OFFSET ?");
             }
-            JsonArray data = bridge.query(String.valueOf(dataQuery), state , MatchConstants.itemsPerPage, offset);
+            JsonArray data = bridge.query(String.valueOf(dataQuery), state , MatchConstants.ITEMS_PER_PAGE, offset);
             result.add("match", data);
             return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {

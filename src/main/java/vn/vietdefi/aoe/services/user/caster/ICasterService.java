@@ -1,4 +1,4 @@
-package vn.vietdefi.aoe.services.caster;
+package vn.vietdefi.aoe.services.user.caster;
 
 
 import com.google.gson.JsonObject;

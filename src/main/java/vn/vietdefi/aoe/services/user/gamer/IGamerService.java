@@ -1,4 +1,4 @@
-package vn.vietdefi.aoe.services.gamer;
+package vn.vietdefi.aoe.services.user.gamer;
 
 import com.google.gson.JsonObject;
 
