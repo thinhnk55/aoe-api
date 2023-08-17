@@ -1,5 +1,15 @@
+CREATE TABLE IF NOT EXISTS aoe_profile  (
+    user_id      BIGINT PRIMARY KEY NOT NULL,
+    user_name    VARCHAR(128) UNIQUE NOT NULL,
+    nick_name    VARCHAR(2048) UNIQUE NOT NULL,
+    level        INT NOT NULL DEFAULT 0,
+    avatar       VARCHAR(2048) NOT NULL
+);
+
+CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nickname);
+
 CREATE TABLE IF NOT EXISTS gamer  (
-    user_id      BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id      BIGINT PRIMARY KEY NOT NULL,
     nickname     VARCHAR(2048) UNIQUE NOT NULL,
     main_name    VARCHAR(2048) NOT NULL,
     avatar       VARCHAR(2048) NOT NULL ,
@@ -17,7 +27,7 @@ CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nickname);
 
 
 CREATE TABLE IF NOT EXISTS caster (
-    id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    id INT(11) PRIMARY KEY NOT NULL,
     fullname VARCHAR(2048) NOT NULL DEFAULT '',
     nickname VARCHAR(2048) UNIQUE NOT NULL DEFAULT '',
     avatar VARCHAR(2048) NOT NULL DEFAULT '',
