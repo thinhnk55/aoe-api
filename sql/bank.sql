@@ -17,28 +17,27 @@ CREATE TABLE IF NOT EXISTS bank_account
     bank_code INT NOT NULL DEFAULT 0,
     account_number VARCHAR(50),
     account_owner VARCHAR(50),
-    state INT NOT NULL DEFAULT 0
+    state INT NOT NULL DEFAULT 0,
+    refer_id BIGINT NOT NULL
 );
 
-create table bank_transaction
+CREATE TABLE IF NOT EXISTS bank_transaction
 (
-    id                    PRIMARY KEY  BIGINT      AUTO_INCREMENT,
-    refNo                 VARCHAR(50)              not null,
-    transaction_id        BIGINT,
-    receiver_bankcode     INT          default 0   not null,
-    receiver_bank_account VARCHAR(50)  default '0' not null,
-    receiver_bank_name    VARCHAR(200) default '0' not null,
-    receiver_name         VARCHAR(50)  default '0' not null,
-    note                  TEXT                     not null,
-    amount                BIGINT       default 0   not null,
-    sender_bankcode       INT          default 0   not null,
-    sender_bank_account   VARCHAR(50)  default '0' not null,
-    sender_bank_name      VARCHAR(252) default '0' not null,
-    sender_name           VARCHAR(252) default '0' not null,
-    create_time           BIGINT       default 0   not null,
-    status                INT          default 0   not null
-)
-
-create index bank_trans_create_time_index
-    on bank_transaction (create_time);
+    id                    BIGINT       PRIMARY KEY AUTO_INCREMENT,
+    bank_transaction_id   VARCHAR(50)              NOT NULL,
+    receiver_bankcode     INT          DEFAULT 0   NOT NULL,
+    receiver_bank_account VARCHAR(50)  DEFAULT ''  NOT NULL,
+    receiver_bank_name    VARCHAR(200) DEFAULT ''  NOT NULL,
+    receiver_name         VARCHAR(50)  DEFAULT ''  NOT NULL,
+    note                  TEXT         DEFAULT ''  NOT NULL,
+    amount                BIGINT       DEFAULT 0   NOT NULL,
+    sender_bankcode       INT          DEFAULT 0   NOT NULL,
+    sender_bank_account   VARCHAR(50)  DEFAULT ''  NOT NULL,
+    sender_bank_name      VARCHAR(252) DEFAULT ''  NOT NULL,
+    sender_name           VARCHAR(252) DEFAULT ''  NOT NULL,
+    create_time           BIGINT       DEFAULT 0   NOT NULL,
+    status                INT          DEFAULT 0   NOT NULL,
+    star_transaction_id   BIGINT       DEFAULT -1  NOT NULL
+);
+CREATE INDEX bank_transaction_create_time_index ON bank_transaction (create_time);
 

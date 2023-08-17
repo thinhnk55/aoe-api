@@ -1,31 +1,29 @@
 package vn.vietdefi.bank.logic;
 
 import com.google.gson.JsonObject;
+import vn.vietdefi.bank.BankServices;
+import vn.vietdefi.common.BaseResponse;
 
 public class BankAccount {
-    public int id;
-    public int bankCode;
-    public String bankName;
-    public String accountNumber;
-    public String accountOwner;
+    public long id;
+    public int bank_code;
+    public String account_number;
+    public String account_owner;
     public int state;
     public JsonObject other;
 
     public BankAccount(JsonObject json) {
-        this.bankCode = json.get("bank_code").getAsInt();
-        this.bankName = json.get("bank_name").getAsString();
-        this.accountNumber = json.get("account_number").getAsString();
-        this.accountOwner = json.get("owner").getAsString();
+        this.id = json.get("id").getAsLong();
+        this.bank_code = json.get("bank_code").getAsInt();
+        this.account_number = json.get("bank_name").getAsString();
+        this.account_owner = json.get("account_number").getAsString();
         this.state = json.get("state").getAsInt();
-        this.other = json.getAsJsonObject("other");
-    }
-
-    public BankAccount(String accountNumber, String accountOwner, int state, JsonObject other) {
-        this.bankCode = 0;
-        this.bankName = "";
-        this.accountNumber = accountNumber;
-        this.accountOwner = accountOwner;
-        this.state = state;
-        this.other = other;
+        long refer_id = json.get("refer_id").getAsLong();
+        if(this.bank_code == BankCode.TIMO){
+            JsonObject response = BankServices.timoService.getAccountById(refer_id);
+            if(BaseResponse.isSuccessFullMessage(response)){
+                this.other = response.getAsJsonObject("data");
+            }
+        }
     }
 }

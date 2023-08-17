@@ -18,4 +18,9 @@ public class TimoService implements ITimoService{
         // update database
         return null;
     }
+
+    @Override
+    public JsonObject getAccountById(long id) {
+        return null;
+    }
 }

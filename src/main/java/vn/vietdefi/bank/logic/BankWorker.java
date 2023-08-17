@@ -1,34 +1,17 @@
 package vn.vietdefi.bank.logic;
 
-import vn.vietdefi.util.log.DebugLogger;
-
-import java.util.List;
+import vn.vietdefi.bank.logic.timo.TimoApi;
 
 public class BankWorker {
-    private final BankAccount account;
+    public final BankAccount account;
 
     public BankWorker(BankAccount account) {
         this.account = account;
     }
 
     public void loop() {
-        if (account.bankCode == BankCode.TIMO) {
-            List<BalanceTransaction> transaction = TimoApi.update(account);
-            if (transaction != null) {
-                String refNo = transaction.get(0).getTransactionId();
-                String accountNumber = account.accountNumber;
-                int row = timoService.updateRefNo(refNo, accountNumber);
-                if (row != 0) {
-                    updateNewTransaction(transaction);
-                } else {
-                    DebugLogger.error("Update refNo fail!");
-                }
-            }
+        if(account.bank_code == BankCode.TIMO) {
+            TimoApi.loop(account);
         }
     }
-
-    private void updateNewTransaction(List<BalanceTransaction> update) {
-        BankController.instance().bankService.processBalanceTransaction(update);
-    }
-
 }

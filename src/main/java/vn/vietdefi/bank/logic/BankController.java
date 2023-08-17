@@ -4,14 +4,15 @@ package vn.vietdefi.bank.logic;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import vn.vietdefi.bank.services.BankService;
-import vn.vietdefi.bank.services.IBankService;
+import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.thread.ThreadPoolWorker;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,40 +24,37 @@ public class BankController {
         }
         return ins;
     }
-    public IBankService bankService;
     private BankController(){
-        bankService = new BankService();
         updateActiveBank();
     }
 
     /**
      *
      */
-    private void updateActiveBank() {
-        if(bankWorkerList == null){
-            bankWorkerList = new LinkedList<>();
+    public void updateActiveBank() {
+        if(bankWorkers == null){
+            bankWorkers = new HashMap<>();
         }else{
-            bankWorkerList.clear();
+            bankWorkers.clear();
         }
-        JsonObject response = bankService.getActiveBanks();
+        JsonObject response = BankServices.bankService.getActiveBanks();
         if(BaseResponse.isSuccessFullMessage(response)){
             JsonArray array = response.getAsJsonArray("data");
             for(int i = 0; i < array.size(); i++){
                 JsonObject json = array.get(i).getAsJsonObject();
                 BankAccount account = new BankAccount(json);
                 BankWorker worker = new BankWorker(account);
-                bankWorkerList.add(worker);
+                bankWorkers.put(worker.account.id, worker);
             }
         }
     }
-
-    List<BankWorker> bankWorkerList;
+    Map<Long, BankWorker> bankWorkers;
     private void loop() {
         try {
-            updateActiveBank();
             DebugLogger.info("BankController loop");
-            for (BankWorker data : bankWorkerList) {
-                data.loop();
+            for (Map.Entry<Long, BankWorker> entry : bankWorkers.entrySet()) {
+                BankWorker worker = entry.getValue();
+                worker.loop();
             }
         }catch (Exception e){
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -75,5 +73,9 @@ public class BankController {
         if (loopTask != null) {
             this.loopTask.cancel(true);
         }
+    }
+
+    public void removeBankAccount(BankAccount account) {
+        bankWorkers.remove(account.id);
     }
 }
