@@ -12,4 +12,9 @@ public class BankService implements IBankService{
     public JsonObject getActiveBanks() {
         return null;
     }
+
+    @Override
+    public JsonObject updateBankState(long id, int state) {
+        return null;
+    }
 }

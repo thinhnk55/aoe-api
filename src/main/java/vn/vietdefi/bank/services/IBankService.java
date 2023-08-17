@@ -6,5 +6,6 @@ public interface IBankService {
     JsonObject createBankAccount(JsonObject data);
 
     JsonObject getActiveBanks();
+    public JsonObject updateBankState(long id, int state);
 
 }
