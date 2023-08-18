@@ -3,6 +3,7 @@ package vn.vietdefi.aoe.vertx;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
+import vn.vietdefi.aoe.vertx.router.clan.ClanRouter;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
 import vn.vietdefi.aoe.vertx.router.match.MatchRouter;
 import vn.vietdefi.aoe.vertx.router.profile.ProfileRouter;
@@ -19,6 +20,7 @@ public class AoeAPI {
         casterAPI(router);
         profileApi(router);
         walletApi(router);
+        clanApi(router);
         matchApi(router);
     }
 
@@ -45,7 +47,6 @@ public class AoeAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::login);
     }
-
     private static void adminApi(Router router) {
 
     }
@@ -122,8 +123,7 @@ public class AoeAPI {
                         .getPath("/match/user/suggest/list"))
                 .handler(MatchRouter::getListMatchSuggested);
     }
-
-    public static void gamerApi(Router router) {
+    public static void gamerApi(Router router){
         router.post(ApiConfig
                         .instance()
                         .getPath("/gamer/create"))
@@ -136,6 +136,10 @@ public class AoeAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(GamerRouter::updateInfo);
+        router.get(ApiConfig
+                        .instance()
+                        .getPath("/gamer/get"))
+                .handler(GamerRouter::getGamerByUserId);
     }
 
     public static void casterAPI(Router router) {
@@ -151,12 +155,22 @@ public class AoeAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(CasterRouter::updateCaster);
-        router.post(ApiConfig
+        router.get(ApiConfig
                         .instance()
-                        .getPath("/caster/delete"))
+                        .getPath("/caster/get"))
+                .handler(CasterRouter::getCasterByUserId);
+    }
+    public static void clanApi(Router router){
+        router.post(ApiConfig.instance().getPath("/clan/get"))
+                .handler(ClanRouter::getInfoClan);
+        router.post(ApiConfig.instance().getPath("/clan/create"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
-                .handler(CasterRouter::deleteCaster);
+                .handler(ClanRouter::createClan);
+        router.post(ApiConfig.instance().getPath("/clan/update"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeAdmin)
+                .handler(ClanRouter::updateClan);
     }
 
     public static void profileApi(Router router) {
