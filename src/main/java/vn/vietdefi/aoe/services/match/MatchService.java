@@ -7,7 +7,7 @@ import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
-import vn.vietdefi.aoe.services.AoeServices;
+
 public class MatchService implements IMatchService{
     @Override
     public JsonObject adminCreateMatch(JsonObject json, long adminId) {
@@ -23,8 +23,7 @@ public class MatchService implements IMatchService{
             insertToDB.addProperty("suggester_id",adminId);
             insertToDB.addProperty("state", MatchConstants.MATCH_VOTING);
             insertToDB.addProperty("created_time",System.currentTimeMillis());
-            bridge.insertObjectToDB("`match`", "match_id", insertToDB);
-            bridge.insertObjectToDB("aoe_match", json);
+            bridge.insertObjectToDB("`match`", "id", insertToDB);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -60,7 +59,7 @@ public class MatchService implements IMatchService{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject updateToDb = createDetail(json);
             updateToDb.addProperty("time_expired", json.get("time_expired").getAsLong());
-            bridge.updateObjectToDb("aoe_match","match_id", json);
+            bridge.updateObjectToDb("aoe_match","id",json);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -75,10 +74,10 @@ public class MatchService implements IMatchService{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
 
             long offset = (page - 1) * recordPerPage;
-            String countQuery = "SELECT COUNT(*) AS total_rows FROM `match` WHERE `state ` = ?";
+            String countQuery = "SELECT COUNT(*) AS total_rows FROM aoe_match WHERE `state ` = ?";
             JsonObject result = new JsonObject();
             result.addProperty("total_page", bridge.queryInteger(countQuery, state )/recordPerPage + 1);
-            StringBuilder dataQuery = new StringBuilder("SELECT * FROM `match` WHERE `state ` = ? ");
+            StringBuilder dataQuery = new StringBuilder("SELECT * FROM aoe_match WHERE `state ` = ? ");
             if(state  < MatchConstants.MATCH_CANCELLED){
                 dataQuery.append("ORDER BY ABS(star_current-star_default)  LIMIT ? OFFSET ?");
             }else {
@@ -95,10 +94,10 @@ public class MatchService implements IMatchService{
     }
 
     @Override
-    public JsonObject getInfoMatch(long match_id) {
+    public JsonObject getById(long match_id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM `match` WHERE `match_id` = ?";
+            String query = "SELECT * FROM aoe_match WHERE id = ?";
             JsonObject data = bridge.queryOne(query, match_id);
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "not_found");
@@ -115,11 +114,11 @@ public class MatchService implements IMatchService{
     public JsonObject updateResult(long matchId, JsonArray json) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject data = getInfoMatch(matchId);
+            JsonObject data = getById(matchId);
             JsonObject details = data.get("data").getAsJsonObject().get("detail").getAsJsonObject();
             details.add("result",json);
             data.add("detail",details);
-            bridge.updateObjectToDb("aoe_match","match_id",data);
+            bridge.updateObjectToDb("aoe_match","id",data);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -132,7 +131,7 @@ public class MatchService implements IMatchService{
     public boolean checkMatchExists(long matchId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT match_id FROM `match` WHERE `match_id` = ?";
+            String query = "SELECT id FROM aoe_match WHERE id = ?";
             JsonObject data = bridge.queryOne(query, matchId);
             return data != null;
         } catch (Exception e) {
@@ -146,7 +145,7 @@ public class MatchService implements IMatchService{
     public JsonObject getSuggestMatch() {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM `match` WHERE star_current < star_default ORDER BY star_current DESC";
+            String query = "SELECT * FROM aoe_match WHERE star_current < star_default ORDER BY star_current DESC";
             JsonObject data = bridge.queryOne(query);
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "not_found");
@@ -163,7 +162,7 @@ public class MatchService implements IMatchService{
     public JsonObject updateState(long matchId, int state) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String  query = "UPDATE `match` SET state =? WHERE match_id =?";
+            String  query = "UPDATE aoe_match SET state =? WHERE id =?";
             bridge.update(query,state,matchId);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
@@ -177,7 +176,7 @@ public class MatchService implements IMatchService{
     public JsonObject lockMatchForUpcoming (long matchId, JsonObject json) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject data = getInfoMatch(matchId);
+            JsonObject data = getById(matchId);
             JsonObject res = checkAction(data);
             if (!BaseResponse.isSuccessFullMessage(res)){
                 return res;
@@ -185,7 +184,7 @@ public class MatchService implements IMatchService{
             data.get("detail").getAsJsonObject().addProperty("match_date", json.get("match_date").getAsLong());
             data.addProperty("state", MatchConstants.MATCH_STOP_VOTING);
             data.addProperty("time_expired",System.currentTimeMillis());
-            bridge.updateObjectToDb("aoe_match","match_id", data);
+            bridge.updateObjectToDb("aoe_match","id", data);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -211,7 +210,7 @@ public class MatchService implements IMatchService{
     public JsonObject startMatch(long matchId, JsonObject json) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject data = getInfoMatch(matchId);
+            JsonObject data = getById(matchId);
             JsonObject res = checkAction(data);
             if (!BaseResponse.isSuccessFullMessage(res)){
                 return res;
@@ -219,7 +218,7 @@ public class MatchService implements IMatchService{
             data.get("detail").getAsJsonObject().addProperty("match_date", json.get("match_date").getAsLong());
             data.addProperty("state", MatchConstants.MATCH_ONGOING);
             data.addProperty("time_expired",System.currentTimeMillis());
-            bridge.updateObjectToDb("aoe_match","match_id", data);
+            bridge.updateObjectToDb("aoe_match","id", data);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -232,14 +231,14 @@ public class MatchService implements IMatchService{
     public JsonObject endMatch(long matchId, JsonObject json) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject data = getInfoMatch(matchId);
+            JsonObject data = getById(matchId);
             JsonObject res = checkAction(data);
             if (!BaseResponse.isSuccessFullMessage(res)){
                 return res;
             }
             data.get("detail").getAsJsonObject().add("result", json.get("result").getAsJsonArray());
             data.addProperty("state", MatchConstants.MATCH_FINISHED);
-            bridge.updateObjectToDb("aoe_match","match_id", data);
+            bridge.updateObjectToDb("aoe_match","id", data);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -252,12 +251,12 @@ public class MatchService implements IMatchService{
     public JsonObject cancelMatch(long matchId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject data = getInfoMatch(matchId);
+            JsonObject data = getById(matchId);
             JsonObject res = checkAction(data);
             if (!BaseResponse.isSuccessFullMessage(res)){
                 return res;
             }
-            String query = "UPDATE `match` SET status = ? ,time_expired = ? WHERE match_id = ?";
+            String query = "UPDATE aoe_match SET status = ? ,time_expired = ? WHERE id = ?";
             bridge.update(query,MatchConstants.MATCH_CANCELLED,matchId);
 //            AoeServices.starService.refundMoney(matchId);
             return BaseResponse.createFullMessageResponse(0, "success");

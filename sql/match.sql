@@ -12,3 +12,16 @@ CREATE TABLE IF NOT EXISTS aoe_match  (
      team_player TEXT NOT NULL,
      caster_id BIGINT NOT NULL default 0
 ) ;
+create table aoe_match_suggest
+(
+    id           BIGINT        PRIMARY KEY   AUTO_INCREMENT   ,
+    suggester_id BIGINT        NOT NULL,
+    type         INT           NOT NULL,
+    format       INT           NOT NULL,
+    team_play    TEXT          NOT NULL,
+    detail       TEXT          NOT NULL,
+    star         INT           NULL,
+    create_time  BIGINT        NOT NULL,
+    state        INT           NOT NULL default 0
+);
+
