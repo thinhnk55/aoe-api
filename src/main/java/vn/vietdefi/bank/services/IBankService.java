@@ -30,6 +30,6 @@ public interface IBankService {
     void updateBankTransactionState(long id,
                                     int state);
 
-    void completeBankTransaction(BankTransaction transaction,
+    void updateStarTransactionId(BankTransaction transaction,
                                  long starTransactionId);
 }
