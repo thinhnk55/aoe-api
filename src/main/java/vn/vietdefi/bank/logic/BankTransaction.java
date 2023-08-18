@@ -22,7 +22,7 @@ import com.google.gson.JsonObject;
  * star_transaction_id   BIGINT       DEFAULT -1  NOT NULL
  * );
  */
-public class BalanceTransaction {
+public class BankTransaction {
     public long id;
     public String bank_transaction_id;
     public int receiver_bankcode;
@@ -39,7 +39,7 @@ public class BalanceTransaction {
     public int status;
     public long star_transaction_id;
 
-    public BalanceTransaction(JsonObject data) {
+    public BankTransaction(JsonObject data) {
         id = data.get("id").getAsLong();
         bank_transaction_id = data.get("bank_transaction_id").getAsString();
         receiver_bankcode = data.get("receiver_bankcode").getAsInt();

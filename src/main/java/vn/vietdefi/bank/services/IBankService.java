@@ -20,4 +20,7 @@ public interface IBankService {
     JsonObject selectBank(long id);
 
     JsonObject getBalanceTransactionById(long referId);
+
+    JsonObject listWaitingTransaction();
+    void updateBankTransactionState(long id, int state);
 }

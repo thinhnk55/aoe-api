@@ -4,6 +4,7 @@ package vn.vietdefi.bank.logic;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import vn.vietdefi.aoe.services.bank.AoeBankMessage;
 import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
@@ -52,10 +53,33 @@ public class BankController {
                 BankWorker worker = entry.getValue();
                 worker.loop();
             }
+            completeBalanceTransaction();
         }catch (Exception e){
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
         }
     }
+
+    private void completeBalanceTransaction() {
+        JsonObject response = BankServices.bankService.listWaitingTransaction();
+        if(BaseResponse.isSuccessFullMessage(response)){
+            JsonArray data = response.getAsJsonArray("data");
+            for(int i = 0; i < data.size(); i++){
+                JsonObject json = data.get(i).getAsJsonObject();
+                BankTransaction transaction = new BankTransaction(json);
+                completeBalanceTransaction(transaction);
+            }
+        }
+    }
+
+    private void completeBalanceTransaction(BankTransaction transaction) {
+        AoeBankMessage message = AoeBankMessage.createFromBalanceTransaction(transaction);
+        if(message == null){
+            BankServices.bankService.updateBankState(transaction.id, BankTransactionState.ERROR);
+            return;
+        }
+        Aoe
+    }
+
     public ScheduledFuture<?> loopTask;
     public void startLoop() {
         DebugLogger.info("BankController startLoop");

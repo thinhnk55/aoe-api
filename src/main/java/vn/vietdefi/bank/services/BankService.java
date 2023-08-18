@@ -229,4 +229,15 @@ public class BankService implements IBankService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+    @Override
+    public void updateBankTransactionState(long id, int state) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE bank_transaction SET state = ? WHERE id = ?";
+            bridge.update(query, state, id);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+        }
+    }
 }
