@@ -52,6 +52,8 @@ public class AoeBankHandlerService implements IBankHandlerService {
     }
 
     private boolean donateMatch(BankTransaction transaction, AoeBankAction message) {
+        String sender = message.sender;
+        
         JsonObject response = AoeServices.matchService.getInfoMatch(message.receiverId);
         if(!BaseResponse.isSuccessFullMessage(response)){
             return false;
