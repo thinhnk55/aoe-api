@@ -1,5 +1,6 @@
 package vn.vietdefi.aoe.vertx.router.match;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -126,5 +127,100 @@ public class MatchRouter {
             rc.response().end(response.toString());
         }
     }
+
+    public static void updateResult(RoutingContext rc){
+        try {
+            String data = rc.body().asString();
+            JsonArray json = GsonUtil.toJsonArray(data);
+            long matchId = Long.parseLong(rc.request().getParam("match_id"));
+            JsonObject response = AoeServices.matchService.updateResult(matchId,json);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void cancelMatch(RoutingContext rc){
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long matchId = json.get("match_id").getAsLong();
+            JsonObject response = AoeServices.matchService.cancelMatch(matchId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+    public static void confirmMatch(RoutingContext rc){
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            JsonObject response = AoeServices.matchService.confirmMatch(json);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void createMatchSuggest(RoutingContext rc){
+        try {
+            long userid = Long.parseLong(rc.request().getHeader("userid"));
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            JsonObject response = AoeServices.matchService.createMatchSuggest(json,userid);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void updateMatchSuggest(RoutingContext rc){
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long matchSuggesterId = json.get("id").getAsLong();
+            JsonObject response = AoeServices.matchService.updateMatchSuggest(matchSuggesterId,json);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void getListMatchSuggested(RoutingContext rc){
+        try {
+            long userid = Long.parseLong(rc.request().getHeader("userid"));
+            long page = Long.parseLong(rc.request().getParam("page"));
+            JsonObject response = AoeServices.matchService.getListMatchSuggested(userid,page,MatchConstants.ITEMS_PER_PAGE);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+
 
 }
