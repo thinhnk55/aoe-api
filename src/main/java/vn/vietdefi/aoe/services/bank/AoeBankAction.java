@@ -1,41 +1,35 @@
 package vn.vietdefi.aoe.services.bank;
 
 import com.google.gson.JsonObject;
-import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.bank.logic.BankCode;
 import vn.vietdefi.bank.logic.BankTransaction;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AoeBankMessage {
+public class AoeBankAction {
     String sender;
     int service;
     long receiverId;
 
-    public AoeBankMessage(String sender, int service, long receiverId) {
+    public AoeBankAction(String sender, int service, long receiverId) {
         this.sender = sender;
         this.service = service;
         this.receiverId = receiverId;
     }
 
-    public AoeBankMessage(String phoneNumber, int service) {
-        this.sender = phoneNumber;
-        this.service = service;
-    }
-
-    public static AoeBankMessage createFromBalanceTransaction(BankTransaction transaction) {
+    public static AoeBankAction createFromBalanceTransaction(BankTransaction transaction) {
         if (transaction.getReceiverBankCode() == BankCode.TIMO) {
             return timoConvert(transaction);
         }
         return null;
     }
 
-    private static AoeBankMessage timoConvert(BankTransaction transaction) {
+    private static AoeBankAction timoConvert(BankTransaction transaction) {
         String data = transaction.getNote();
         // Biểu thức chính quy
-        String regex = new StringBuilder("(\\d+) ").append(AoeBankConstant.MESSAGE_DONATE).append(" (\\w+\\d+)").toString();
-        String regex2 = new StringBuilder("(\\d+) ").append(AoeBankConstant.MESSAGE_RECHARGE).toString();
+        String regex = "(\\d+) (donate) (\\w+\\d+)";
+        String regex2 = "(\\d+) (donate star)";
         // Tạo Pattern từ biểu thức chính quy
         Pattern pattern = Pattern.compile(regex);
         Pattern pattern2 = Pattern.compile(regex2);
@@ -44,26 +38,32 @@ public class AoeBankMessage {
         Matcher matcher2 = pattern2.matcher(data);
         // Trích xuất thông tin
         String phoneNumber = "";
-        int service = 0;
-        String target = "";
+        String role = "";
+        int targetId = 0; // 1: nạp tienn 2: donate match 3 donate gamer 4:donate BLV
+        String targetReceiver = "";
         if (matcher.find()) {
             phoneNumber = matcher.group(1);
-            target = matcher.group(2).trim();
-            JsonObject targetMessage = convertTarget(target);
-            if(targetMessage != null) {
-                String targetCode = targetMessage.get("code").getAsString();
+            role = matcher.group(2);
+            targetReceiver = matcher.group(3).trim();
+            JsonObject target = convertTarget(targetReceiver);
+            if(target != null) {
+                String targetCode = target.get("code").getAsString();
                 if(targetCode.equals("KD")) {
-                    service = StarConstant.SERVICE_DONATE_MATCH;
-                } else if (targetCode.equals("GT")||targetCode.equals("BLV")) {
-                    service = StarConstant.SERVICE_DONATE_USER;
+                    targetId = 2;
+                } else if (targetCode.equals("GT")) {
+                    targetId = 3;
+                }else if (targetCode.equals("BL"))
+                {
+                    targetId = 4;
                 }
-                long receiverId = targetMessage.get("id").getAsLong();
-                return new AoeBankMessage(phoneNumber,service, receiverId);
+                targetReceiver = target.get("id").getAsString();
+                return new AoeBankAction(phoneNumber,0, 0);
             }
             else return null;
         } else if (matcher2.find()) {
             phoneNumber = matcher2.group(1);
-            return new AoeBankMessage(phoneNumber, StarConstant.SERVICE_STAR_RECHARGE);
+            role = matcher2.group(2);
+            return new AoeBankAction(phoneNumber, 0, 0 );
         }
         return null;
     }
@@ -82,6 +82,7 @@ public class AoeBankMessage {
         }else {
             return null;
         }
+
         return targetJson;
     }
 }

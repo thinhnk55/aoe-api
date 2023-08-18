@@ -115,7 +115,7 @@ public class StarService implements IStarService {
     }
 
     @Override
-    public JsonObject exchangeStar(int amount, int service, String username, long referId) {
+    public JsonObject exchangeStar(long amount, int service, String username, long referId) {
         String query1 = "SELECT * FROM aoe_star WHERE username = ? FOR UPDATE";
         String query2 = "UPDATE aoe_star SET balance = ? WHERE username = ?";
         String query3 = "INSERT INTO aoe_star_transaction (user_id, username, service, refer_id, amount, balance, create_time) VALUE (?,?,?,?,?,?,?)";
@@ -132,12 +132,12 @@ public class StarService implements IStarService {
                 if (rs.next()) {
                     long userId = rs.getLong("user_id");
                     int balance = rs.getInt("balance");
-                    int newBalance = balance + amount;
+                    long newBalance = balance + amount;
                     if (newBalance < 0) {
                         return BaseResponse.createFullMessageResponse(12, "insufficient_balance");
                     }
                     //update star wallet
-                    st2.setInt(1, newBalance);
+                    st2.setLong(1, newBalance);
                     st2.setString(2, username);
                     int rowUpdateStarWallet = st2.executeUpdate();
                     if(rowUpdateStarWallet == 0){
@@ -148,8 +148,8 @@ public class StarService implements IStarService {
                     st3.setString(2, username);
                     st3.setInt(3, service);
                     st3.setLong(4, referId);
-                    st3.setInt(5, amount);
-                    st3.setInt(6, newBalance);
+                    st3.setLong(5, amount);
+                    st3.setLong(6, newBalance);
                     st3.setLong(7, System.currentTimeMillis());
                     int rowInsertStarTransaction = st3.executeUpdate();
                     if (rowInsertStarTransaction == 0) {

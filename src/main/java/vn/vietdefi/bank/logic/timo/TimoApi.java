@@ -13,7 +13,6 @@ import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -280,7 +279,7 @@ public class TimoApi {
         long id = account.bank_detail.get("id").getAsLong();
         JsonObject response = BankServices.timoService.retryLogin(id);
         if(BaseResponse.isSuccessFullMessage(response)){
-            BankServices.bankService.updateBankState(account.id, BankAccountState.WORKING);
+            BankServices.bankService.updateBankAccountState(account.id, BankAccountState.WORKING);
             BankController.instance().updateWorkingBank();
         }
     }

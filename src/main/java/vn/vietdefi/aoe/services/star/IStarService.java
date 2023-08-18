@@ -8,5 +8,5 @@ public interface IStarService {
 
     JsonObject listStarTransactionOfUser(long userId, long page, long recordPerPage);
     JsonObject getStarTransactionById(long id);
-    JsonObject exchangeStar(int amount, int service, String username, long referId);
+    JsonObject exchangeStar(long amount, int service, String username, long referId);
 }

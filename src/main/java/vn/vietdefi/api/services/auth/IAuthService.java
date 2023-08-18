@@ -8,6 +8,7 @@ public interface IAuthService {
                         int role,
                         int status);
     JsonObject get(long userid);
+    JsonObject get(String username);
     JsonObject login(String username,
                      String password);
     JsonObject login(long userid);

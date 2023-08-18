@@ -50,6 +50,21 @@ public class AuthService implements IAuthService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+    public JsonObject get(String username) {
+        try{
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM user WHERE username = ?";
+            JsonObject data = bridge.queryOne(query, username);
+            if(data == null){
+                return BaseResponse.createFullMessageResponse(10, "user_not_exist");
+            }
+            data.remove("password");
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        }catch (Exception e){
+            e.printStackTrace();
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
     @Override
     public JsonObject login(String username, String password){
         try{

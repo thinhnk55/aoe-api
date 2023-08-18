@@ -7,7 +7,6 @@ import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.bank.logic.BankAccountState;
 import vn.vietdefi.bank.logic.BankCode;
 import vn.vietdefi.bank.logic.timo.TimoApi;
-import vn.vietdefi.bank.services.util.Constants;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -53,7 +52,7 @@ public class BankService implements IBankService {
     }
 
     @Override
-    public JsonObject getWorkingBanks() {
+    public JsonObject getWorkingBankAccount() {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM bank_account WHERE state = ?";
@@ -65,7 +64,7 @@ public class BankService implements IBankService {
     }
 
     @Override
-    public void updateBankState(long id, int state) {
+    public void updateBankAccountState(long id, int state) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE bank_account SET state = ? WHERE id = ?";
@@ -110,7 +109,7 @@ public class BankService implements IBankService {
                     return BaseResponse.createFullMessageResponse(10, "api_failure");
                 }
             } else {
-                updateBankState(bank_account_id, BankAccountState.ACTIVE);
+                updateBankAccountState(bank_account_id, BankAccountState.ACTIVE);
                 return getAccountById(bank_account_id);
             }
         } catch (Exception e) {
@@ -153,7 +152,7 @@ public class BankService implements IBankService {
     }
 
     @Override
-    public JsonObject addBank(JsonObject data) {
+    public JsonObject addBankAccount(JsonObject data) {
         try {
             int bankCode = data.get("bankCode").getAsInt();
             String username = data.get("username").getAsString();
@@ -175,7 +174,7 @@ public class BankService implements IBankService {
     }
 
     @Override
-    public JsonObject updateBank(JsonObject data) {
+    public JsonObject updateBankAccount(JsonObject data) {
         try {
             int bankCode = data.get("bankCode").getAsInt();
             String username = data.get("username").getAsString();
@@ -197,7 +196,7 @@ public class BankService implements IBankService {
     }
 
     @Override
-    public JsonObject selectBank(long id) {
+    public JsonObject selectBankAccount(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE bank_account SET state = ? WHERE id = ?";

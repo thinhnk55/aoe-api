@@ -58,7 +58,7 @@ public class BankRouter {
         try {
             String request = routingContext.body().asString();
             JsonObject data = GsonUtil.toJsonObject(request);
-            JsonObject response = BankServices.bankService.addBank(data);
+            JsonObject response = BankServices.bankService.addBankAccount(data);
             routingContext.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -72,7 +72,7 @@ public class BankRouter {
         try {
             String request = routingContext.body().asString();
             JsonObject data = GsonUtil.toJsonObject(request);
-            JsonObject response = BankServices.bankService.updateBank(data);
+            JsonObject response = BankServices.bankService.updateBankAccount(data);
             routingContext.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -87,7 +87,7 @@ public class BankRouter {
             String request = routingContext.body().asString();
             JsonObject data = GsonUtil.toJsonObject(request);
             long id = data.get("id").getAsLong();
-            JsonObject response = BankServices.bankService.selectBank(id);
+            JsonObject response = BankServices.bankService.selectBankAccount(id);
             routingContext.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -1,26 +1,33 @@
 package vn.vietdefi.bank.services;
 
 import com.google.gson.JsonObject;
+import vn.vietdefi.bank.logic.BankTransaction;
 
 public interface IBankService {
     JsonObject createBankAccount(int bankCode, String accountOwner, String accountNumber, long bankDetailId);
-    JsonObject getWorkingBanks();
-    void updateBankState(long id, int state);
-    JsonObject createBalanceTransaction(JsonObject data);
+    JsonObject getWorkingBankAccount();
+    void updateBankAccountState(long id, int state);
+
     JsonObject createBankAccountFromTimoAccount(JsonObject data);
     JsonObject getBankAccount(int bankCode, String accountNumber);
     JsonObject getAccountById(long id);
 
     JsonObject listBankAccount(long page, long recordPerPage);
 
-    JsonObject addBank(JsonObject data);
+    JsonObject addBankAccount(JsonObject data);
 
-    JsonObject updateBank(JsonObject data);
+    JsonObject updateBankAccount(JsonObject data);
 
-    JsonObject selectBank(long id);
+    JsonObject selectBankAccount(long id);
+    
+    JsonObject createBalanceTransaction(JsonObject data);
 
     JsonObject getBalanceTransactionById(long referId);
 
     JsonObject listWaitingTransaction();
-    void updateBankTransactionState(long id, int state);
+    void updateBankTransactionState(long id,
+                                    int state);
+
+    void completeTransaction(BankTransaction transaction,
+                             long starTransactionId);
 }

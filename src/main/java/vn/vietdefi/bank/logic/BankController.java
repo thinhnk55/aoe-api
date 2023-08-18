@@ -5,7 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.bank.AoeBankHandlerService;
-import vn.vietdefi.aoe.services.bank.AoeBankMessage;
 import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.bank.services.IBankHandlerService;
 import vn.vietdefi.common.BaseResponse;
@@ -35,7 +34,7 @@ public class BankController {
         }else{
             bankWorkers.clear();
         }
-        JsonObject response = BankServices.bankService.getWorkingBanks();
+        JsonObject response = BankServices.bankService.getWorkingBankAccount();
         if(BaseResponse.isSuccessFullMessage(response)){
             JsonArray array = response.getAsJsonArray("data");
             for(int i = 0; i < array.size(); i++){

@@ -12,4 +12,5 @@ public class StarConstant {
 
 
     public static int DEFAULT_RECORD_PER_PAGE = 20;
+    public static final int STAR_PRICE_RATE = 1000;
 }
