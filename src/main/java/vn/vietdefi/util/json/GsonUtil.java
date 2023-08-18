@@ -2,6 +2,8 @@ package vn.vietdefi.util.json;
 
 import com.google.gson.*;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 public class GsonUtil {
@@ -170,5 +172,61 @@ public class GsonUtil {
             set.add(arr.get(i).getAsInt());
         }
         return set;
+    }
+    public static JsonObject toJsonObject(ResultSet rs) throws SQLException {
+        if (rs.next()) {
+            int total_columns = rs.getMetaData().getColumnCount();
+            JsonObject obj = new JsonObject();
+            for (int i = 0; i < total_columns; i++) {
+                addToJson(obj, rs.getMetaData().getColumnLabel(i + 1), rs.getObject(i + 1));
+            }
+            return obj;
+        } else {
+            return null;
+        }
+    }
+
+    public static JsonArray toJsonArray(ResultSet rs) throws SQLException {
+        JsonArray array = new JsonArray();
+        while (rs.next()) {
+            int total_columns = rs.getMetaData().getColumnCount();
+            JsonObject obj = new JsonObject();
+            for (int i = 0; i < total_columns; i++) {
+                addToJson(obj, rs.getMetaData().getColumnLabel(i + 1), rs.getObject(i + 1));
+            }
+            array.add(obj);
+        }
+        return array;
+    }
+
+    public static void addToJson(JsonObject json, String label, Object value) {
+        if (value == null) {
+            json.add(label, null);
+            return;
+        }
+        if (value instanceof String) {
+            boolean result = addAsJson(json, label, (String) value);
+            if (!result) {
+                json.addProperty(label, (String) value);
+            }
+        } else if (value instanceof Boolean) {
+            json.addProperty(label, ((Boolean) value) ? 1 : 0);
+        } else {
+            json.addProperty(label, (Number) value);
+        }
+    }
+
+    public static boolean addAsJson(JsonObject json, String label, String value) {
+        JsonObject obj = GsonUtil.toJsonObject(value);
+        if (obj != null) {
+            json.add(label, obj);
+            return true;
+        }
+        JsonArray array = GsonUtil.toJsonArray(value);
+        if (array != null) {
+            json.add(label, array);
+            return true;
+        }
+        return false;
     }
 }

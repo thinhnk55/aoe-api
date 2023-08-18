@@ -11,7 +11,7 @@ public interface IBankService {
     JsonObject getBankAccount(int bankCode, String accountNumber);
     JsonObject getAccountById(long id);
 
-    JsonObject getListBank(int page);
+    JsonObject listBankAccount(long page, long recordPerPage);
 
     JsonObject addBank(JsonObject data);
 
@@ -19,4 +19,5 @@ public interface IBankService {
 
     JsonObject selectBank(long id);
 
+    JsonObject getBalanceTransactionById(long referId);
 }

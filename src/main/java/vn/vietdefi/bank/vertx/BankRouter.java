@@ -7,8 +7,6 @@ import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
-import vn.vietdefi.util.sql.HikariClients;
-import vn.vietdefi.util.sql.SQLJavaBridge;
 
 public class BankRouter {
     public static void timoLogin(RoutingContext routingContext) {
@@ -46,7 +44,7 @@ public class BankRouter {
     public static void getListBank(RoutingContext routingContext) {
         try {
             int page = Integer.parseInt(routingContext.request().getParam("page","1"));
-            JsonObject response = BankServices.bankService.getListBank(page);
+            JsonObject response = BankServices.bankService.listBankAccount(page, 20);
             routingContext.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

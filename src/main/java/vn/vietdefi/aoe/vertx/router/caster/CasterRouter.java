@@ -1,4 +1,4 @@
-package vn.vietdefi.aoe.router.caster;
+package vn.vietdefi.aoe.vertx.router.caster;
 
 import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;

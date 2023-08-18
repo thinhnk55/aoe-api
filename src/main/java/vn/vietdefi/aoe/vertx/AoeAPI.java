@@ -2,19 +2,32 @@ package vn.vietdefi.aoe.vertx;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import vn.vietdefi.aoe.router.caster.CasterRouter;
-import vn.vietdefi.aoe.router.gamer.GamerRouter;
+import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
+import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
 public class AoeAPI {
     public static void configAPI(Router router) {
+        authApi(router);
         userApi(router);
         adminApi(router);
         gamerApi(router);
         casterAPI(router);
     }
 
+    private static void authApi(Router router) {
+        router.post(ApiConfig
+                        .instance()
+                        .getPath("/register"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::register);
+        router.post(ApiConfig
+                        .instance()
+                        .getPath("/login"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::login);
+    }
     private static void adminApi(Router router) {
 
     }

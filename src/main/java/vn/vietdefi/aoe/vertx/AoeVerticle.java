@@ -22,7 +22,6 @@ public class AoeVerticle extends AbstractVerticle {
     public void start() {
         Router router = Router.router(vertx);
         crossAccessControl(router);
-        AuthHttpAPI.configAPI(router);
         BankHttpAPI.configAPI(router);
         AoeAPI.configAPI(router);
         router.get(ApiConfig.instance().getPath("/test")).handler(this::test);

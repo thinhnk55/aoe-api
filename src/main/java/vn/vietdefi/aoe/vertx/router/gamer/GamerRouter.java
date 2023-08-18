@@ -1,4 +1,4 @@
-package vn.vietdefi.aoe.router.gamer;
+package vn.vietdefi.aoe.vertx.router.gamer;
 
 import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;

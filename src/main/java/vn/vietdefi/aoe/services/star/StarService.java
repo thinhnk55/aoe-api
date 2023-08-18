@@ -4,7 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.api.services.ApiServices;
+import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.common.BaseResponse;
+import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
@@ -15,93 +17,118 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class StarService implements IStarService {
-    @Override
-    public JsonObject createStarWallet(long userId) {
+    private JsonObject createStarWallet(long userId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject response = ApiServices.authService.get(userId);
-            if (BaseResponse.isSuccessFullMessage(response)) {
+            if(!BaseResponse.isSuccessFullMessage(response)){
+                return response;
+            }else {
                 String username = response.getAsJsonObject("data").get("username").getAsString();
+                JsonObject data = new JsonObject();
+                data.addProperty("user_id", userId);
+                data.addProperty("username", username);
+                data.addProperty("balance", 0);
                 String query = "INSERT INTO aoe_star(user_id, username) VALUES(?,?)";
                 bridge.update(query, userId, username);
-            } else {
-                return response;
+                return BaseResponse.createFullMessageResponse(0, "success", data);
             }
-            return BaseResponse.createFullMessageResponse(0, "success");
-        } catch (Exception exception) {
-            String stacktrace = ExceptionUtils.getStackTrace(exception);
-            DebugLogger.error(stacktrace);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
     @Override
-    public JsonObject getStarWallet(long userId) {
+    public JsonObject getStarWalletByUserId(long userId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM aoe_star WHERE user_id = ?";
             JsonObject data = bridge.queryOne(query, userId);
             if(data == null){
-                return BaseResponse.createFullMessageResponse(10, "star_wallet_not_found");
+                return createStarWallet(userId);
             }
             return BaseResponse.createFullMessageResponse(0, "success", data);
-        } catch (Exception exception) {
-            String stacktrace = ExceptionUtils.getStackTrace(exception);
-            DebugLogger.error(stacktrace);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
     @Override
-    public JsonObject starRechargeLog(long userId,int recordPerPage, int page) {
+    public JsonObject listStarTransactionOfUserByService(long userId, int service, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            int offset = (page - 1) * recordPerPage;
-            String query = "SELECT amount, create_time FROM aoe_star WHERE user_id = ? AND service = ? LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, userId, StarConstant.STAR_RECHARGE_SERVICE, recordPerPage, offset);
+            long offset = (page - 1) * recordPerPage;
+            String query = "SELECT * FROM aoe_star WHERE user_id = ? AND service = ? LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, userId, service, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
-        } catch (Exception exception) {
-            String stacktrace = ExceptionUtils.getStackTrace(exception);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
-    @Override
-    public JsonObject starTransactionLog(long userId,int recordPerPage, int page) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            int offset = (page - 1) * recordPerPage;
-            String query = "SELECT id, amount, balance, service, create_time FROM aoe_star_transaction WHERE user_id = ? LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, userId, recordPerPage, offset);
-            return BaseResponse.createFullMessageResponse(0, "success", data);
-        } catch (Exception exception) {
-            String stacktrace = ExceptionUtils.getStackTrace(exception);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-    @Override
-    public JsonObject getDetailTransaction(long id) {
-        try {
-            //get balance transaction
-            //get user profile
-            return null;
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    @Override
+    public JsonObject listStarTransactionOfUser(long userId, long page, long recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long offset = (page - 1) * recordPerPage;
+            String query = "SELECT * FROM aoe_star_transaction WHERE user_id = ? LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, userId, recordPerPage, offset);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+    @Override
+    public JsonObject getStarTransactionById(long id) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM aoe_star_transaction WHERE id = ?";
+            JsonObject data = bridge.queryOne(query, id);
+            addReferToTransaction(data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    private void addReferToTransaction(JsonObject data) {
+        long referId = data.get("refer_id").getAsLong();
+        if(referId == 0){
+            data.add("refer", null);
+            return;
+        }
+        int service = data.get("service").getAsInt();
+        if(service == StarConstant.SERVICE_STAR_RECHARGE){
+            JsonObject response = BankServices.bankService.getBalanceTransactionById(referId);
+            if(BaseResponse.isSuccessFullMessage(response)){
+                JsonObject account = response.getAsJsonObject("data");
+                data.add("refer", account);
+            }
+        }
+        //TODO: Implement all other service
+    }
+
     @Override
     public JsonObject exchangeStar(int amount, int service, String username, long referId) {
+        String query1 = "SELECT * FROM aoe_star WHERE username = ? FOR UPDATE";
+        String query2 = "UPDATE aoe_star SET balance = ? WHERE username = ?";
+        String query3 = "INSERT INTO aoe_star_transaction (user_id, username, service, refer_id, amount, balance, create_time) VALUE (?,?,?,?,?,?,?)";
+        String query4 = "SELECT * FROM aoe_star_transaction WHERE id = ?";
         try (Connection connection = HikariClients.instance().defaulSQLJavaBridge().sqlClient.getConnection();
-             PreparedStatement stStarWallet = connection.prepareStatement("SELECT * FROM aoe_star WHERE username = ? FOR UPDATE");
-             PreparedStatement stUpdateStarWallet = connection.prepareStatement("UPDATE aoe_star SET balance = balance + ? WHERE username = ?");
-             PreparedStatement stInsertStarTransaction = connection.prepareStatement("INSERT INTO aoe_star_transaction VALUES(user_id, username, service, refer_id, amount, balance, create_time) WHERE username = ?", Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement st1 = connection.prepareStatement(query1);
+             PreparedStatement st2 = connection.prepareStatement(query2);
+             PreparedStatement st3 = connection.prepareStatement(query3, Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement st4 = connection.prepareStatement(query4))
+        {
             connection.setAutoCommit(false);
-            stStarWallet.setString(1, username);
-            try (ResultSet rs = stStarWallet.executeQuery()) {
+            st1.setString(1, username);
+            try (ResultSet rs = st1.executeQuery()) {
                 if (rs.next()) {
                     long userId = rs.getLong("user_id");
                     int balance = rs.getInt("balance");
@@ -110,29 +137,36 @@ public class StarService implements IStarService {
                         return BaseResponse.createFullMessageResponse(12, "insufficient_balance");
                     }
                     //update star wallet
-                    stUpdateStarWallet.setInt(1, amount);
-                    stUpdateStarWallet.setString(2, username);
-                    int rowUpdateStarWallet = stUpdateStarWallet.executeUpdate();
+                    st2.setInt(1, newBalance);
+                    st2.setString(2, username);
+                    int rowUpdateStarWallet = st2.executeUpdate();
+                    if(rowUpdateStarWallet == 0){
+                        return BaseResponse.createFullMessageResponse(11, "failure");
+                    }
                     //insert star transaction
-                    stInsertStarTransaction.setLong(1, userId);
-                    stInsertStarTransaction.setString(2, username);
-                    stInsertStarTransaction.setInt(3, service);
-                    stInsertStarTransaction.setLong(4, referId);
-                    stInsertStarTransaction.setInt(5, amount);
-                    stInsertStarTransaction.setInt(6, newBalance);
-                    stInsertStarTransaction.setLong(7, System.currentTimeMillis());
-                    int rowInsertStarTransaction = stInsertStarTransaction.executeUpdate();
-                    if (rowUpdateStarWallet == 0 || rowInsertStarTransaction == 0) {
+                    st3.setLong(1, userId);
+                    st3.setString(2, username);
+                    st3.setInt(3, service);
+                    st3.setLong(4, referId);
+                    st3.setInt(5, amount);
+                    st3.setInt(6, newBalance);
+                    st3.setLong(7, System.currentTimeMillis());
+                    int rowInsertStarTransaction = st3.executeUpdate();
+                    if (rowInsertStarTransaction == 0) {
                         connection.rollback();
                         return BaseResponse.createFullMessageResponse(11, "failure");
                     } else {
                         //get id aoe transaction
-                        try (ResultSet result = stInsertStarTransaction.getGeneratedKeys()) {
+                        JsonObject data;
+                        try (ResultSet result = st3.getGeneratedKeys()) {
                             long id = result.getLong(1);
-                            //update bank transaction
+                            st4.setLong(1, id);
+                            try(ResultSet rs4 = st4.executeQuery()){
+                                data = GsonUtil.toJsonObject(rs4);
+                            }
                         }
                         connection.commit();
-                        return BaseResponse.createFullMessageResponse(0, "success");
+                        return BaseResponse.createFullMessageResponse(0, "success", data);
                     }
                 } else {
                     return BaseResponse.createFullMessageResponse(10, "not_found");

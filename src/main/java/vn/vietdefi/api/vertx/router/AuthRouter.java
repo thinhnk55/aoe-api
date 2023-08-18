@@ -153,14 +153,4 @@ public class AuthRouter {
             rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
         }
     }
-    public static void logout(RoutingContext rc) {
-        try {
-            long userid = Long.parseLong(rc.request().getHeader("userid"));
-            JsonObject response = ApiServices.authService.logout(userid);
-            rc.response().end(response.toString());
-        } catch (Exception e) {
-            DebugLogger.error(ExceptionUtils.getStackTrace(e));
-            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
-        }
-    }
 }

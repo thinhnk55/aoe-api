@@ -1,9 +1,6 @@
 package vn.vietdefi.util.sql;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 
@@ -226,7 +223,7 @@ public class SQLJavaBridge {
             connection = sqlClient.getConnection();
             st = buildQueryStatement(connection, query, params);
             rs = st.executeQuery();
-            json = toJsonObject(rs);
+            json = GsonUtil.toJsonObject(rs);
         } catch (Exception e) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < params.length; i++) {
@@ -257,7 +254,7 @@ public class SQLJavaBridge {
             connection = sqlClient.getConnection();
             st = buildQueryStatement(connection, query, params);
             rs = st.executeQuery();
-            array = toJsonArray(rs);
+            array = GsonUtil.toJsonArray(rs);
         } catch (Exception e) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < params.length; i++) {
@@ -308,62 +305,7 @@ public class SQLJavaBridge {
         return 0;
     }
 
-    public JsonObject toJsonObject(ResultSet rs) throws SQLException {
-        if (rs.next()) {
-            int total_columns = rs.getMetaData().getColumnCount();
-            JsonObject obj = new JsonObject();
-            for (int i = 0; i < total_columns; i++) {
-                addToJson(obj, rs.getMetaData().getColumnLabel(i + 1), rs.getObject(i + 1));
-            }
-            return obj;
-        } else {
-            return null;
-        }
-    }
 
-    public JsonArray toJsonArray(ResultSet rs) throws SQLException {
-        JsonArray array = new JsonArray();
-        while (rs.next()) {
-            int total_columns = rs.getMetaData().getColumnCount();
-            JsonObject obj = new JsonObject();
-            for (int i = 0; i < total_columns; i++) {
-                addToJson(obj, rs.getMetaData().getColumnLabel(i + 1), rs.getObject(i + 1));
-            }
-            array.add(obj);
-        }
-        return array;
-    }
-
-    public static void addToJson(JsonObject json, String label, Object value) {
-        if (value == null) {
-            json.add(label, null);
-            return;
-        }
-        if (value instanceof String) {
-            boolean result = addAsJson(json, label, (String) value);
-            if (!result) {
-                json.addProperty(label, (String) value);
-            }
-        } else if (value instanceof Boolean) {
-            json.addProperty(label, ((Boolean) value) ? 1 : 0);
-        } else {
-            json.addProperty(label, (Number) value);
-        }
-    }
-
-    public static boolean addAsJson(JsonObject json, String label, String value) {
-        JsonObject obj = GsonUtil.toJsonObject(value);
-        if (obj != null) {
-            json.add(label, obj);
-            return true;
-        }
-        JsonArray array = GsonUtil.toJsonArray(value);
-        if (array != null) {
-            json.add(label, array);
-            return true;
-        }
-        return false;
-    }
 
     public PreparedStatement buildQueryStatement(Connection connection, String query, Object... params) throws SQLException {
         PreparedStatement st = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
