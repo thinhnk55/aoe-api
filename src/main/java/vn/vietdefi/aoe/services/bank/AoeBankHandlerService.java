@@ -140,11 +140,13 @@ public class AoeBankHandlerService implements IBankHandlerService {
         JsonObject starTransaction = response.getAsJsonObject("data");
         JsonObject data = new JsonObject();
         data.addProperty("user_id", userId);
-        data.addProperty("user_name", message.sender);
+        data.addProperty("username", message.sender);
         data.addProperty("nick_name", profile.get("nick_name").getAsString());
-        data.addProperty("phone_number", message.sender);
+        data.addProperty("phone", message.sender);
         data.addProperty("amount", star);
         data.addProperty("gamer_id", gamer.get("id").getAsLong());
+        data.addProperty("create_time", starTransaction.get("create_time").getAsLong());
+        data.addProperty("star_transaction_id", starTransaction.get("id").getAsLong());
         response = AoeServices.donateService.createDonateGamer(data);
         if(!BaseResponse.isSuccessFullMessage(response)){
             BaseResponse.createFullMessageResponse(32, "create_donate_failed");
