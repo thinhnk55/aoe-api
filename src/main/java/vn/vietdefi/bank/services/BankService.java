@@ -222,7 +222,7 @@ public class BankService implements IBankService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM balance_transaction WHERE id = ?";
-            JsonArray data = bridge.query(query, id);
+            JsonObject data = bridge.queryOne(query, id);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -230,6 +230,21 @@ public class BankService implements IBankService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    @Override
+    public JsonObject listWaitingTransaction() {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM balance_transaction WHERE state = ?";
+            JsonArray data = bridge.query(query, BankTransactionState.WAITING);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
     @Override
     public void updateBankTransactionState(long id, int state) {
         try {

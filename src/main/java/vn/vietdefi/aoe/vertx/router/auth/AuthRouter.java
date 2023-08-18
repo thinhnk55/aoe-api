@@ -18,7 +18,6 @@ public class AuthRouter {
             String password = json.get("password").getAsString();
             JsonObject response = ApiServices.authService.register(username,
                     password, UserConstant.ROLE_USER, UserConstant.STATUS_NORMAL);
-            //TODO: Get profie and wallet send to user
             rc.response().end(response.toString());
         }catch (Exception e){
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -32,7 +31,6 @@ public class AuthRouter {
             String username = json.get("username").getAsString();
             String password = json.get("password").getAsString();
             JsonObject response = ApiServices.authService.login(username, password);
-            //TODO: Get profie and wallet send to user
             rc.response().end(response.toString());
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));

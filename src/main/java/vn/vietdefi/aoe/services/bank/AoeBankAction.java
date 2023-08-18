@@ -1,6 +1,7 @@
 package vn.vietdefi.aoe.services.bank;
 
 import com.google.gson.JsonObject;
+import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.bank.logic.BankCode;
 import vn.vietdefi.bank.logic.BankTransaction;
 
@@ -12,11 +13,17 @@ public class AoeBankAction {
     int service;
     long receiverId;
 
-    public AoeBankAction(String sender, int service, long receiverId) {
+    public AoeBankAction(String sender, int service,long receiverId) {
         this.sender = sender;
         this.service = service;
         this.receiverId = receiverId;
     }
+
+    public AoeBankAction(String sender, int service) {
+        this.sender = sender;
+        this.service = service;
+    }
+
 
     public static AoeBankAction createFromBalanceTransaction(BankTransaction transaction) {
         if (transaction.getReceiverBankCode() == BankCode.TIMO) {
@@ -28,8 +35,8 @@ public class AoeBankAction {
     private static AoeBankAction timoConvert(BankTransaction transaction) {
         String data = transaction.getNote();
         // Biểu thức chính quy
-        String regex = "(\\d+) (donate) (\\w+\\d+)";
-        String regex2 = "(\\d+) (donate star)";
+        String regex = new StringBuilder( "(\\d+) ").append((AoeBankConstant.MESSAGE_DONATE)).append(" (\\w+\\d+)").toString();
+        String regex2 = new StringBuilder("(\\d+) ").append(AoeBankConstant.MESSAGE_RECHARGE).toString();
         // Tạo Pattern từ biểu thức chính quy
         Pattern pattern = Pattern.compile(regex);
         Pattern pattern2 = Pattern.compile(regex2);
@@ -38,32 +45,29 @@ public class AoeBankAction {
         Matcher matcher2 = pattern2.matcher(data);
         // Trích xuất thông tin
         String phoneNumber = "";
-        String role = "";
-        int targetId = 0; // 1: nạp tienn 2: donate match 3 donate gamer 4:donate BLV
+        int service = 0;
         String targetReceiver = "";
         if (matcher.find()) {
             phoneNumber = matcher.group(1);
-            role = matcher.group(2);
             targetReceiver = matcher.group(3).trim();
             JsonObject target = convertTarget(targetReceiver);
             if(target != null) {
                 String targetCode = target.get("code").getAsString();
                 if(targetCode.equals("KD")) {
-                    targetId = 2;
+                    service = StarConstant.SERVICE_DONATE_MATCH;
                 } else if (targetCode.equals("GT")) {
-                    targetId = 3;
-                }else if (targetCode.equals("BL"))
+                    service = StarConstant.SERVICE_DONATE_GAMER;
+                }else if (targetCode.equals("BLV"))
                 {
-                    targetId = 4;
+                    service = StarConstant.SERVICE_DONATE_CASTER;
                 }
-                targetReceiver = target.get("id").getAsString();
-                return new AoeBankAction(phoneNumber,0, 0);
+                long receiverId = target.get("id").getAsLong();
+                return new AoeBankAction(phoneNumber,service, receiverId);
             }
             else return null;
         } else if (matcher2.find()) {
             phoneNumber = matcher2.group(1);
-            role = matcher2.group(2);
-            return new AoeBankAction(phoneNumber, 0, 0 );
+            return new AoeBankAction(phoneNumber, StarConstant.SERVICE_STAR_RECHARGE);
         }
         return null;
     }

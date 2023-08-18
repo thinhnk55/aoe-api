@@ -7,7 +7,7 @@ public interface IMatchService {
     JsonObject adminCreateMatch(JsonObject data, long adminId);
     JsonObject updateMatch(JsonObject data);
     JsonObject getListMatch(int state , long page, long recordPerPage);
-    JsonObject getInfoMatch(long match_id);
+    JsonObject getById(long match_id);
     JsonObject updateResult(long matchId, JsonArray json);
     boolean checkMatchExists(long matchId);
     JsonObject getSuggestMatch();
@@ -16,7 +16,4 @@ public interface IMatchService {
     JsonObject startMatch(long matchId,JsonObject json);
     JsonObject endMatch(long matchId,JsonObject json);
     JsonObject cancelMatch(long match);
-
-
-
 }

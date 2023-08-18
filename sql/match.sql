@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS aoe_match  (
-     match_id BIGINT PRIMARY KEY NOT NULL,
+     id BIGINT PRIMARY KEY NOT NULL,
      star_current INT NOT NULL default 0,       #số sao hiện tại đã nhận được từ donate
      star_default INT NOT NULL default 0,       #số sao để bắt đầu kèo
      type INT,               #1:Random / 2:R Shang / 3:R Assyrian /4:Sáng tạo
@@ -12,3 +12,16 @@ CREATE TABLE IF NOT EXISTS aoe_match  (
      team_player TEXT NOT NULL,
      caster_id BIGINT NOT NULL default 0
 ) ;
+create table aoe_match_suggest
+(
+    id           BIGINT        PRIMARY KEY   AUTO_INCREMENT   ,
+    suggester_id BIGINT        NOT NULL,
+    type         INT           NOT NULL,
+    format       INT           NOT NULL,
+    team_play    TEXT          NOT NULL,
+    detail       TEXT          NOT NULL,
+    star         INT           NULL,
+    create_time  BIGINT        NOT NULL,
+    state        INT           NOT NULL default 0
+);
+

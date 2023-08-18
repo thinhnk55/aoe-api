@@ -21,9 +21,9 @@ public class StarService implements IStarService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject response = ApiServices.authService.get(userId);
-            if(!BaseResponse.isSuccessFullMessage(response)){
+            if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
-            }else {
+            } else {
                 String username = response.getAsJsonObject("data").get("username").getAsString();
                 JsonObject data = new JsonObject();
                 data.addProperty("user_id", userId);
@@ -45,7 +45,7 @@ public class StarService implements IStarService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM aoe_star WHERE user_id = ?";
             JsonObject data = bridge.queryOne(query, userId);
-            if(data == null){
+            if (data == null) {
                 return createStarWallet(userId);
             }
             return BaseResponse.createFullMessageResponse(0, "success", data);
@@ -83,6 +83,7 @@ public class StarService implements IStarService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
     @Override
     public JsonObject getStarTransactionById(long id) {
         try {
@@ -99,19 +100,18 @@ public class StarService implements IStarService {
 
     private void addReferToTransaction(JsonObject data) {
         long referId = data.get("refer_id").getAsLong();
-        if(referId == 0){
+        if (referId == 0) {
             data.add("refer", null);
             return;
         }
         int service = data.get("service").getAsInt();
-        if(service == StarConstant.SERVICE_STAR_RECHARGE){
+        if (service == StarConstant.SERVICE_STAR_RECHARGE) {
             JsonObject response = BankServices.bankService.getBalanceTransactionById(referId);
-            if(BaseResponse.isSuccessFullMessage(response)){
+            if (BaseResponse.isSuccessFullMessage(response)) {
                 JsonObject account = response.getAsJsonObject("data");
                 data.add("refer", account);
             }
         }
-        //TODO: Implement all other service
     }
 
     @Override
@@ -124,8 +124,7 @@ public class StarService implements IStarService {
              PreparedStatement st1 = connection.prepareStatement(query1);
              PreparedStatement st2 = connection.prepareStatement(query2);
              PreparedStatement st3 = connection.prepareStatement(query3, Statement.RETURN_GENERATED_KEYS);
-             PreparedStatement st4 = connection.prepareStatement(query4))
-        {
+             PreparedStatement st4 = connection.prepareStatement(query4)) {
             connection.setAutoCommit(false);
             st1.setString(1, username);
             try (ResultSet rs = st1.executeQuery()) {
@@ -140,7 +139,7 @@ public class StarService implements IStarService {
                     st2.setLong(1, newBalance);
                     st2.setString(2, username);
                     int rowUpdateStarWallet = st2.executeUpdate();
-                    if(rowUpdateStarWallet == 0){
+                    if (rowUpdateStarWallet == 0) {
                         return BaseResponse.createFullMessageResponse(11, "failure");
                     }
                     //insert star transaction
@@ -161,7 +160,7 @@ public class StarService implements IStarService {
                         try (ResultSet result = st3.getGeneratedKeys()) {
                             long id = result.getLong(1);
                             st4.setLong(1, id);
-                            try(ResultSet rs4 = st4.executeQuery()){
+                            try (ResultSet rs4 = st4.executeQuery()) {
                                 data = GsonUtil.toJsonObject(rs4);
                             }
                         }
@@ -176,6 +175,16 @@ public class StarService implements IStarService {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+    @Override
+    public void updateReferId(long id, long referId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE aoe_star_transaction SET refer_id = ? WHERE id = ?";
+            bridge.update(query, referId, id);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
         }
     }
 }
