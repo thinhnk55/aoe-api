@@ -27,16 +27,14 @@ public class BankTransaction {
     public String bank_transaction_id;
     public int receiver_bankcode;
     public String receiver_bank_account;
-    public String receiver_bank_name;
     public String receiver_name;
     public String note;
     public long amount;
     public int sender_bankcode;
     public String sender_bank_account;
-    public String sender_bank_name;
     public String sender_name;
     public long create_time;
-    public int status;
+    public int state;
     public long star_transaction_id;
 
     public BankTransaction(JsonObject data) {
@@ -44,24 +42,14 @@ public class BankTransaction {
         bank_transaction_id = data.get("bank_transaction_id").getAsString();
         receiver_bankcode = data.get("receiver_bankcode").getAsInt();
         receiver_bank_account = data.get("receiver_bank_account").getAsString();
-        receiver_bank_name = data.get("receiver_bank_name").getAsString();
         receiver_name = data.get("receiver_name").getAsString();
         note = data.get("note").getAsString();
         amount = data.get("amount").getAsLong();
         sender_bankcode = data.get("sender_bankcode").getAsInt();
         sender_bank_account = data.get("sender_bank_account").getAsString();
-        sender_bank_name = data.get("sender_bank_name").getAsString();
         sender_name = data.get("sender_name").getAsString();
         create_time = data.get("create_time").getAsLong();
-        status = data.get("status").getAsInt();
+        state = data.get("state").getAsInt();
         star_transaction_id = data.get("star_transaction_id").getAsLong();
-    }
-
-    public int getReceiverBankCode() {
-        return 0;
-    }
-
-    public String getNote() {
-        return null;
     }
 }
