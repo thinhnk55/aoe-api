@@ -86,7 +86,7 @@ public class ClanService implements IClanService{
     public JsonObject getInfoClan(long clanId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT  * FROM clan WHERE `clan_id` = ? AND status = 0";
+            String query = "SELECT  * FROM clan WHERE clan_id = ? AND status = 0";
             JsonObject data = bridge.queryOne(query, clanId);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {

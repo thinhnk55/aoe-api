@@ -76,8 +76,10 @@ public class GamerService implements IGamerService {
                 return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
             }
             long clanId = data.get("clan_id").getAsLong();
-            JsonObject clan = AoeServices.clanService.getInfoClan(clanId);
-            data.add("clan_name", clan.get("clan_name"));
+            if(clanId != 0) {
+                JsonObject clan = AoeServices.clanService.getInfoClan(clanId);
+                data.add("clan_name", clan.get("clan_name"));
+            }
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -189,7 +189,7 @@ public class StarService implements IStarService {
             }
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
