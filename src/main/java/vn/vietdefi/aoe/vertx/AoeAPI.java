@@ -4,6 +4,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
+import vn.vietdefi.aoe.vertx.router.match.MatchRouter;
 import vn.vietdefi.aoe.vertx.router.profile.ProfileRouter;
 import vn.vietdefi.aoe.vertx.router.wallet.WalletRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
@@ -49,6 +50,14 @@ public class AoeAPI {
 
     private static void userApi(Router router) {
 
+    }
+
+    private static void matchApi(Router router) {
+        router.post(ApiConfig
+                        .instance()
+                        .getPath("/match/create"))
+                .handler(BodyHandler.create(false))
+                .handler(MatchRouter::create);
     }
     public static void gamerApi(Router router){
         router.post(ApiConfig

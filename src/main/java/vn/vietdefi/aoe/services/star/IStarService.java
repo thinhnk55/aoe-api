@@ -11,4 +11,5 @@ public interface IStarService {
     JsonObject exchangeStar(long amount, int service, String username, long referId);
 
     void updateReferId(long id, long referId);
+    boolean checkStar(long amount, long userid);
 }

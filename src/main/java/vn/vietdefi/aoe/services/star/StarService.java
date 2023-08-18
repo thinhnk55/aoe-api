@@ -189,4 +189,17 @@ public class StarService implements IStarService {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
         }
     }
+
+    @Override
+    public boolean checkStar(long amount, long userid) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT balance FROM aoe_star WHERE userid = ?";
+            long data = bridge.queryInteger(query, userid);
+            return data >= amount;
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return false;
+        }
+    }
 }
