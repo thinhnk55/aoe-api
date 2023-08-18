@@ -14,4 +14,6 @@ public interface IDonateService {
     JsonObject updateDonateCaster(JsonObject data);
     JsonObject getDonateCasterById(long id);
 
+    JsonObject lookupHistoryDonate(int service, String phoneNumber, long timeStamp);
+
 }

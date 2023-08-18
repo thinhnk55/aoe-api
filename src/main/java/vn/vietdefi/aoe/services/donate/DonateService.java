@@ -106,4 +106,9 @@ public class DonateService implements IDonateService{
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    @Override
+    public JsonObject lookupHistoryDonate(int service, String phoneNumber, long timeStamp) {
+        return null;
+    }
 }
