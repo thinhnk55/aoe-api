@@ -10,17 +10,20 @@ import vn.vietdefi.util.sql.SQLJavaBridge;
 import vn.vietdefi.aoe.services.AoeServices;
 public class MatchService implements IMatchService{
     @Override
-    public JsonObject AdminCreateMatch(JsonObject json, long adminId) {
+    public JsonObject adminCreateMatch(JsonObject json, long adminId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            json.add("detail", createDetail(json));
-            json.remove("description");
-            json.remove("percent_for_gamer");
-            json.remove("percent_for_viewer");
-            json.remove("percent_for_organizers");
-            json.addProperty("suggester_id",adminId);
-            json.addProperty("state", MatchConstants.MATCH_VOTING);
-            json.addProperty("created_time",System.currentTimeMillis());
+            JsonObject insertToDB = new JsonObject();
+            insertToDB.addProperty("format", json.get("format").getAsInt());
+            insertToDB.addProperty("type", json.get("type").getAsInt());
+            insertToDB.addProperty("star_default", json.get("star_default").getAsString());
+            insertToDB.addProperty("create_time", System.currentTimeMillis());
+            insertToDB.add("detail", createDetail(json));
+            insertToDB.addProperty("time_expired", json.get("time_expired").getAsLong());
+            insertToDB.addProperty("suggester_id",adminId);
+            insertToDB.addProperty("state", MatchConstants.MATCH_VOTING);
+            insertToDB.addProperty("created_time",System.currentTimeMillis());
+            bridge.insertObjectToDB("`match`", "match_id", insertToDB);
             bridge.insertObjectToDB("aoe_match", json);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
@@ -32,14 +35,22 @@ public class MatchService implements IMatchService{
 
     private JsonObject createDetail(JsonObject json) {
         JsonObject detail = new JsonObject();
-        detail.addProperty("suggester", "organizers");
-        detail.addProperty("description", json.get("detail").getAsString());//
+        detail.addProperty("description", json.get("description").getAsString());//
         detail.addProperty("percent_for_gamer", json.get("percent_for_gamer").getAsString());
         detail.addProperty("percent_for_viewer", json.get("percent_for_viewer").getAsString());
         detail.addProperty("percent_for_organizers", json.get("percent_for_organizers").getAsString());
         detail.addProperty("link_livestream", "");
+        if (json.has("link_livestream")) {
+            detail.addProperty("link_livestream", json.get("link_livestream").getAsString());
+        }
         detail.add("result",new JsonArray());
+        if (json.has("result")) {
+            detail.add("result", json.get("result"));
+        }
         detail.addProperty("match_date",0);
+        if (json.has("match_date")) {
+            detail.addProperty("match_date", json.get("match_date").getAsLong());
+        }
         return detail;
     }
 
@@ -47,11 +58,8 @@ public class MatchService implements IMatchService{
     public JsonObject updateMatch(JsonObject json) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            json.add("detail", createDetail(json));
-            json.remove("description");
-            json.remove("percent_for_gamer");
-            json.remove("percent_for_viewer");
-            json.remove("percent_for_organizers");
+            JsonObject updateToDb = createDetail(json);
+            updateToDb.addProperty("time_expired", json.get("time_expired").getAsLong());
             bridge.updateObjectToDb("aoe_match","match_id", json);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
@@ -62,23 +70,21 @@ public class MatchService implements IMatchService{
     }
 
     @Override
-    public JsonObject getListMatch(int state , int page) {
+    public JsonObject getListMatch(int state , long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
 
-            long offset = (long) (page - 1) * MatchConstants.ITEMS_PER_PAGE;
-            // Query to get the total number of pages
+            long offset = (page - 1) * recordPerPage;
             String countQuery = "SELECT COUNT(*) AS total_rows FROM `match` WHERE `state ` = ?";
             JsonObject result = new JsonObject();
-            result.addProperty("total_page", bridge.queryInteger(countQuery, state )/MatchConstants.ITEMS_PER_PAGE + 1);
-            // Query to get data for the current page
+            result.addProperty("total_page", bridge.queryInteger(countQuery, state )/recordPerPage + 1);
             StringBuilder dataQuery = new StringBuilder("SELECT * FROM `match` WHERE `state ` = ? ");
-            if(state  < 5){
+            if(state  < MatchConstants.MATCH_CANCELLED){
                 dataQuery.append("ORDER BY ABS(star_current-star_default)  LIMIT ? OFFSET ?");
             }else {
                 dataQuery.append("ORDER BY time_expired DESC LIMIT ? OFFSET ?");
             }
-            JsonArray data = bridge.query(String.valueOf(dataQuery), state , MatchConstants.ITEMS_PER_PAGE, offset);
+            JsonArray data = bridge.query(String.valueOf(dataQuery), state , recordPerPage, offset);
             result.add("match", data);
             return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
@@ -96,13 +102,6 @@ public class MatchService implements IMatchService{
             JsonObject data = bridge.queryOne(query, match_id);
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "not_found");
-            }
-            long casterId = data.get("caster_id").getAsLong();
-            if (casterId == 0) {
-                data.addProperty("caster", "");
-            } else {
-                JsonObject caster = AoeServices.casterService.getInfoCaster(casterId);
-                data.add("caster", caster.getAsJsonObject().get("fullname"));
             }
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -135,10 +134,7 @@ public class MatchService implements IMatchService{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT match_id FROM `match` WHERE `match_id` = ?";
             JsonObject data = bridge.queryOne(query, matchId);
-            if (data == null) {
-                return false;
-            }
-            return true;
+            return data != null;
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
@@ -154,13 +150,6 @@ public class MatchService implements IMatchService{
             JsonObject data = bridge.queryOne(query);
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "not_found");
-            }
-            long casterId = data.get("caster_id").getAsLong();
-            if (casterId == 0) {
-                data.addProperty("caster", "");
-            } else {
-                JsonObject caster = AoeServices.casterService.getInfoCaster(casterId);
-                data.add("caster", caster.getAsJsonObject().get("fullname"));
             }
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -278,6 +267,8 @@ public class MatchService implements IMatchService{
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+
 
 
 }
