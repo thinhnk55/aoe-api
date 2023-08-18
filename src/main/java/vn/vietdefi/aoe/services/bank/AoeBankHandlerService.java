@@ -3,7 +3,6 @@ package vn.vietdefi.aoe.services.bank;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import sun.applet.AppletIOException;
 import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.api.services.ApiServices;
@@ -99,6 +98,13 @@ public class AoeBankHandlerService implements IBankHandlerService {
         if(!BaseResponse.isSuccessFullMessage(response)){
             return response;
         }
+        //Lay profile message.sender
+        long userId = response.getAsJsonObject("data").get("user_id").getAsLong();
+        response =  AoeServices.profileService.getUserProfile(userId);
+        if(!BaseResponse.isSuccessFullMessage(response)){
+            BaseResponse.createFullMessageResponse(40, "profile_not_found");
+        }
+        JsonObject profile = response.getAsJsonObject("data");
         //Lay thong tin gamer
         response = AoeServices.gamerService.getById(message.receiverId);
         if(!BaseResponse.isSuccessFullMessage(response)){
@@ -116,10 +122,10 @@ public class AoeBankHandlerService implements IBankHandlerService {
         //Tao giao dich donate
         JsonObject starTransaction = response.getAsJsonObject("data");
         JsonObject data = new JsonObject();
-        data.addProperty("user_id", starTransaction.get("user_id").getAsString());
-        data.addProperty("user_name", starTransaction.get("user_name").getAsString());
-        data.addProperty("nick_name", starTransaction.get("user_name").getAsString());
-        data.addProperty("phone_number", starTransaction.get("user_name").getAsString());
+        data.addProperty("user_id", userId);
+        data.addProperty("user_name", message.sender);
+        data.addProperty("nick_name", profile.get("nick_name").getAsString());
+        data.addProperty("phone_number", message.sender);
         data.addProperty("amount", star);
         data.addProperty("gamer_id", gamer.get("id").getAsLong());
         response = AoeServices.donateService.createDonateGamer(data);
@@ -152,6 +158,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
                     BaseResponse.createFullMessageResponse(21, "create_wallet_failed");
                 }
                 //Tao profile
+                response =  AoeServices.profileService.getUserProfile(userId);
                 if(!BaseResponse.isSuccessFullMessage(response)){
                     BaseResponse.createFullMessageResponse(22, "create_profile_failed");
                 }
