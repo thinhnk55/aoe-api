@@ -4,12 +4,15 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
 import vn.vietdefi.aoe.vertx.router.clan.ClanRouter;
+import vn.vietdefi.aoe.vertx.router.donate.DonateRouter;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
 import vn.vietdefi.aoe.vertx.router.match.MatchRouter;
 import vn.vietdefi.aoe.vertx.router.profile.ProfileRouter;
+import vn.vietdefi.aoe.vertx.router.router.UserRouter;
 import vn.vietdefi.aoe.vertx.router.wallet.WalletRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
+import vn.vietdefi.api.vertx.router.TelegramRouter;
 
 public class AoeAPI {
     public static void configAPI(Router router) {
@@ -22,37 +25,71 @@ public class AoeAPI {
         walletApi(router);
         clanApi(router);
         matchApi(router);
+        donateApi(router);
+    }
+    private static void donateApi(Router router) {
+        router.post(ApiConfig.instance().getPath("/donate/gamer"))
+                .handler(BodyHandler.create(false))
+                .handler(DonateRouter::donateGamer);
+        router.post(ApiConfig.instance().getPath("/donate/caster"))
+                .handler(BodyHandler.create(false))
+                .handler(DonateRouter::donateCaster);
+        router.post(ApiConfig.instance().getPath("/donate/match"))
+                .handler(BodyHandler.create(false))
+                .handler(DonateRouter::donateMatch);
+        router.get(ApiConfig.instance().getPath("/donate/list-fan-donate"))
+                .handler(DonateRouter::listFanDonate);
+        router.get(ApiConfig.instance().getPath("/donate/list-top-donate"))
+                .handler(DonateRouter::listTopDonate);
     }
 
     private static void walletApi(Router router) {
-        router.post(ApiConfig.instance().getPath("/wallet/get"))
+        router.get(ApiConfig.instance().getPath("/wallet/get"))
                 .handler(WalletRouter::getWallet);
-        router.get(ApiConfig.instance().getPath("/wallet/list-recharge"))
-                .handler(WalletRouter::listRecharge);
+        router.get(ApiConfig.instance().getPath("/wallet/list-by-service"))
+                .handler(WalletRouter::listByService);
         router.get(ApiConfig.instance().getPath("/wallet/list-transaction"))
                 .handler(WalletRouter::listTransaction);
         router.get(ApiConfig.instance().getPath("/wallet/transaction"))
                 .handler(WalletRouter::getTransaction);
+        router.get(ApiConfig.instance().getPath("/wallet/get-user"))
+                .handler(WalletRouter::getUserWallet);
     }
 
     private static void authApi(Router router) {
         router.post(ApiConfig
                         .instance()
-                        .getPath("/aoefan/register"))
+                        .getPath("/auth/register"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::register);
         router.post(ApiConfig
                         .instance()
-                        .getPath("/aoefan/login"))
+                        .getPath("/auth/login"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::login);
+        router.post(ApiConfig.instance().getPath("/auth/logout"))
+                .handler(AuthRouter::logout);
+        router.post(ApiConfig.instance().getPath("/auth/tele-link"))
+                .handler(TelegramRouter::requestLinkAccount);
     }
     private static void adminApi(Router router) {
 
     }
 
     private static void userApi(Router router) {
-
+        router.post(ApiConfig.instance().getPath("/user/lock"))
+                .handler(UserRouter::lockUser);
+        router.post(ApiConfig.instance().getPath("/user/unlock"))
+                .handler(UserRouter::unLockUser);
+        router.post(ApiConfig.instance().getPath("/user/change-password"))
+                .handler(BodyHandler.create(false))
+                .handler(UserRouter::changePassword);
+        router.post(ApiConfig.instance().getPath("/user/send-otp"))
+                .handler(BodyHandler.create(false))
+                .handler(UserRouter::sendOtp);
+        router.post(ApiConfig.instance().getPath("/user/forgot-password"))
+                .handler(BodyHandler.create(false))
+                .handler(UserRouter::forgotPassword);
     }
 
     private static void matchApi(Router router) {
@@ -179,5 +216,8 @@ public class AoeAPI {
         router.post(ApiConfig.instance().getPath("/profile/update"))
                 .handler(BodyHandler.create(false))
                 .handler(ProfileRouter::updateProfile);
+        router.post(ApiConfig.instance().getPath("/profile/search"))
+                .handler(BodyHandler.create(false))
+                .handler(ProfileRouter::searchProfile);
     }
 }

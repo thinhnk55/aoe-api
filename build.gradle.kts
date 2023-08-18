@@ -47,8 +47,10 @@ dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
     implementation("io.jsonwebtoken:jjwt:0.9.1")
-
-
+    // https://mvnrepository.com/artifact/com.github.pengrad/java-telegram-bot-api
+    implementation("com.github.pengrad:java-telegram-bot-api:6.2.0")
+    // https://mvnrepository.com/artifact/com.vdurmont/emoji-java
+    implementation("com.vdurmont:emoji-java:5.1.1")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")

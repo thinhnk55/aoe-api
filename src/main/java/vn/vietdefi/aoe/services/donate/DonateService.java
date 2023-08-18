@@ -1,5 +1,6 @@
 package vn.vietdefi.aoe.services.donate;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
@@ -10,7 +11,7 @@ import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
 
-public class DonateService implements IDonateService{
+public class DonateService implements IDonateService {
     @Override
     public JsonObject donate(long sender, long star, int service, long target_id, String message) {
         try {
@@ -56,8 +57,8 @@ public class DonateService implements IDonateService{
             long donate_id = donate.get("id").getAsLong();
             AoeServices.starService.updateReferId(sub_star_transaction_id,
                     donate_id);
-            if(service == StarConstant.SERVICE_DONATE_GAMER
-                    || service == StarConstant.SERVICE_DONATE_CASTER){
+            if (service == StarConstant.SERVICE_DONATE_GAMER
+                    || service == StarConstant.SERVICE_DONATE_CASTER) {
                 response = AoeServices.starService.exchangeStar(star,
                         service,
                         target_id, donate_id);
@@ -70,7 +71,7 @@ public class DonateService implements IDonateService{
                 }
             }
             return BaseResponse.createFullMessageResponse(0, "success", donate);
-        }catch (Exception e){
+        } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
@@ -78,35 +79,64 @@ public class DonateService implements IDonateService{
 
     @Override
     public JsonObject createDonate(JsonObject data) {
-        try{
+        try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             bridge.insertObjectToDB("aoe_donate", data);
             return BaseResponse.createFullMessageResponse(0, "success", data);
-        }catch (Exception e){
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject listFanDonate(long targetId, long page, long recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long offset = (page - 1) * recordPerPage;
+            String query = "SELECT * FROM aoe_donate WHERE target_id = ? LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, targetId, page, offset);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject listTopDonate(long targetId, long page, long recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long offset = (page - 1) * recordPerPage;
+            String query = "SELECT username, SUM(amount) as total_star FROM aoe_donate WHERE target_id = ? GROUP BY username ORDER BY total_star DESC LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, targetId, page, offset);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
     private JsonObject verifyTarget(int service, long targetId) {
-        if(service == StarConstant.SERVICE_DONATE_MATCH){
+        if (service == StarConstant.SERVICE_DONATE_MATCH) {
             return AoeServices.matchService.getById(targetId);
         }
-        if(service == StarConstant.SERVICE_DONATE_GAMER){
+        if (service == StarConstant.SERVICE_DONATE_GAMER) {
             return AoeServices.gamerService.getGamerByUserId(targetId);
         }
-        if(service == StarConstant.SERVICE_DONATE_CASTER){
+        if (service == StarConstant.SERVICE_DONATE_CASTER) {
             return AoeServices.casterService.getCasterByUserId(targetId);
         }
         return BaseResponse.createFullMessageResponse(10, "invalid_service");
     }
+
     @Override
     public void updateDonateUsed(long id, long add_star_transaction_id) {
-        try{
+        try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE aoe_donate SET add_star_transaction_id = ?, state = ? WHERE id = ?";
             bridge.update(query, add_star_transaction_id, DonateState.USED, id);
-        }catch (Exception e){
+        } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
         }
     }

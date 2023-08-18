@@ -23,11 +23,12 @@ public class WalletRouter {
         }
     }
 
-    public static void listRecharge(RoutingContext rc) {
+    public static void listByService(RoutingContext rc) {
         try {
             long id = Long.parseLong(rc.request().getHeader("userId"));
+            int service = Integer.parseInt(rc.request().getParam("service"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.starService.listStarTransactionOfUserByService(id, StarConstant.SERVICE_STAR_RECHARGE, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.starService.listStarTransactionOfUserByService(id, service, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -71,6 +72,20 @@ public class WalletRouter {
         try {
             long id = Long.parseLong(rc.request().getParam("id"));
             JsonObject response = AoeServices.starService.getStarTransactionById(id);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void getUserWallet(RoutingContext rc) {
+        try {
+            long id = Long.parseLong(rc.request().getParam("id"));
+            JsonObject response = AoeServices.starService.getStarWalletByUserId(id);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

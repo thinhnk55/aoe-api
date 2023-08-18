@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import org.apache.log4j.xml.DOMConfigurator;
 import vn.vietdefi.aoe.vertx.AoeVerticle;
+import vn.vietdefi.api.services.telegram.bot.VdefTelegramBot;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.bank.logic.BankController;
 import vn.vietdefi.util.log.DebugLogger;
@@ -18,7 +19,8 @@ public class AoeLauncher {
     public static void run(){
         try {
             initConfig();
-            BankController.instance().startLoop();
+//            BankController.instance().startLoop();
+            VdefTelegramBot.instance().run();
             startHttpServer();
         } catch (Exception e) {
             e.printStackTrace();

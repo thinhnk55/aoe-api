@@ -1,8 +1,10 @@
 package vn.vietdefi.api.services.auth;
 
 import com.google.gson.JsonObject;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.common.BaseResponse;
+import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
 import vn.vietdefi.util.string.StringUtil;
@@ -210,6 +212,32 @@ public class AuthService implements IAuthService {
             return get(userid);
         }catch (Exception e){
             e.printStackTrace();
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject changePassword(JsonObject json, long userId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String password = json.get("password").getAsString();
+            String newPassword = json.get("newPassword").getAsString();
+            String hashedPassword = StringUtil.sha256(password);
+            String hashedNewPassword = StringUtil.sha256(newPassword);
+            String query = "SELECT password FROM user WHERE id = ?";
+            JsonObject data = bridge.queryOne(query, userId);
+            if (!data.get("password").getAsString().equals(hashedPassword)) {
+                return BaseResponse.createFullMessageResponse(2, "wrong_password");
+            }
+            if (hashedNewPassword.equals(hashedPassword)) {
+                return BaseResponse.createFullMessageResponse(3, "duplicated_old_password");
+            }
+            query = "UPDATE user SET password = ? WHERE id = ?";
+            bridge.update(query, hashedNewPassword, userId);
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }

@@ -1,8 +1,10 @@
 package vn.vietdefi.aoe.services.star;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.api.services.ApiServices;
 import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.common.BaseResponse;
@@ -83,7 +85,6 @@ public class StarService implements IStarService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
-
     @Override
     public JsonObject listStarTransactionOfUserByTime(long time, long userId, long page, long recordPerPage) {
         try {
@@ -114,6 +115,7 @@ public class StarService implements IStarService {
 
     private void addReferToTransaction(JsonObject data) {
         long referId = data.get("refer_id").getAsLong();
+        long userId = data.get("user_id").getAsLong();
         if (referId == 0) {
             data.add("refer", null);
             return;
@@ -125,6 +127,9 @@ public class StarService implements IStarService {
                 JsonObject account = response.getAsJsonObject("data");
                 data.add("refer", account);
             }
+        }else if (service == StarConstant.SERVICE_DONATE_GAMER){
+            JsonObject response = AoeServices.gamerService.getGamerByUserId(userId);
+
         }
     }
 

@@ -11,7 +11,7 @@ import vn.vietdefi.util.log.DebugLogger;
 public class ProfileRouter {
     public static void getProfile(RoutingContext rc) {
         try {
-            long id = Long.parseLong(rc.request().getHeader("userId"));
+            long id = Long.parseLong(rc.request().getHeader("userid"));
             JsonObject response = AoeServices.profileService.getUserProfileByUserId(id);
             rc.response().end(response.toString());
         } catch (Exception e) {
@@ -28,6 +28,21 @@ public class ProfileRouter {
             String request = rc.body().asString();
             JsonObject data = GsonUtil.toJsonObject(request);
             JsonObject response = AoeServices.profileService.updateUserProfile(data);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void searchProfile(RoutingContext rc) {
+        try {
+            String request = rc.body().asString();
+            JsonObject data = GsonUtil.toJsonObject(request);
+            JsonObject response = AoeServices.profileService.searchProfile(data);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

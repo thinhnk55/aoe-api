@@ -8,6 +8,6 @@ public class StarConstant {
     public static final int SERVICE_DONATE_GAMER= 11;
     public static final int SERVICE_DONATE_CASTER = 12;
     public static final int SERVICE_DONATE_LEAGUE = 13;
-    public static int DEFAULT_RECORD_PER_PAGE = 20;
+    public static long DEFAULT_RECORD_PER_PAGE = 20;
     public static final int STAR_PRICE_RATE = 1000;
 }

@@ -1,5 +1,13 @@
 package vn.vietdefi.aoe.services.user;
 
-public interface IUserService {
+import com.google.gson.JsonObject;
 
+public interface IUserService {
+    boolean isExistPhone(String phoneNumber);
+
+    JsonObject lockUser(long userId);
+
+    JsonObject unLockUser(long userId);
+
+    JsonObject forgotPassword(JsonObject data);
 }
