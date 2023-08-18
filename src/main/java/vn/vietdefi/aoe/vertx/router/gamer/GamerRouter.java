@@ -25,7 +25,7 @@ public class GamerRouter {
     }
     public static void updateInfo(RoutingContext rc){
         try{
-            long userid = Long.parseLong(rc.request().getParam("gamerId"));
+            long userid = Long.parseLong(rc.request().getParam("userId"));
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
             json.addProperty("userid",userid);

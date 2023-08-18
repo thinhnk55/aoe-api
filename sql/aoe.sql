@@ -1,18 +1,3 @@
-CREATE TABLE IF NOT EXISTS gamer  (
-    user_id BIGINT PRIMARY KEY NOT NULL,
-    nickname VARCHAR  NOT NULL,
-    main_name VARCHAR  NOT NULL,
-    avatar VARCHAR  ,
-    detail_infoJSON,									#{"day_of_birth":"07-09-2002", "address":"NB","sport":"aoe","fb_link":"...","tiktok_link":"...","image":"img.jpg"...}
-    clan_id BIGINT  ,
-    rank INT  ,										#1:chuyên nghiệp, 2:bán chuyên, 3 : phong trào
-    rank_info TEXT  ,									#{"team":"Top 1", "solo_ramdom":"Top 1"}
-    match_played INT  NOT NULL DEFAULT 0,
-    match_won INT  NOT NULL DEFAULT 0,
-    update_time BIGINT  ,
-    status INT  NOT NULL	                             #0 : gamer hoạt động; 1 gamer bị vô hiệu hóa
-);
-CREATE UNIQUE INDEX nickname_uindex ON aoe.gamer (nickname);
 
 CREATE TABLE IF NOT EXISTS match  (
     match_id BIGINT PRIMARY KEY NOT NULL,
@@ -46,12 +31,11 @@ CREATE TABLE IF NOT EXISTS aoe_profile  (
     avatar       VARCHAR(2048) NOT NULL
 );
 
-CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nick_name);
 
 CREATE TABLE IF NOT EXISTS gamer  (
     user_id      BIGINT PRIMARY KEY NOT NULL,
     nick_name     VARCHAR(2048) UNIQUE NOT NULL,
-    main_name    VARCHAR(2048) NOT NULL,
+    fullname    VARCHAR(2048) NOT NULL,
     avatar       VARCHAR(2048) NOT NULL ,
     detail_info  JSON,									#{"day_of_birth":"07-09-2002", "address":"NB","sport":"aoe","fb_link":"...","tiktok_link":"...","image":"img.jpg"..}
     clan_id      BIGINT NOT NULL DEFAULT 0,
@@ -61,7 +45,8 @@ CREATE TABLE IF NOT EXISTS gamer  (
     match_won    INT NOT NULL DEFAULT 0,
     update_time  BIGINT NOT NULL DEFAULT 0,
     status       INT,                                   #0 : gamer hoạt động; 1 gamer bị vô hiệu hóa
-    phone_number VARCHAR(2048) NOT NULL
+    phone VARCHAR(2048) NOT NULL,
+    username VARCHAR(2048) NOT NULL
 );
 CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nick_name);
 
@@ -72,10 +57,11 @@ CREATE TABLE IF NOT EXISTS caster (
     nick_name VARCHAR(2048) UNIQUE NOT NULL DEFAULT '',
     avatar VARCHAR(2048) NOT NULL DEFAULT '',
     detail JSON ,
-    phone_number VARCHAR(2048) NOT NULL DEFAULT '',
+    phone VARCHAR(2048) NOT NULL DEFAULT '',
     image JSON NOT NULL DEFAULT '' ,
     is_deleted INT(11)  NULL DEFAULT 0,
-    clan_id BIGINT(20) NULL DEFAULT 0
+    clan_id BIGINT(20) NULL DEFAULT 0,
+    username VARCHAR(2048) NOT NULL DEFAULT ''
 );
 CREATE UNIQUE INDEX caster_nickname_unique_index ON caster (nick_name);
 

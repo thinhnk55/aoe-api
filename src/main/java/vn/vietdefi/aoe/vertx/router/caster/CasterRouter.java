@@ -25,9 +25,9 @@ public class CasterRouter {
     }
     public static void updateCaster(RoutingContext rc){
         try {
+            long casterId = Long.parseLong(rc.request().getParam("userId"));
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            long casterId = json.get("caster_id").getAsLong();
             JsonObject response = AoeServices.casterService.updateCaster(casterId,json);
             rc.response().end(response.toString());
         } catch (Exception e) {

@@ -22,9 +22,9 @@ public class CasterService implements ICasterService {
             JsonObject caster = bridge.queryOne(query, nickname);
             if (caster != null) return BaseResponse.createFullMessageResponse(11, "nickname_used");
             String avatar = json.get("avatar").getAsString();
-            String phone_number = json.get("phone_number").getAsString();
+            String phone_number = json.get("phone").getAsString();
             long clanId = json.get("clan_id").getAsLong();
-            query = "SELECT user_id FROM caster WHERE phone_number = ?";
+            query = "SELECT user_id FROM caster WHERE phone = ?";
             caster = bridge.queryOne(query, phone_number);
             if (caster != null) return BaseResponse.createFullMessageResponse(10, "phone_number_used");
             JsonObject detail = new JsonObject();
@@ -38,17 +38,17 @@ public class CasterService implements ICasterService {
             detail.add("sport", json.get("sport"));
             JsonArray image = json.get("image").getAsJsonArray();
             //create information user
+            String username = json.get("username").getAsString();
             JsonObject createUser = new JsonObject();
             createUser.addProperty("username", phone_number);
             query = "SELECT id FROM user WHERE username = ?";
-            if (bridge.queryExist(query, phone_number))
-                return BaseResponse.createFullMessageResponse(11, "phone_number_used");
-
+            if (bridge.queryExist(query, username))
+                return BaseResponse.createFullMessageResponse(12, "username_exist");
             String password = StringUtil.generateRandomStringNumberCharacter(12);
 
-            long userid = ApiServices.authService.register(phone_number, password, UserConstant.ROLE_USER,UserConstant.STATUS_NORMAL).get("data").getAsJsonObject().get("id").getAsLong();
-            query = "INSERT INTO `caster`(user_id,fullname,nick_name,avatar,detail,phone_number,image,clan_id)VALUES(?,?,?,?,?,?,?,?)";
-            bridge.update(query, userid, fullname, nickname, avatar, detail, phone_number, image, clanId);
+            long userid = ApiServices.authService.register(username, password, UserConstant.ROLE_USER,UserConstant.STATUS_NORMAL).get("data").getAsJsonObject().get("id").getAsLong();
+            query = "INSERT INTO `caster` (user_id,fullname,nick_name,avatar,detail,phone,image,clan_id,username)VALUES(?,?,?,?,?,?,?,?,?)";
+            bridge.update(query, userid, fullname, nickname, avatar, detail, phone_number, image, clanId,username);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -61,18 +61,19 @@ public class CasterService implements ICasterService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String fullname = json.get("fullname").getAsString();
-            String nickname = json.get("nickname").getAsString();
+            String nickname = json.get("nick_name").getAsString();
             String query = "SELECT user_id FROM caster WHERE nick_name = ?";
             JsonObject caster = bridge.queryOne(query, nickname);
             if (caster != null && caster.get("user_id").getAsInt() != casterId)
                 return BaseResponse.createFullMessageResponse(11, "nickname_used");
             String avatar = json.get("avatar").getAsString();
-            String phone_number = json.get("phone_number").getAsString();
+            String phone_number = json.get("phone").getAsString();
             long clanId = json.get("clan_id").getAsLong();
-            query = "SELECT user_id FROM caster WHERE phone_number = ?";
+            query = "SELECT user_id FROM caster WHERE phone = ?";
             caster = bridge.queryOne(query, phone_number);
             if (caster != null && caster.get("user_id").getAsInt() != casterId)
                 return BaseResponse.createFullMessageResponse(10, "phone_number_used");
+
             JsonObject detail = new JsonObject();
             detail.add("address", json.get("address"));
             detail.add("date_of_birth", json.get("date_of_birth"));
@@ -83,7 +84,7 @@ public class CasterService implements ICasterService {
             detail.add("sport", json.get("sport"));
             JsonArray image = json.get("image").getAsJsonArray();
 
-            query = "UPDATE caster SET fullname = ?,nick_name = ?,avatar = ?, phone_number = ? ,detail = ?,image = ?,clan_id =? WHERE user_id =? ";
+            query = "UPDATE caster SET fullname = ?,nick_name = ?,avatar = ?, phone = ? ,detail = ?,image = ?,clan_id =? WHERE user_id =? ";
             if (bridge.update(query, fullname, nickname, avatar, phone_number, detail, image,clanId, casterId) == 0) {
                 return BaseResponse.createFullMessageResponse(10, "nothing_to_update");
             }
@@ -117,6 +118,7 @@ public class CasterService implements ICasterService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM caster WHERE user_id = ?";
             JsonObject data = bridge.queryOne(query, user_id);
+            data.remove("username");
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

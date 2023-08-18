@@ -16,23 +16,23 @@ public class GamerService implements IGamerService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
 
-            String nickname = json.get("nickname").getAsString();
+            String nickname = json.get("nick_name").getAsString();
 
-            String query = "SELECT user_id FROM gamer WHERE nickname = ?";
+            String query = "SELECT user_id FROM gamer WHERE nick_name = ?";
             Long existingUserid = bridge.queryLong(query, nickname);
             if (existingUserid != null) {
-                return BaseResponse.createFullMessageResponse(10, "nickname_exist");
+                return BaseResponse.createFullMessageResponse(10, "nick_name_exist");
             }
 
-            String mainName = json.get("main_name").getAsString();
+            String mainName = json.get("fullname").getAsString();
             String avatar = json.get("avatar").getAsString();
             int matchPlayed = json.get("match_played").getAsInt();
             long clanId = json.get("clan_id").getAsLong();
             int rank = json.get("rank").getAsInt();
             JsonObject rankInfo = json.get("rank_info").getAsJsonObject();
             int matchWon = json.get("match_won").getAsInt();
-            String phoneNumber = json.get("phone_number").getAsString();
-
+            String phoneNumber = json.get("phone").getAsString();
+            String username = json.get("username").getAsString();
 
             JsonObject info = new JsonObject();
 
@@ -51,13 +51,13 @@ public class GamerService implements IGamerService {
 
 
             query = "SELECT id FROM user WHERE username = ?";
-            if (bridge.queryExist(query, phoneNumber))
-                return BaseResponse.createFullMessageResponse(11, "phone_number_used");
+            if (bridge.queryExist(query, username))
+                return BaseResponse.createFullMessageResponse(11, "username_exist");
             String password = StringUtil.generateRandomStringNumberCharacter(12);
 
-            long userid = ApiServices.authService.register(phoneNumber, password, UserConstant.ROLE_USER,UserConstant.STATUS_NORMAL).get("data").getAsJsonObject().get("id").getAsLong();
-            query = "INSERT INTO gamer (user_id, nickname,main_name,avatar,detail_info,clan_id, rank,rank_info,match_played,match_won,update_time,status,phone_number) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
-            bridge.update(query, userid, nickname, mainName, avatar, info, clanId, rank, rankInfo, matchPlayed, matchWon, createTime, 0, phoneNumber);
+            long userid = ApiServices.authService.register(username, password, UserConstant.ROLE_USER,UserConstant.STATUS_NORMAL).get("data").getAsJsonObject().get("id").getAsLong();
+            query = "INSERT INTO gamer (user_id, nick_name,fullname,avatar,detail_info,clan_id, rank,rank_info,match_played,match_won,update_time,status,phone,username) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            bridge.update(query, userid, nickname, mainName, avatar, info, clanId, rank, rankInfo, matchPlayed, matchWon, createTime, 0, phoneNumber,username);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stackTrace = ExceptionUtils.getStackTrace(e);
@@ -76,6 +76,7 @@ public class GamerService implements IGamerService {
                 return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
             }
             long clanId = data.get("clan_id").getAsLong();
+            data.remove("username");
             if(clanId != 0) {
                 JsonObject clan = AoeServices.clanService.getInfoClan(clanId);
                 data.add("clan_name", clan.get("clan_name"));
@@ -96,13 +97,13 @@ public class GamerService implements IGamerService {
             if (!bridge.queryExist(query, userId, 0)) {
                 return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
             }
-            String nickname = json.get("nickname").getAsString();
-            query = "SELECT user_id FROM gamer WHERE `nickname` = ?";
+            String nickname = json.get("nick_name").getAsString();
+            query = "SELECT user_id FROM gamer WHERE nick_name = ?";
             JsonObject user = bridge.queryOne(query, nickname);
             if (user != null && user.get("user_id").getAsLong() != userId)
                 return BaseResponse.createFullMessageResponse(10, "nickname_exist");
 
-            String mainName = json.get("main_name").getAsString();
+            String mainName = json.get("fullname").getAsString();
             String avatar = json.get("avatar").getAsString();
             int matchPlayed = json.get("match_played").getAsInt();
             int rank = json.get("rank").getAsInt();
@@ -113,7 +114,7 @@ public class GamerService implements IGamerService {
 
             JsonObject detailInfo = new JsonObject();
 
-            detailInfo.addProperty("date_of_birth", json.get("date_of_birth").getAsLong());
+            detailInfo.addProperty("date_of_birth", json.get("date_of_birth").getAsString());
             detailInfo.addProperty("address", json.get("address").getAsString());
             detailInfo.addProperty("sport", json.get("sport").getAsString());
             detailInfo.addProperty("nationality", json.get("nationality").getAsString());
@@ -125,11 +126,11 @@ public class GamerService implements IGamerService {
             detailInfo.add("image", json.get("image"));
 
 
-            String updateQuery = "UPDATE gamer SET nickname = ?, main_name = ?, avatar = ?, detail_info = ?, " +
-                    "clan_id = ?, rank = ?, rank_info = ?, match_played = ?, match_won = ? " +
-                    ", update_time = ?,status = ? WHERE user_id = ?";
+            StringBuilder updateQuery = new StringBuilder("UPDATE gamer SET nick_name = ?, fullname = ?, avatar = ?, detail_info = ?, ") ;
+                    updateQuery.append("clan_id = ?, rank = ?, rank_info = ?, match_played = ?, match_won = ? ");
+                    updateQuery.append(", update_time = ?,status = ? WHERE user_id = ?");
 
-            bridge.update(updateQuery, nickname, mainName, avatar, detailInfo, clanId, rank,
+            bridge.update(updateQuery.toString(), nickname, mainName, avatar, detailInfo, clanId, rank,
                     rankInfo, matchPlayed, matchWon, updateTime, 0, userId);
 
             return BaseResponse.createFullMessageResponse(0, "success");
