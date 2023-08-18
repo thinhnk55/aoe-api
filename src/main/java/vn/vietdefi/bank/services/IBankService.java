@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import vn.vietdefi.bank.logic.BankTransaction;
 
 public interface IBankService {
+    //Bank Account
     JsonObject createBankAccount(int bankCode, String accountOwner, String accountNumber, long bankDetailId);
     JsonObject getWorkingBankAccount();
     void updateBankAccountState(long id, int state);
@@ -19,7 +20,8 @@ public interface IBankService {
     JsonObject updateBankAccount(JsonObject data);
 
     JsonObject selectBankAccount(long id);
-    
+
+    //Bank Transaction
     JsonObject createBalanceTransaction(JsonObject data);
 
     JsonObject getBalanceTransactionById(long referId);
@@ -28,6 +30,6 @@ public interface IBankService {
     void updateBankTransactionState(long id,
                                     int state);
 
-    void completeTransaction(BankTransaction transaction,
-                             long starTransactionId);
+    void completeBankTransaction(BankTransaction transaction,
+                                 long starTransactionId);
 }

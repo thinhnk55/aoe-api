@@ -6,6 +6,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.bank.logic.BankAccountState;
 import vn.vietdefi.bank.logic.BankCode;
+import vn.vietdefi.bank.logic.BankTransaction;
+import vn.vietdefi.bank.logic.BankTransactionState;
 import vn.vietdefi.bank.logic.timo.TimoApi;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
@@ -234,6 +236,19 @@ public class BankService implements IBankService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE bank_transaction SET state = ? WHERE id = ?";
             bridge.update(query, state, id);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+        }
+    }
+
+    @Override
+    public void completeBankTransaction(BankTransaction transaction,
+                                 long starTransactionId){
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE bank_transaction SET state = ?, star_transaction_id = ? WHERE id = ?";
+            bridge.update(query, BankTransactionState.DONE, starTransactionId, transaction.id);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);

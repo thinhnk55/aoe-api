@@ -43,8 +43,14 @@ public class AoeBankHandlerService implements IBankHandlerService {
         switch (message.service){
             case StarConstant.SERVICE_STAR_RECHARGE:
                 return starRecharge(transaction, message);
-                break;
+            case StarConstant.SERVICE_DONATE_USER:
+                return donateUser(transaction, message);
+            case StarConstant.SERVICE_DONATE_MATCH:
+                return donate(transaction, message);
+            case StarConstant.SERVICE_DONATE_LEAGUE:
+                return starRecharge(transaction, message);
         }
+        return false;
     }
 
     private boolean starRecharge(BankTransaction transaction, AoeBankAction message) {
@@ -57,12 +63,12 @@ public class AoeBankHandlerService implements IBankHandlerService {
                 return false;
             }
             long starTransactionId = response.getAsJsonObject("data").get("id").getAsLong();
-            BankServices.bankService.completeTransaction(transaction, starTransactionId);
+            BankServices.bankService.completeBankTransaction(transaction, starTransactionId);
+            return true;
         }catch (Exception e){
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             return false;
         }
     }
-
 }

@@ -6,7 +6,8 @@ public class StarConstant {
     public static final int SERVICE_SUGGEST_MATCH = 3;
 
     public static final int SERVICE_DONATE_MATCH = 10;
-    public static final int SERVICE_DONATE_USER = 11;
+    public static final int SERVICE_DONATE_GAMER= 11;
+    public static final int SERVICE_DONATE_CASTER = 12;
     public static final int SERVICE_DONATE_LEAGUE = 13;
 
 
