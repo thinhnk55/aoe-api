@@ -45,12 +45,29 @@ public class AoeBankHandlerService implements IBankHandlerService {
                 return starRecharge(transaction, message);
             case StarConstant.SERVICE_DONATE_GAMER:
                 return donateGamer(transaction, message);
+            case StarConstant.SERVICE_DONATE_MATCH:
+                return donateMatch(transaction, message);
         }
         return false;
     }
 
+    private boolean donateMatch(BankTransaction transaction, AoeBankAction message) {
+        JsonObject response = AoeServices.matchService.getInfoMatch(message.receiverId);
+        if(!BaseResponse.isSuccessFullMessage(response)){
+            return false;
+        }
+        JsonObject match = response.getAsJsonObject("data");
+    }
+
     private boolean donateGamer(BankTransaction transaction, AoeBankAction message) {
-        AoeServices.gamerService.get
+        JsonObject response = AoeServices.gamerService.getById(message.receiverId);
+        if(!BaseResponse.isSuccessFullMessage(response)){
+            return false;
+        }
+        JsonObject gamer = response.getAsJsonObject("data");
+        //TODO: waiting for aoe_donate_gamer
+        return true;
+
     }
 
     private boolean starRecharge(BankTransaction transaction, AoeBankAction message) {
