@@ -43,14 +43,14 @@ public class AoeBankHandlerService implements IBankHandlerService {
         switch (message.service){
             case StarConstant.SERVICE_STAR_RECHARGE:
                 return starRecharge(transaction, message);
-            case StarConstant.SERVICE_DONATE_USER:
-                return donateUser(transaction, message);
-            case StarConstant.SERVICE_DONATE_MATCH:
-                return donate(transaction, message);
-            case StarConstant.SERVICE_DONATE_LEAGUE:
-                return starRecharge(transaction, message);
+            case StarConstant.SERVICE_DONATE_GAMER:
+                return donateGamer(transaction, message);
         }
         return false;
+    }
+
+    private boolean donateGamer(BankTransaction transaction, AoeBankAction message) {
+        AoeServices.gamerService.get
     }
 
     private boolean starRecharge(BankTransaction transaction, AoeBankAction message) {

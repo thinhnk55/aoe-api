@@ -64,6 +64,12 @@ public class GamerService implements IGamerService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    @Override
+    public JsonObject getById(long id) {
+        return null;
+    }
+
     public JsonObject updateInfo(JsonObject json) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
