@@ -26,14 +26,14 @@ public class AoeBankAction {
 
 
     public static AoeBankAction createFromBalanceTransaction(BankTransaction transaction) {
-        if (transaction.getReceiverBankCode() == BankCode.TIMO) {
+        if (transaction.receiver_bankcode == BankCode.TIMO) {
             return timoConvert(transaction);
         }
         return null;
     }
 
     private static AoeBankAction timoConvert(BankTransaction transaction) {
-        String data = transaction.getNote();
+        String data = transaction.note;
         // Biểu thức chính quy
         String regex = new StringBuilder( "(\\d+) ").append((AoeBankConstant.MESSAGE_DONATE)).append(" (\\w+\\d+)").toString();
         String regex2 = new StringBuilder("(\\d+) ").append(AoeBankConstant.MESSAGE_RECHARGE).toString();
@@ -49,15 +49,15 @@ public class AoeBankAction {
         String targetReceiver = "";
         if (matcher.find()) {
             phoneNumber = matcher.group(1);
-            targetReceiver = matcher.group(3).trim();
+            targetReceiver = matcher.group(2).trim();
             JsonObject target = convertTarget(targetReceiver);
             if(target != null) {
                 String targetCode = target.get("code").getAsString();
-                if(targetCode.equals("KD")) {
+                if(targetCode.equals("kd")) {
                     service = StarConstant.SERVICE_DONATE_MATCH;
-                } else if (targetCode.equals("GT")) {
+                } else if (targetCode.equals("gt")) {
                     service = StarConstant.SERVICE_DONATE_GAMER;
-                }else if (targetCode.equals("BLV"))
+                }else if (targetCode.equals("bl"))
                 {
                     service = StarConstant.SERVICE_DONATE_CASTER;
                 }

@@ -93,7 +93,6 @@ public class TimoApi {
                                                 JsonArray notificationToProcess,
                                                 long lastNotificationId) {
         long last = lastNotificationId;
-        boolean hasTransaction = false;
         for(int i = notificationToProcess.size()-1; i >= 0; i--){
             JsonObject json = notificationToProcess.get(i).getAsJsonObject();
             String group = json.get("group").getAsString();
@@ -102,24 +101,26 @@ public class TimoApi {
                 transactionInfo.addProperty("receiver_bankcode", account.bank_code);
                 transactionInfo.addProperty("receiver_bank_account", account.account_number);
                 transactionInfo.addProperty("receiver_name", account.account_owner);
+                transactionInfo.addProperty("sender_bankcode", -1);
+                transactionInfo.addProperty("sender_bank_account", "");
+                transactionInfo.addProperty("sender_name", "");
+                transactionInfo.addProperty("create_time", System.currentTimeMillis());
                 JsonObject response = BankServices.bankService.createBalanceTransaction(transactionInfo);
                 if(BaseResponse.isSuccessFullMessage(response)){
                     last = json.get("iD").getAsLong();
-                    hasTransaction = true;
                 }else{
                     break;
                 }
+            }else{
+                last = json.get("iD").getAsLong();
             }
         }
         TimoUtil.cancelForceUpdate(account);
         commitReadNotification(account);
-        if(hasTransaction){
-            TimoUtil.updateLastNofiticationId(account, last);
-            long id = account.bank_detail.get("id").getAsLong();
-            JsonObject other = account.bank_detail.getAsJsonObject("other");
-            BankServices.timoService.updateOther(id, other);
-        }
-        //Danh dau da xu li den notification id nao
+        TimoUtil.updateLastNofiticationId(account, last);
+        long id = account.bank_detail.get("id").getAsLong();
+        JsonObject other = account.bank_detail.getAsJsonObject("other");
+        BankServices.timoService.updateOther(id, other);
     }
 
     private static void commitReadNotification(BankAccount account) {

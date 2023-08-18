@@ -235,7 +235,7 @@ public class BankService implements IBankService {
     public JsonObject listWaitingTransaction() {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM balance_transaction WHERE state = ?";
+            String query = "SELECT * FROM bank_transaction WHERE state = ?";
             JsonArray data = bridge.query(query, BankTransactionState.WAITING);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -244,7 +244,6 @@ public class BankService implements IBankService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
-
     @Override
     public void updateBankTransactionState(long id, int state) {
         try {

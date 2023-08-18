@@ -9,8 +9,7 @@ import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
 
 public class ProfileService implements IProfileService{
-    @Override
-    public JsonObject createUserProfile(long userId) {
+    private JsonObject createUserProfile(long userId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject response = ApiServices.authService.get(userId);
@@ -22,7 +21,9 @@ public class ProfileService implements IProfileService{
                 data.addProperty("user_id", userId);
                 data.addProperty("user_name", username);
                 data.addProperty("nick_name", username);
-                bridge.updateObjectToDb("aoe_profile", data);
+                data.addProperty("level", 0);
+                String query = "INSERT INTO aoe_profile(user_id, user_name, nick_name) VALUES(?,?,?)";
+                bridge.update(query, userId, username, username);
                 return BaseResponse.createFullMessageResponse(0, "success", data);
             }
         } catch (Exception e) {
@@ -32,7 +33,7 @@ public class ProfileService implements IProfileService{
     }
 
     @Override
-    public JsonObject getUserProfile(long userId) {
+    public JsonObject getUserProfileByUserId(long userId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM aoe_profile WHERE user_id = ?";
@@ -51,10 +52,10 @@ public class ProfileService implements IProfileService{
     public JsonObject updateUserProfile(JsonObject data) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long userId = data.get("userId").getAsLong();
-            String query = "SELECT id FROM aoe_profile WHERE id = ?";
+            long userId = data.get("user_id").getAsLong();
+            String query = "SELECT * FROM aoe_profile WHERE user_id = ?";
             if(bridge.queryExist(query, userId)){
-                bridge.updateObjectToDb("aoe_profile", data);
+                bridge.updateObjectToDb("aoe_profile", "user_id", data);
                 return BaseResponse.createFullMessageResponse(0, "success", data);
             }else{
                 return BaseResponse.createFullMessageResponse(10, "user_not_found");

@@ -30,7 +30,7 @@ public class AuthService implements IAuthService {
             data.addProperty("create_time", createTime);
             data.addProperty("token", token);
             data.addProperty("token_expired", tokenExpired);
-            JsonObject response = AoeServices.profileService.getUserProfile(userId);
+            JsonObject response = AoeServices.profileService.getUserProfileByUserId(userId);
             data.add("aoe_profile", response.getAsJsonObject("data"));
             response = AoeServices.starService.getStarWalletByUserId(userId);
             data.add("aoe_star", response.getAsJsonObject("data"));
@@ -100,7 +100,7 @@ public class AuthService implements IAuthService {
             }
             data.remove("password");
             long userId = data.get("id").getAsLong();
-            JsonObject response = AoeServices.profileService.getUserProfile(userId);
+            JsonObject response = AoeServices.profileService.getUserProfileByUserId(userId);
             data.add("aoe_profile", response.getAsJsonObject("data"));
             response = AoeServices.starService.getStarWalletByUserId(userId);
             data.add("aoe_star", response.getAsJsonObject("data"));
