@@ -1,16 +1,16 @@
 CREATE TABLE IF NOT EXISTS aoe_profile  (
     user_id      BIGINT PRIMARY KEY NOT NULL,
-    user_name    VARCHAR(128) UNIQUE NOT NULL,
+    username    VARCHAR(128) UNIQUE NOT NULL,
     nick_name    VARCHAR(2048) UNIQUE NOT NULL,
     level        INT NOT NULL DEFAULT 0,
     avatar       VARCHAR(2048) NOT NULL
 );
 
-CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nickname);
+CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nick_name);
 
 CREATE TABLE IF NOT EXISTS gamer  (
     user_id      BIGINT PRIMARY KEY NOT NULL,
-    nickname     VARCHAR(2048) UNIQUE NOT NULL,
+    nick_name     VARCHAR(2048) UNIQUE NOT NULL,
     main_name    VARCHAR(2048) NOT NULL,
     avatar       VARCHAR(2048) NOT NULL ,
     detail_info  JSON,									#{"day_of_birth":"07-09-2002", "address":"NB","sport":"aoe","fb_link":"...","tiktok_link":"...","image":"img.jpg"..}
@@ -23,13 +23,13 @@ CREATE TABLE IF NOT EXISTS gamer  (
     status       INT,                                   #0 : gamer hoạt động; 1 gamer bị vô hiệu hóa
     phone_number VARCHAR(2048) NOT NULL
 );
-CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nickname);
+CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nick_name);
 
 
 CREATE TABLE IF NOT EXISTS caster (
     id INT(11) PRIMARY KEY NOT NULL,
     fullname VARCHAR(2048) NOT NULL DEFAULT '',
-    nickname VARCHAR(2048) UNIQUE NOT NULL DEFAULT '',
+    nick_name VARCHAR(2048) UNIQUE NOT NULL DEFAULT '',
     avatar VARCHAR(2048) NOT NULL DEFAULT '',
     detail JSON ,
     phone_number VARCHAR(2048) NOT NULL DEFAULT '',
@@ -37,4 +37,4 @@ CREATE TABLE IF NOT EXISTS caster (
     is_deleted INT(11)  NULL DEFAULT 0,
     clan_id BIGINT(20) NULL DEFAULT 0
 );
-CREATE UNIQUE INDEX caster_nickname_unique_index ON caster (nickname);
+CREATE UNIQUE INDEX caster_nickname_unique_index ON caster (nick_name);

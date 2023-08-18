@@ -66,4 +66,18 @@ public class WalletRouter {
             rc.response().end(response.toString());
         }
     }
+
+    public static void getTransaction(RoutingContext rc) {
+        try {
+            long id = Long.parseLong(rc.request().getParam("id"));
+            JsonObject response = AoeServices.starService.getStarTransactionById(id);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
 }

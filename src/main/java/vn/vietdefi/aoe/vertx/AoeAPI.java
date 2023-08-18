@@ -28,8 +28,8 @@ public class AoeAPI {
                 .handler(WalletRouter::listRecharge);
         router.get(ApiConfig.instance().getPath("/wallet/list-transaction"))
                 .handler(WalletRouter::listTransaction);
-        router.post(ApiConfig.instance().getPath("/wallet/exchange"))
-                .handler(WalletRouter::exchangeStar);
+        router.get(ApiConfig.instance().getPath("/wallet/transaction"))
+                .handler(WalletRouter::getTransaction);
     }
 
     private static void authApi(Router router) {

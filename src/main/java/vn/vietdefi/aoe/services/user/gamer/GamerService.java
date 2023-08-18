@@ -17,7 +17,7 @@ public class GamerService implements IGamerService {
 
             String nickname = json.get("nickname").getAsString();
 
-            String query = "SELECT user_id FROM gamer WHERE nickname = ?";
+            String query = "SELECT user_id FROM gamer WHERE nick_name = ?";
             Long existingUserid = bridge.queryLong(query, nickname);
             if (existingUserid != null) {
                 return BaseResponse.createFullMessageResponse(10, "nickname_exist");
@@ -55,7 +55,7 @@ public class GamerService implements IGamerService {
             String password = StringUtil.generateRandomStringNumberCharacter(12);
 
             long userid = ApiServices.authService.register(phoneNumber, password, UserConstant.ROLE_USER,UserConstant.STATUS_NORMAL).get("data").getAsJsonObject().get("id").getAsLong();
-            query = "INSERT INTO gamer (user_id, nickname,main_name,avatar,detail_info,clan_id, rank,rank_info,match_played,match_won,update_time,status,phone_number) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            query = "INSERT INTO gamer (user_id, nick_name,main_name,avatar,detail_info,clan_id, rank,rank_info,match_played,match_won,update_time,status,phone_number) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
             bridge.update(query, userid, nickname, mainName, avatar, info, clanId, rank, rankInfo, matchPlayed, matchWon, createTime, 0, phoneNumber);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
@@ -88,7 +88,7 @@ public class GamerService implements IGamerService {
                 return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
             }
             String nickname = json.get("nickname").getAsString();
-            query = "SELECT user_id FROM gamer WHERE `nickname` = ?";
+            query = "SELECT user_id FROM gamer WHERE `nick_name` = ?";
             JsonObject user = bridge.queryOne(query, nickname);
             if (user != null && user.get("user_id").getAsLong() != userId)
                 return BaseResponse.createFullMessageResponse(10, "nickname_exist");
@@ -116,7 +116,7 @@ public class GamerService implements IGamerService {
             detailInfo.add("image", json.get("image"));
 
 
-            String updateQuery = "UPDATE gamer SET nickname = ?, main_name = ?, avatar = ?, detail_info = ?, " +
+            String updateQuery = "UPDATE gamer SET nick_name = ?, main_name = ?, avatar = ?, detail_info = ?, " +
                     "clan_id = ?, rank = ?, rank_info = ?, match_played = ?, match_won = ? " +
                     ", update_time = ?,status = ? WHERE user_id = ?";
 

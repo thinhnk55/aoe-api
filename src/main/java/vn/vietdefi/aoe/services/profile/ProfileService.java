@@ -19,10 +19,10 @@ public class ProfileService implements IProfileService{
                 String username = response.getAsJsonObject("data").get("username").getAsString();
                 JsonObject data = new JsonObject();
                 data.addProperty("user_id", userId);
-                data.addProperty("user_name", username);
+                data.addProperty("username", username);
                 data.addProperty("nick_name", username);
                 data.addProperty("level", 0);
-                String query = "INSERT INTO aoe_profile(user_id, user_name, nick_name) VALUES(?,?,?)";
+                String query = "INSERT INTO aoe_profile(user_id, username, nick_name) VALUES(?,?,?)";
                 bridge.update(query, userId, username, username);
                 return BaseResponse.createFullMessageResponse(0, "success", data);
             }
