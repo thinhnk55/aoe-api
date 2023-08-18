@@ -149,7 +149,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
         data.addProperty("caster_id", caster.get("user_id").getAsLong());
         data.addProperty("create_time", starTransaction.get("create_time").getAsLong());
         data.addProperty("star_transaction_id", starTransaction.get("id").getAsLong());
-        response = AoeServices.donateService.createDonateGamer(data);
+        response = AoeServices.donateService.createDonateCaster(data);
         if(!BaseResponse.isSuccessFullMessage(response)){
             BaseResponse.createFullMessageResponse(32, "create_donate_failed");
         }
