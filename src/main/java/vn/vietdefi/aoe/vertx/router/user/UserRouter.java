@@ -1,4 +1,4 @@
-package vn.vietdefi.aoe.vertx.router.router;
+package vn.vietdefi.aoe.vertx.router.user;
 
 import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
@@ -74,6 +74,20 @@ public class UserRouter {
             DebugLogger.error(stacktrace);
             JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
             routingContext.response().end(response.toString());
+        }
+    }
+    public static void requestLinkAccount(RoutingContext rc) {
+        try {
+            long userid = Long.parseLong(rc.request().getHeader("userid"));
+            JsonObject data = new JsonObject();
+            data.addProperty("userid", userid);
+            JsonObject response = ApiServices.telegramService.requestLinkAccount(data);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
+            rc.response().end(response.toString());
         }
     }
 }
