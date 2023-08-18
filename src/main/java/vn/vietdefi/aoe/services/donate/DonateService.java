@@ -18,14 +18,13 @@ public class DonateService implements IDonateService{
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(10, "profile_not_found");
             }
-            //Lay thong tin tran dau
+            JsonObject profile = response.getAsJsonObject("data");
+            String username = profile.get("username").getAsString();
+            String nick_name = profile.get("nick_name").getAsString();
             response = verifyTarget(service, target_id);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(11, "target_not_found");
             }
-            JsonObject profile = response.getAsJsonObject("data");
-            String username = profile.get("username").getAsString();
-            String nick_name = profile.get("nick_name").getAsString();
             //Tru sao trong tai khoan message.sender
             response = AoeServices.starService.exchangeStar(-star,
                     StarConstant.SERVICE_DONATE_MATCH,
@@ -40,11 +39,13 @@ public class DonateService implements IDonateService{
             data.addProperty("user_id", sender);
             data.addProperty("username", username);
             data.addProperty("nick_name", nick_name);
+            data.addProperty("phone", username);
             data.addProperty("amount", star);
             data.addProperty("service", service);
             data.addProperty("target_id", target_id);
             data.addProperty("message", message);
             data.addProperty("sub_star_transaction_id", sub_star_transaction_id);
+            data.addProperty("add_star_transaction_id", 0);
             data.addProperty("state", DonateState.WAITING);
             data.addProperty("create_time", starTransaction.get("create_time").getAsLong());
             response = createDonate(data);
@@ -58,12 +59,14 @@ public class DonateService implements IDonateService{
             if(service == StarConstant.SERVICE_DONATE_GAMER
                     || service == StarConstant.SERVICE_DONATE_CASTER){
                 response = AoeServices.starService.exchangeStar(star,
-                        StarConstant.SERVICE_DONATE_MATCH,
+                        service,
                         target_id, donate_id);
                 if (BaseResponse.isSuccessFullMessage(response)) {
                     long add_star_transaction_id = response.getAsJsonObject("data")
                             .get("id").getAsLong();
                     updateDonateUsed(donate_id, add_star_transaction_id);
+                    donate.addProperty("add_star_transaction_id", add_star_transaction_id);
+                    donate.addProperty("state", DonateState.USED);
                 }
             }
             return BaseResponse.createFullMessageResponse(0, "success", donate);
