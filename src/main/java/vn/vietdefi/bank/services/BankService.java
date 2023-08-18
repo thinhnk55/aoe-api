@@ -244,7 +244,6 @@ public class BankService implements IBankService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
-
     @Override
     public void updateBankTransactionState(long id, int state) {
         try {

@@ -60,7 +60,7 @@ public class StarService implements IStarService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT * FROM aoe_star WHERE user_id = ? AND service = ? LIMIT ? OFFSET ?";
+            String query = "SELECT * FROM aoe_star_transaction WHERE user_id = ? AND service = ? LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, userId, service, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -158,8 +158,10 @@ public class StarService implements IStarService {
                         //get id aoe transaction
                         JsonObject data;
                         try (ResultSet result = st3.getGeneratedKeys()) {
-                            long id = result.getLong(1);
-                            st4.setLong(1, id);
+                            if(result.next()){
+                                long id = result.getLong(1);
+                                st4.setLong(1, id);
+                            }
                             try (ResultSet rs4 = st4.executeQuery()) {
                                 data = GsonUtil.toJsonObject(rs4);
                             }

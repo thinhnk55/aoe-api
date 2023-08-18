@@ -4,6 +4,8 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
+import vn.vietdefi.aoe.vertx.router.profile.ProfileRouter;
+import vn.vietdefi.aoe.vertx.router.wallet.WalletRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
@@ -14,6 +16,19 @@ public class AoeAPI {
         adminApi(router);
         gamerApi(router);
         casterAPI(router);
+        profileApi(router);
+        walletApi(router);
+    }
+
+    private static void walletApi(Router router) {
+        router.post(ApiConfig.instance().getPath("/wallet/get"))
+                .handler(WalletRouter::getWallet);
+        router.get(ApiConfig.instance().getPath("/wallet/list-recharge"))
+                .handler(WalletRouter::listRecharge);
+        router.get(ApiConfig.instance().getPath("/wallet/list-transaction"))
+                .handler(WalletRouter::listTransaction);
+        router.post(ApiConfig.instance().getPath("/wallet/exchange"))
+                .handler(WalletRouter::exchangeStar);
     }
 
     private static void authApi(Router router) {
@@ -74,5 +89,12 @@ public class AoeAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(CasterRouter::deleteCaster);
+    }
+    public static void profileApi(Router router){
+        router.post(ApiConfig.instance().getPath("/profile/get"))
+                .handler(ProfileRouter::getProfile);
+        router.post(ApiConfig.instance().getPath("/profile/update"))
+                .handler(BodyHandler.create(false))
+                .handler(ProfileRouter::updateProfile);
     }
 }
