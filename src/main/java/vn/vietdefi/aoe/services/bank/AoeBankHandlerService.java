@@ -8,7 +8,6 @@ import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.api.services.ApiServices;
 import vn.vietdefi.api.services.auth.UserConstant;
 import vn.vietdefi.bank.BankServices;
-import vn.vietdefi.bank.logic.BankAccount;
 import vn.vietdefi.bank.logic.BankTransaction;
 import vn.vietdefi.bank.logic.BankTransactionState;
 import vn.vietdefi.bank.services.IBankHandlerService;
