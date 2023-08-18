@@ -1,7 +1,6 @@
 package vn.vietdefi.aoe.vertx.router.match;
 
 import com.google.gson.JsonObject;
-import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
@@ -16,7 +15,7 @@ public class MatchRouter {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.matchService.adminCreateMatch(json,0);
+            JsonObject response = AoeServices.matchService.CreateMatch(json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

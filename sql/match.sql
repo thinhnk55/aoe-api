@@ -20,7 +20,7 @@ create table aoe_match_suggest
     format       INT           NOT NULL,
     team_play    TEXT          NOT NULL,
     detail       TEXT          NOT NULL,
-    star         INT           NULL,
+    star_current INT           NULL,
     create_time  BIGINT        NOT NULL,
     state        INT           NOT NULL default 0
 );

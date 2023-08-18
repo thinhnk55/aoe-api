@@ -11,16 +11,16 @@ import vn.vietdefi.util.sql.SQLJavaBridge;
 
 public class MatchService implements IMatchService{
     @Override
-    public JsonObject adminCreateMatch(JsonObject json, long adminId) {
+    public JsonObject CreateMatch(JsonObject json) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject insertToDB = new JsonObject();
             insertToDB.addProperty("format", json.get("format").getAsInt());
             insertToDB.addProperty("type", json.get("type").getAsInt());
-            insertToDB.addProperty("star_default", json.get("star_default").getAsString());
+            insertToDB.addProperty("star_default", json.get("star_default").getAsLong());
             insertToDB.add("detail", createDetail(json));
             insertToDB.addProperty("time_expired", json.get("time_expired").getAsLong());
-            insertToDB.addProperty("suggester_id",adminId);
+            insertToDB.addProperty("suggester_id",json.get("user_id").getAsLong());
             insertToDB.addProperty("state", MatchConstants.MATCH_VOTING);
             insertToDB.addProperty("create_time",System.currentTimeMillis());
             insertToDB.add("team_player",json.get("team_player").getAsJsonArray());
@@ -306,7 +306,7 @@ public class MatchService implements IMatchService{
             if (!BaseResponse.isSuccessFullMessage(matchSuggest)){
                 return BaseResponse.createFullMessageResponse(10,"not_found");
             }
-            long userId = matchSuggest.get("suggest_id").getAsLong();
+            long userId = matchSuggest.get("suggester_id").getAsLong();
             long star = data.get("star_donate").getAsLong();
             JsonObject user = AoeServices.starService.getStarWalletByUserId(userId);
             if (user.get("balance").getAsLong() < star){
@@ -366,9 +366,12 @@ public class MatchService implements IMatchService{
     }
 
     @Override
-    public JsonObject updateStarCurrentMatch(long matchId, long amount) {
+    public JsonObject addStarCurrentMatch(long matchId, long amount) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            if(!checkStateMatch(matchId,MatchConstants.MATCH_VOTING)){
+                return BaseResponse.createFullMessageResponse(10, "Donations_for_match_has_ended");
+            }
             String query = "UPDATE aoe_match SET star_current = star_current + ? WHERE id = ?";
             bridge.update(query,amount,matchId);
             return BaseResponse.createFullMessageResponse(0, "success");
@@ -376,6 +379,40 @@ public class MatchService implements IMatchService{
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject confirmMatch(JsonObject data) {
+        try {
+            long matchSuggestId = data.get("id").getAsInt();
+            JsonObject match = getMatchSuggest(matchSuggestId);
+            match.addProperty("time_expired",data.get("time_expired").getAsLong());
+            match.addProperty("star_default",data.get("star_default").getAsLong());
+            JsonObject check =  CreateMatch(match);
+            if (!BaseResponse.isSuccessFullMessage(check)){
+                return check;
+            }
+            return BaseResponse.createFullMessageResponse(0, "success");
+
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    private boolean checkStateMatch( long matchId, int state){
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT state FROM aoe_match WHERE id =?";
+            int stateMatch = bridge.queryInteger(query,matchId);
+            return stateMatch == state;
+
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return false;
         }
     }
 

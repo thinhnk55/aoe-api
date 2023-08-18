@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public interface IMatchService {
-    JsonObject adminCreateMatch(JsonObject data, long adminId);
+    JsonObject CreateMatch(JsonObject data);
     JsonObject updateMatch(JsonObject data);
     JsonObject getListMatch(int state , long page, long recordPerPage);
     JsonObject getById(long match_id);
@@ -19,7 +19,10 @@ public interface IMatchService {
     JsonObject createMatchSuggest(JsonObject data ,long userId);
     JsonObject updateMatchSuggest( long matchSuggestId,JsonObject data);
     JsonObject getListMatchSuggested(long userId,long page, long recordPerPage);
-    JsonObject updateStarCurrentMatch(long matchId, long amount);
+    JsonObject addStarCurrentMatch(long matchId, long amount);
+    JsonObject confirmMatch(JsonObject data);
+
+
 
 
 }
