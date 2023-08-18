@@ -1,6 +1,7 @@
 package vn.vietdefi.api.services.auth;
 
 import com.google.gson.JsonObject;
+import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
@@ -29,6 +30,10 @@ public class AuthService implements IAuthService {
             data.addProperty("create_time", createTime);
             data.addProperty("token", token);
             data.addProperty("token_expired", tokenExpired);
+            JsonObject response = AoeServices.userService.getUserProfile(userId);
+            data.add("aoe_profile", response.getAsJsonObject("data"));
+            response = AoeServices.starService.getStarWalletByUserId(userId);
+            data.add("aoe_star", response.getAsJsonObject("data"));
             return BaseResponse.createFullMessageResponse(0, "success", data);
         }catch (Exception e){
             e.printStackTrace();
@@ -94,6 +99,11 @@ public class AuthService implements IAuthService {
                 data.addProperty("token_expired", tokenExpired);
             }
             data.remove("password");
+            long userId = data.get("id").getAsLong();
+            JsonObject response = AoeServices.userService.getUserProfile(userId);
+            data.add("aoe_profile", response.getAsJsonObject("data"));
+            response = AoeServices.starService.getStarWalletByUserId(userId);
+            data.add("aoe_star", response.getAsJsonObject("data"));
             return BaseResponse.createFullMessageResponse(0, "success", data);
         }catch (Exception e){
             e.printStackTrace();

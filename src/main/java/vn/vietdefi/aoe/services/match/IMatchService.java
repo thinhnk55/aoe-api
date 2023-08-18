@@ -16,7 +16,4 @@ public interface IMatchService {
     JsonObject startMatch(long matchId,JsonObject json);
     JsonObject endMatch(long matchId,JsonObject json);
     JsonObject cancelMatch(long match);
-
-
-
 }

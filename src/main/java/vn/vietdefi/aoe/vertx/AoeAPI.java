@@ -19,12 +19,12 @@ public class AoeAPI {
     private static void authApi(Router router) {
         router.post(ApiConfig
                         .instance()
-                        .getPath("/register"))
+                        .getPath("/aoefan/register"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::register);
         router.post(ApiConfig
                         .instance()
-                        .getPath("/login"))
+                        .getPath("/aoefan/login"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::login);
     }

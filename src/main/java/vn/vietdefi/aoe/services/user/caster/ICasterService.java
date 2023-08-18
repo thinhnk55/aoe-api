@@ -8,6 +8,5 @@ public interface ICasterService {
     JsonObject createCaster(JsonObject json);
     JsonObject updateCaster(long casterId,JsonObject json);
     JsonObject deleteCaster(long casterId);
-
     JsonObject getInfoCaster(long casterId);
 }
