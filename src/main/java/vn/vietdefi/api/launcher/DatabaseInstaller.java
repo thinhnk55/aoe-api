@@ -24,12 +24,8 @@ public class DatabaseInstaller {
     private static void databaseInstall() throws Exception {
         ScriptRunner scriptRunner = new ScriptRunner(
                 HikariClients.instance().defaultHikariClient().getConnection());
-        File file = new File("sql/auth.sql");
+        File file = new File("sql/aoe_donate.sql");
         Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
-        scriptRunner.runScript(reader);
-
-        file = new File("sql/aoe.sql");
-        reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
         scriptRunner.runScript(reader);
     }
 }

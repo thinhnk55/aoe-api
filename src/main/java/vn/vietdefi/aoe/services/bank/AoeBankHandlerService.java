@@ -61,7 +61,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
             return BaseResponse.createFullMessageResponse(12, "service_not_found");
         }catch (Exception e){
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
-            return BaseResponse.createFullMessageResponse(12, "system_error");
+            return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
@@ -74,7 +74,8 @@ public class AoeBankHandlerService implements IBankHandlerService {
         //Lay profile message.sender
         long userId = response.getAsJsonObject("data").get("user_id").getAsLong();
         long star = transaction.amount / StarConstant.STAR_PRICE_RATE;
-        return AoeServices.donateService.donateMatch(userId, star, message.receiverId);
+        return AoeServices.donateService.donate(userId, star,
+                StarConstant.SERVICE_DONATE_MATCH, message.receiverId, "");
     }
 
     private JsonObject donateCaster(BankTransaction transaction, AoeBankAction message) {
@@ -86,7 +87,8 @@ public class AoeBankHandlerService implements IBankHandlerService {
         //Lay profile message.sender
         long userId = response.getAsJsonObject("data").get("user_id").getAsLong();
         long star = transaction.amount / StarConstant.STAR_PRICE_RATE;
-        return AoeServices.donateService.donateCaster(userId, star, message.receiverId);
+        return AoeServices.donateService.donate(userId, star,
+                StarConstant.SERVICE_DONATE_CASTER, message.receiverId, "");
     }
 
     private JsonObject donateGamer(BankTransaction transaction, AoeBankAction message) {
@@ -98,7 +100,8 @@ public class AoeBankHandlerService implements IBankHandlerService {
         //Lay profile message.sender
         long userId = response.getAsJsonObject("data").get("user_id").getAsLong();
         long star = transaction.amount / StarConstant.STAR_PRICE_RATE;
-        return AoeServices.donateService.donateGamer(userId, star, message.receiverId);
+        return AoeServices.donateService.donate(userId, star,
+                StarConstant.SERVICE_DONATE_GAMER, message.receiverId, "");
     }
 
     private JsonObject starRecharge(BankTransaction transaction, AoeBankAction message) {

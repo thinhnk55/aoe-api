@@ -3,18 +3,7 @@ package vn.vietdefi.aoe.services.donate;
 import com.google.gson.JsonObject;
 
 public interface IDonateService {
-    JsonObject donateMatch(long sender, long star, long match_id);
-    JsonObject createDonateMatch(JsonObject data);
-    JsonObject getDonateMatchById(long id);
-
-    JsonObject donateGamer(long sender, long star, long gamer_id);
-    JsonObject createDonateGamer(JsonObject data);
-    JsonObject updateDonateGamer(JsonObject data);
-    JsonObject getDonateGamerById(long id);
-
-    JsonObject donateCaster(long sender, long star, long caster_id);
-    JsonObject createDonateCaster(JsonObject data);
-    JsonObject updateDonateCaster(JsonObject data);
-    JsonObject getDonateCasterById(long id);
-
+    JsonObject donate(long sender, long star, int service, long target_id, String message);
+    void updateDonateUsed(long id, long add_star_transaction_id);
+    public JsonObject createDonate(JsonObject data);
 }

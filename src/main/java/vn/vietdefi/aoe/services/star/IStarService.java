@@ -9,6 +9,7 @@ public interface IStarService {
     JsonObject listStarTransactionOfUserByTime(long time, long userId, long page, long recordPerPage);
     JsonObject getStarTransactionById(long id);
     JsonObject exchangeStar(long amount, int service, String username, long referId);
+    JsonObject exchangeStar(long amount, int service, long userId, long referId);
 
     void updateReferId(long id, long referId);
     boolean checkStar(long amount, long userid);
