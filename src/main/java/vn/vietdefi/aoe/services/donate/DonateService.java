@@ -12,4 +12,9 @@ public class DonateService implements IDonateService{
     public JsonObject getDonateMatchById(long id) {
         return null;
     }
+
+    @Override
+    public JsonObject createDonateGamer(JsonObject data) {
+        return null;
+    }
 }

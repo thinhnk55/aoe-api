@@ -177,4 +177,14 @@ public class StarService implements IStarService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+    @Override
+    public void updateReferId(long id, long referId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE aoe_star_transaction SET refer_id = ? WHERE id = ?";
+            bridge.update(query, referId, id);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+        }
+    }
 }
