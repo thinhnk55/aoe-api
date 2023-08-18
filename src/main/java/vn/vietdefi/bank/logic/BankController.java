@@ -4,8 +4,10 @@ package vn.vietdefi.bank.logic;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import vn.vietdefi.aoe.services.bank.AoeBankHandlerService;
 import vn.vietdefi.aoe.services.bank.AoeBankMessage;
 import vn.vietdefi.bank.BankServices;
+import vn.vietdefi.bank.services.IBankHandlerService;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.thread.ThreadPoolWorker;
@@ -45,6 +47,7 @@ public class BankController {
         }
     }
     Map<Long, BankWorker> bankWorkers;
+    IBankHandlerService handler = new AoeBankHandlerService();
     private void loop() {
         try {
             DebugLogger.info("BankController loop {} ", bankWorkers.size());
@@ -53,33 +56,11 @@ public class BankController {
                 BankWorker worker = entry.getValue();
                 worker.loop();
             }
-            completeBalanceTransaction();
+            handler.completeBalanceTransaction();
         }catch (Exception e){
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
         }
     }
-
-    private void completeBalanceTransaction() {
-        JsonObject response = BankServices.bankService.listWaitingTransaction();
-        if(BaseResponse.isSuccessFullMessage(response)){
-            JsonArray data = response.getAsJsonArray("data");
-            for(int i = 0; i < data.size(); i++){
-                JsonObject json = data.get(i).getAsJsonObject();
-                BankTransaction transaction = new BankTransaction(json);
-                completeBalanceTransaction(transaction);
-            }
-        }
-    }
-
-    private void completeBalanceTransaction(BankTransaction transaction) {
-        AoeBankMessage message = AoeBankMessage.createFromBalanceTransaction(transaction);
-        if(message == null){
-            BankServices.bankService.updateBankState(transaction.id, BankTransactionState.ERROR);
-            return;
-        }
-        Aoe
-    }
-
     public ScheduledFuture<?> loopTask;
     public void startLoop() {
         DebugLogger.info("BankController startLoop");

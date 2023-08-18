@@ -9,15 +9,13 @@ import java.util.regex.Pattern;
 
 public class AoeBankMessage {
     String sender;
-    String action;
-    int targetType;
-    String targetId;
+    int service;
+    long receiverId;
 
-    public AoeBankMessage(String sender, String action, int targetType, String targetId) {
+    public AoeBankMessage(String sender, int service, long receiverId) {
         this.sender = sender;
-        this.action = action;
-        this.targetType = targetType;
-        this.targetId = targetId;
+        this.service = service;
+        this.receiverId = receiverId;
     }
 
     public static AoeBankMessage createFromBalanceTransaction(BankTransaction transaction) {
@@ -59,13 +57,13 @@ public class AoeBankMessage {
                     targetId = 4;
                 }
                 targetReceiver = target.get("id").getAsString();
-                return new AoeBankMessage(phoneNumber, role, targetId, targetReceiver);
+                return new AoeBankMessage(phoneNumber,0, 0);
             }
             else return null;
         } else if (matcher2.find()) {
             phoneNumber = matcher2.group(1);
             role = matcher2.group(2);
-            return new AoeBankMessage(phoneNumber, role, 1,phoneNumber );
+            return new AoeBankMessage(phoneNumber, 0, 0 );
         }
         return null;
     }
