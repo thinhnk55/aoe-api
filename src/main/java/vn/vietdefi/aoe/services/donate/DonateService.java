@@ -37,7 +37,32 @@ public class DonateService implements IDonateService{
     public JsonObject createDonateGamer(JsonObject data) {
         try{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM aoe_match_donate WHERE id = ?";
+            bridge.insertObjectToDB("aoe_donate_gamer", data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        }catch (Exception e){
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject updateDonateGamer(JsonObject data) {
+        try{
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            bridge.updateObjectToDb("aoe_donate_gamer", data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        }catch (Exception e){
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject getDonateGamerById(long id) {
+        try{
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM aoe_donate_gamer WHERE id = ?";
+            JsonObject data = bridge.queryOne(query, id);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         }catch (Exception e){
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
