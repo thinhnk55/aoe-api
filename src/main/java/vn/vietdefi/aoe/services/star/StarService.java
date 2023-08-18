@@ -279,7 +279,7 @@ public class StarService implements IStarService {
     public boolean checkStar(long amount, long userid) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT balance FROM aoe_star WHERE userid = ?";
+            String query = "SELECT balance FROM aoe_star WHERE user_id = ?";
             long data = bridge.queryInteger(query, userid);
             return data >= amount;
         } catch (Exception e) {

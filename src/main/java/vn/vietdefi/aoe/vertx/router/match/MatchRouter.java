@@ -1,6 +1,5 @@
 package vn.vietdefi.aoe.vertx.router.match;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -14,8 +13,10 @@ public class MatchRouter {
 
     public static void create(RoutingContext rc){
         try {
+            long adminId = Long.parseLong(rc.request().getHeader("userid"));
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
+            json.addProperty("userid",adminId);
             JsonObject response = AoeServices.matchService.CreateMatch(json);
             rc.response().end(response.toString());
         } catch (Exception e) {
@@ -44,7 +45,7 @@ public class MatchRouter {
 
     public static void getById(RoutingContext rc){
         try {
-            long id =  Long.parseLong(rc.request().getParam("id"));
+            long id =  Long.parseLong(rc.request().getParam("matchId"));
             JsonObject response = AoeServices.matchService.getById(id);
             rc.response().end(response.toString());
         } catch (Exception e) {
@@ -131,9 +132,9 @@ public class MatchRouter {
     public static void updateResult(RoutingContext rc){
         try {
             String data = rc.body().asString();
-            JsonArray json = GsonUtil.toJsonArray(data);
-            long matchId = Long.parseLong(rc.request().getParam("match_id"));
-            JsonObject response = AoeServices.matchService.updateResult(matchId,json);
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long matchId = json.get("match_id").getAsLong();
+            JsonObject response = AoeServices.matchService.updateResult(json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -173,6 +174,23 @@ public class MatchRouter {
             rc.response().end(response.toString());
         }
     }
+    public static void cancelMatchSuggest(RoutingContext rc){
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            JsonObject response = AoeServices.matchService.cancelMatchSuggest(json);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+
+
 
     public static void createMatchSuggest(RoutingContext rc){
         try {
@@ -209,7 +227,7 @@ public class MatchRouter {
     public static void getListMatchSuggested(RoutingContext rc){
         try {
             long userid = Long.parseLong(rc.request().getHeader("userid"));
-            long page = Long.parseLong(rc.request().getParam("page"));
+            long page = Long.parseLong(rc.request().getParam("page","1"));
             JsonObject response = AoeServices.matchService.getListMatchSuggested(userid,page,MatchConstants.ITEMS_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {

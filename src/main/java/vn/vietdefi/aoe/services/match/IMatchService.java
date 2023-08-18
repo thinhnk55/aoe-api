@@ -1,6 +1,5 @@
 package vn.vietdefi.aoe.services.match;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public interface IMatchService {
@@ -8,7 +7,7 @@ public interface IMatchService {
     JsonObject updateMatch(JsonObject data);
     JsonObject getListMatch(int state , long page, long recordPerPage);
     JsonObject getById(long match_id);
-    JsonObject updateResult(long matchId, JsonArray json);
+    JsonObject updateResult(JsonObject json);
     boolean checkMatchExists(long matchId);
     JsonObject getOutstandingMatch();
     JsonObject updateState(long matchId,int state);
@@ -23,6 +22,5 @@ public interface IMatchService {
     JsonObject confirmMatch(JsonObject data);
 
 
-
-
+    JsonObject cancelMatchSuggest(JsonObject date);
 }

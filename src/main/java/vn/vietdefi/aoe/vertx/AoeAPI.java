@@ -95,7 +95,7 @@ public class AoeAPI {
     private static void matchApi(Router router) {
         router.post(ApiConfig
                         .instance()
-                        .getPath("/match/create"))
+                        .getPath("/admin/match/create"))
                 .handler(BodyHandler.create(false))
                 .handler(MatchRouter::create);
         router.post(ApiConfig
@@ -145,6 +145,11 @@ public class AoeAPI {
                         .getPath("/match/confirm"))
                 .handler(BodyHandler.create(false))
                 .handler(MatchRouter::confirmMatch);
+        router.post(ApiConfig
+                        .instance()
+                        .getPath("/match/suggest/cancel"))
+                .handler(BodyHandler.create(false))
+                .handler(MatchRouter::cancelMatchSuggest);
         router.post(ApiConfig
                         .instance()
                         .getPath("/match/user/suggest"))
