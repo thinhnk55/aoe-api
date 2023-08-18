@@ -53,13 +53,16 @@ public class AoeBankAction {
             JsonObject target = convertTarget(targetReceiver);
             if(target != null) {
                 String targetCode = target.get("code").getAsString();
-                if(targetCode.equals("kd")) {
-                    service = StarConstant.SERVICE_DONATE_MATCH;
-                } else if (targetCode.equals("gt")) {
-                    service = StarConstant.SERVICE_DONATE_GAMER;
-                }else if (targetCode.equals("bl"))
-                {
-                    service = StarConstant.SERVICE_DONATE_CASTER;
+                switch (targetCode) {
+                    case "kd":
+                        service = StarConstant.SERVICE_DONATE_MATCH;
+                        break;
+                    case "gt":
+                        service = StarConstant.SERVICE_DONATE_GAMER;
+                        break;
+                    case "bl":
+                        service = StarConstant.SERVICE_DONATE_CASTER;
+                        break;
                 }
                 long receiverId = target.get("id").getAsLong();
                 return new AoeBankAction(phoneNumber,service, receiverId);
