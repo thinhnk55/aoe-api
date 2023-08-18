@@ -338,7 +338,7 @@ public class MatchService implements IMatchService {
             long star = data.get("amount").getAsLong();
             JsonObject user = AoeServices.starService.getStarWalletByUserId(userId);
             if (user.get("data").getAsJsonObject().get("balance").getAsLong() < star) {
-                return BaseResponse.createFullMessageResponse(10, "balance_not_enough");
+                return BaseResponse.createFullMessageResponse(12, "balance_not_enough");
             }
             JsonObject updateToDB = new JsonObject();
             updateToDB.addProperty("id", matchSuggestId);
@@ -443,7 +443,7 @@ public class MatchService implements IMatchService {
             if (!BaseResponse.isSuccessFullMessage(transaction)) {
                 return transaction;
             }
-            addStarCurrentMatch(match_id,amount);
+            addStarCurrentMatch(match_id, amount);
             updateStateMatchSuggest(matchSuggestId, MatchConstants.MATCH_SUGGEST_CONFIRM);
             return BaseResponse.createFullMessageResponse(0, "success");
 
@@ -463,11 +463,11 @@ public class MatchService implements IMatchService {
                 return matchSg;
             }
             if (matchSg.get("data").getAsJsonObject().get("state").getAsInt() == MatchConstants.MATCH_SUGGEST_CONFIRM) {
-                return BaseResponse.createFullMessageResponse(10, "match_confirmed");
+                return BaseResponse.createFullMessageResponse(11, "match_confirmed");
             }
 
             if (matchSg.get("data").getAsJsonObject().get("state").getAsInt() == MatchConstants.MATCH_SUGGEST_CANCELLED) {
-                return BaseResponse.createFullMessageResponse(11, "match_cancelled");
+                return BaseResponse.createFullMessageResponse(12, "match_cancelled");
             }
             String query = "UPDATE aoe_match_suggest SET state = ? WHERE id = ?";
             bridge.update(query, MatchConstants.MATCH_SUGGEST_CANCELLED, matchSuggestId);

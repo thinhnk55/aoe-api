@@ -207,7 +207,7 @@ public class AoeAPI {
                 .handler(ClanRouter::getInfoClan);
         router.post(ApiConfig.instance().getPath("/clan/create"))
                 .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
+//                .handler(AuthRouter::authorizeAdmin)
                 .handler(ClanRouter::createClan);
         router.post(ApiConfig.instance().getPath("/clan/update"))
                 .handler(BodyHandler.create(false))
