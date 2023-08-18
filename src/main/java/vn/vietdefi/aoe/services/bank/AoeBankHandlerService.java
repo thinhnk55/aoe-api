@@ -8,6 +8,7 @@ import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.api.services.ApiServices;
 import vn.vietdefi.api.services.auth.UserConstant;
 import vn.vietdefi.bank.BankServices;
+import vn.vietdefi.bank.logic.BankAccount;
 import vn.vietdefi.bank.logic.BankTransaction;
 import vn.vietdefi.bank.logic.BankTransactionState;
 import vn.vietdefi.bank.services.IBankHandlerService;
@@ -24,25 +25,29 @@ public class AoeBankHandlerService implements IBankHandlerService {
             for(int i = 0; i < data.size(); i++){
                 JsonObject json = data.get(i).getAsJsonObject();
                 BankTransaction transaction = new BankTransaction(json);
-                response = completeBalanceTransaction(transaction);
-                if(!BaseResponse.isSuccessFullMessage(response)){
-                    DebugLogger.error("completeBalanceTransaction {} {}", transaction.id, response);
+                AoeBankAction message = AoeBankAction.createFromBalanceTransaction(transaction);
+                if (message == null) {
+                    DebugLogger.error("extract error id {} note {}", transaction.id, transaction.note);
                     BankServices.bankService.updateBankTransactionState(transaction.id, BankTransactionState.ERROR);
-                }else{
-                    BankServices.bankService.updateBankTransactionState(transaction.id, BankTransactionState.DONE);
+                }else {
+                    response = completeBalanceTransaction(transaction, message);
+                    if (!BaseResponse.isSuccessFullMessage(response)) {
+                        DebugLogger.error("completeBalanceTransaction {} {}", transaction.id, response);
+                        BankServices.bankService.updateBankTransactionState(transaction.id, BankTransactionState.ERROR);
+                    } else {
+                        long targetId = response.getAsJsonObject("data").get("id").getAsLong();
+                        BankServices.bankService.doneBankTransactionState(transaction.id, message.service
+                                ,targetId);
+                    }
                 }
             }
         }
     }
 
-    public JsonObject completeBalanceTransaction(BankTransaction transaction) {
+    public JsonObject completeBalanceTransaction(BankTransaction transaction, AoeBankAction message) {
         try {
             if (transaction.amount < StarConstant.STAR_PRICE_RATE) {
                 return BaseResponse.createFullMessageResponse(10, "invalid_star_amount");
-            }
-            AoeBankAction message = AoeBankAction.createFromBalanceTransaction(transaction);
-            if (message == null) {
-                return BaseResponse.createFullMessageResponse(11, "extract_message_error");
             }
             switch (message.service) {
                 case StarConstant.SERVICE_STAR_RECHARGE:
@@ -233,8 +238,8 @@ public class AoeBankHandlerService implements IBankHandlerService {
                     BaseResponse.createFullMessageResponse(22, "create_profile_failed");
                 }
             }
-            long starTransactionId = transaction.star_transaction_id;
-            if(starTransactionId == 0){
+            long star_transaction_id = transaction.star_transaction_id;
+            if(star_transaction_id == 0){
                 long star = transaction.amount / StarConstant.STAR_PRICE_RATE;
                 response = AoeServices.starService.exchangeStar(star,
                         StarConstant.SERVICE_STAR_RECHARGE,
@@ -243,12 +248,12 @@ public class AoeBankHandlerService implements IBankHandlerService {
                     BaseResponse.createFullMessageResponse(23, "exchange_star_failed");
                 }
                 JsonObject data = response.getAsJsonObject("data");
-                starTransactionId = data.get("id").getAsLong();
+                star_transaction_id = data.get("id").getAsLong();
                 //Cap nhat lai star_transaction_id trong bank_transaction
-                BankServices.bankService.updateStarTransactionId(transaction, starTransactionId);
+                BankServices.bankService.updateStarTransactionId(transaction.id, star_transaction_id);
                 return BaseResponse.createFullMessageResponse(0,"success", data);
             }else {
-                response = AoeServices.starService.getStarTransactionById(starTransactionId);
+                response = AoeServices.starService.getStarTransactionById(star_transaction_id);
                 if (!BaseResponse.isSuccessFullMessage(response)) {
                     BaseResponse.createFullMessageResponse(24, "exchange_star_not_found");
                 }
