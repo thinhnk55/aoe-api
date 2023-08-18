@@ -112,8 +112,16 @@ public class CasterService implements ICasterService {
     }
 
     @Override
-    public JsonObject getInfoCaster(long casterId) {
-        return null;
+    public JsonObject getCasterByUserId(long user_id) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM caster WHERE user_id = ?";
+            JsonObject data = bridge.queryOne(query, user_id);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
     }
-
 }

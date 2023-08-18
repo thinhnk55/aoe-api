@@ -35,7 +35,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
         }
     }
 
-    private JsonObject completeBalanceTransaction(BankTransaction transaction) {
+    public JsonObject completeBalanceTransaction(BankTransaction transaction) {
         try {
             if (transaction.amount < StarConstant.STAR_PRICE_RATE) {
                 return BaseResponse.createFullMessageResponse(10, "invalid_star_amount");
@@ -47,10 +47,12 @@ public class AoeBankHandlerService implements IBankHandlerService {
             switch (message.service) {
                 case StarConstant.SERVICE_STAR_RECHARGE:
                     return starRecharge(transaction, message);
-                case StarConstant.SERVICE_DONATE_GAMER:
-                    return donateGamer(transaction, message);
                 case StarConstant.SERVICE_DONATE_MATCH:
                     return donateMatch(transaction, message);
+                case StarConstant.SERVICE_DONATE_GAMER:
+                    return donateGamer(transaction, message);
+                case StarConstant.SERVICE_DONATE_CASTER:
+                    return donateCaster(transaction, message);
             }
             return BaseResponse.createFullMessageResponse(12, "service_not_found");
         }catch (Exception e){
@@ -69,13 +71,13 @@ public class AoeBankHandlerService implements IBankHandlerService {
         long userId = response.getAsJsonObject("data").get("user_id").getAsLong();
         response =  AoeServices.profileService.getUserProfileByUserId(userId);
         if(!BaseResponse.isSuccessFullMessage(response)){
-            BaseResponse.createFullMessageResponse(40, "profile_not_found");
+            BaseResponse.createFullMessageResponse(30, "profile_not_found");
         }
         JsonObject profile = response.getAsJsonObject("data");
         //Lay thong tin tran dau
         response = AoeServices.matchService.getById(message.receiverId);
         if(!BaseResponse.isSuccessFullMessage(response)){
-            BaseResponse.createFullMessageResponse(30, "match_not_found");
+            BaseResponse.createFullMessageResponse(31, "match_not_found");
         }
         JsonObject match = response.getAsJsonObject("data");
         //Tru sao trong tai khoan message.sender
@@ -84,7 +86,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
                 StarConstant.SERVICE_DONATE_MATCH,
                 message.sender, 0);
         if (!BaseResponse.isSuccessFullMessage(response)) {
-            BaseResponse.createFullMessageResponse(31, "exchange_star_failed");
+            BaseResponse.createFullMessageResponse(32, "exchange_star_failed");
         }
         //Tao giao dich donate
         JsonObject starTransaction = response.getAsJsonObject("data");
@@ -99,13 +101,62 @@ public class AoeBankHandlerService implements IBankHandlerService {
         data.addProperty("star_transaction_id", starTransaction.get("id").getAsLong());
         response = AoeServices.donateService.createDonateMatch(data);
         if(!BaseResponse.isSuccessFullMessage(response)){
-            BaseResponse.createFullMessageResponse(32, "create_donate_failed");
+            BaseResponse.createFullMessageResponse(33, "create_donate_failed");
         }
         JsonObject donate = response.getAsJsonObject("data");
         //Cap nhat lai refer_id cho giao dich tru sao
         AoeServices.starService.updateReferId(starTransaction.get("id").getAsLong(),
                 donate.get("id").getAsLong());
 
+        return BaseResponse.createFullMessageResponse(0, "success", donate);
+    }
+
+    private JsonObject donateCaster(BankTransaction transaction, AoeBankAction message) {
+        //Chuyen sao vao tai khoan message.sender
+        JsonObject response = starRecharge(transaction, message);
+        if(!BaseResponse.isSuccessFullMessage(response)){
+            return response;
+        }
+        //Lay profile message.sender
+        long userId = response.getAsJsonObject("data").get("user_id").getAsLong();
+        response =  AoeServices.profileService.getUserProfileByUserId(userId);
+        if(!BaseResponse.isSuccessFullMessage(response)){
+            BaseResponse.createFullMessageResponse(50, "profile_not_found");
+        }
+        JsonObject profile = response.getAsJsonObject("data");
+        //Lay thong tin gamer
+        response = AoeServices.casterService.getCasterByUserId(message.receiverId);
+        if(!BaseResponse.isSuccessFullMessage(response)){
+            BaseResponse.createFullMessageResponse(41, "caster_not_found");
+        }
+        JsonObject caster = response.getAsJsonObject("data");
+        //Tru sao trong tai khoan message.sender
+        long star = transaction.amount / StarConstant.STAR_PRICE_RATE;
+        response = AoeServices.starService.exchangeStar(-star,
+                StarConstant.SERVICE_DONATE_GAMER,
+                message.sender, 0);
+        if (!BaseResponse.isSuccessFullMessage(response)) {
+            return BaseResponse.createFullMessageResponse(31, "exchange_star_failed");
+        }
+        //Tao giao dich donate
+        JsonObject starTransaction = response.getAsJsonObject("data");
+        JsonObject data = new JsonObject();
+        data.addProperty("user_id", starTransaction.get("user_id").getAsString());
+        data.addProperty("username", starTransaction.get("username").getAsString());
+        data.addProperty("nick_name", profile.get("nick_name").getAsString());
+        data.addProperty("phone", starTransaction.get("username").getAsString());
+        data.addProperty("amount", star);
+        data.addProperty("caster_id", caster.get("user_id").getAsLong());
+        data.addProperty("create_time", starTransaction.get("create_time").getAsLong());
+        data.addProperty("star_transaction_id", starTransaction.get("id").getAsLong());
+        response = AoeServices.donateService.createDonateGamer(data);
+        if(!BaseResponse.isSuccessFullMessage(response)){
+            BaseResponse.createFullMessageResponse(32, "create_donate_failed");
+        }
+        JsonObject donate = response.getAsJsonObject("data");
+        //Cap nhat lai refer_id cho giao dich tru sao
+        AoeServices.starService.updateReferId(starTransaction.get("id").getAsLong(),
+                donate.get("id").getAsLong());
         return BaseResponse.createFullMessageResponse(0, "success", donate);
     }
 
@@ -134,22 +185,22 @@ public class AoeBankHandlerService implements IBankHandlerService {
                 StarConstant.SERVICE_DONATE_GAMER,
                 message.sender, 0);
         if (!BaseResponse.isSuccessFullMessage(response)) {
-            BaseResponse.createFullMessageResponse(31, "exchange_star_failed");
+            return BaseResponse.createFullMessageResponse(42, "exchange_star_failed");
         }
         //Tao giao dich donate
         JsonObject starTransaction = response.getAsJsonObject("data");
         JsonObject data = new JsonObject();
-        data.addProperty("user_id", userId);
-        data.addProperty("username", message.sender);
+        data.addProperty("user_id", starTransaction.get("user_id").getAsString());
+        data.addProperty("username", starTransaction.get("username").getAsString());
         data.addProperty("nick_name", profile.get("nick_name").getAsString());
-        data.addProperty("phone", message.sender);
+        data.addProperty("phone", starTransaction.get("username").getAsString());
         data.addProperty("amount", star);
-        data.addProperty("gamer_id", gamer.get("id").getAsLong());
+        data.addProperty("gamer_id", gamer.get("user_id").getAsLong());
         data.addProperty("create_time", starTransaction.get("create_time").getAsLong());
         data.addProperty("star_transaction_id", starTransaction.get("id").getAsLong());
         response = AoeServices.donateService.createDonateGamer(data);
         if(!BaseResponse.isSuccessFullMessage(response)){
-            BaseResponse.createFullMessageResponse(32, "create_donate_failed");
+            BaseResponse.createFullMessageResponse(43, "create_donate_failed");
         }
         JsonObject donate = response.getAsJsonObject("data");
         //Cap nhat lai refer_id cho giao dich tru sao

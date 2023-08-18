@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS aoe_match_donate (
+CREATE TABLE IF NOT EXISTS aoe_donate_match (
     id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     user_id BIGINT  NOT NULL,
     username VARCHAR(256) NOT NULL,
