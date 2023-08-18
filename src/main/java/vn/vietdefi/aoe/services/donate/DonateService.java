@@ -35,6 +35,13 @@ public class DonateService implements IDonateService{
 
     @Override
     public JsonObject createDonateGamer(JsonObject data) {
-        return null;
+        try{
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM aoe_match_donate WHERE id = ?";
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        }catch (Exception e){
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
     }
 }
