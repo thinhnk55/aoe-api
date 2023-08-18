@@ -17,14 +17,14 @@ public class CasterService implements ICasterService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String fullname = json.get("fullname").getAsString();
-            String nickname = json.get("nickname").getAsString();
-            String query = "SELECT id FROM caster WHERE nick_name = ?";
+            String nickname = json.get("nick_name").getAsString();
+            String query = "SELECT user_id FROM caster WHERE nick_name = ?";
             JsonObject caster = bridge.queryOne(query, nickname);
             if (caster != null) return BaseResponse.createFullMessageResponse(11, "nickname_used");
             String avatar = json.get("avatar").getAsString();
             String phone_number = json.get("phone_number").getAsString();
             long clanId = json.get("clan_id").getAsLong();
-            query = "SELECT id FROM caster WHERE phone_number = ?";
+            query = "SELECT user_id FROM caster WHERE phone_number = ?";
             caster = bridge.queryOne(query, phone_number);
             if (caster != null) return BaseResponse.createFullMessageResponse(10, "phone_number_used");
             JsonObject detail = new JsonObject();
@@ -47,7 +47,7 @@ public class CasterService implements ICasterService {
             String password = StringUtil.generateRandomStringNumberCharacter(12);
 
             long userid = ApiServices.authService.register(phone_number, password, UserConstant.ROLE_USER,UserConstant.STATUS_NORMAL).get("data").getAsJsonObject().get("id").getAsLong();
-            query = "INSERT INTO `caster`(id,fullname,nick_name,avatar,detail,phone_number,image,clan_id)VALUES(?,?,?,?,?,?,?,?)";
+            query = "INSERT INTO `caster`(user_id,fullname,nick_name,avatar,detail,phone_number,image,clan_id)VALUES(?,?,?,?,?,?,?,?)";
             bridge.update(query, userid, fullname, nickname, avatar, detail, phone_number, image, clanId);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
@@ -62,16 +62,16 @@ public class CasterService implements ICasterService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String fullname = json.get("fullname").getAsString();
             String nickname = json.get("nickname").getAsString();
-            String query = "SELECT id FROM caster WHERE nick_name = ?";
+            String query = "SELECT user_id FROM caster WHERE nick_name = ?";
             JsonObject caster = bridge.queryOne(query, nickname);
-            if (caster != null && caster.get("id").getAsInt() != casterId)
+            if (caster != null && caster.get("user_id").getAsInt() != casterId)
                 return BaseResponse.createFullMessageResponse(11, "nickname_used");
             String avatar = json.get("avatar").getAsString();
             String phone_number = json.get("phone_number").getAsString();
             long clanId = json.get("clan_id").getAsLong();
-            query = "SELECT id FROM caster WHERE phone_number = ?";
+            query = "SELECT user_id FROM caster WHERE phone_number = ?";
             caster = bridge.queryOne(query, phone_number);
-            if (caster != null && caster.get("id").getAsInt() != casterId)
+            if (caster != null && caster.get("user_id").getAsInt() != casterId)
                 return BaseResponse.createFullMessageResponse(10, "phone_number_used");
             JsonObject detail = new JsonObject();
             detail.add("address", json.get("address"));
@@ -83,7 +83,7 @@ public class CasterService implements ICasterService {
             detail.add("sport", json.get("sport"));
             JsonArray image = json.get("image").getAsJsonArray();
 
-            query = "UPDATE caster SET fullname = ?,nick_name = ?,avatar = ?, phone_number = ? ,detail = ?,image = ?,clan_id =? WHERE id =? ";
+            query = "UPDATE caster SET fullname = ?,nick_name = ?,avatar = ?, phone_number = ? ,detail = ?,image = ?,clan_id =? WHERE user_id =? ";
             if (bridge.update(query, fullname, nickname, avatar, phone_number, detail, image,clanId, casterId) == 0) {
                 return BaseResponse.createFullMessageResponse(10, "nothing_to_update");
             }
@@ -98,7 +98,7 @@ public class CasterService implements ICasterService {
     public JsonObject deleteCaster(long casterId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE caster SET is_deleted = 1 WHERE id = ? AND is_deleted = 0 ";
+            String query = "UPDATE caster SET is_deleted = 1 WHERE user_id = ? AND is_deleted = 0 ";
             int row = bridge.update(query, casterId);
             if (row == 0) {
                 return BaseResponse.createFullMessageResponse(10, "caster_not_found");

@@ -1,4 +1,4 @@
-package vn.vietdefi.aoe.vertx.router.gamer;
+package vn.vietdefi.aoe.vertx.router.clan;
 
 import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
@@ -8,48 +8,46 @@ import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 
-public class GamerRouter {
-    public static void create(RoutingContext rc){
-        try {
-            String data = rc.body().asString();
-            JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.gamerService.create(json);
-            rc.response().end(response.toString());
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(
-                    1, "system_error");
-            rc.response().end(response.toString());
-        }
-    }
-    public static void updateInfo(RoutingContext rc){
+public class ClanRouter {
+    public static void createClan(RoutingContext rc){
         try{
-            long userid = Long.parseLong(rc.request().getParam("gamerId"));
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            json.addProperty("userid",userid);
-            JsonObject response = AoeServices.gamerService.updateInfo(json);
+            JsonObject response = AoeServices.clanService.createClan(json);
             rc.response().end(response.toString());
-        }
-        catch (Exception e){
+        }catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
             rc.response().end(response.toString());
         }
     }
-    public static void getGamerByUserId(RoutingContext rc){
+    public static void getInfoClan(RoutingContext rc){
         try{
-            long id = Long.parseLong(rc.request().getParam("userId"));
-            JsonObject response = AoeServices.gamerService.getGamerByUserId(id);
+            long clanId = Long.parseLong(rc.request().getParam("clanId"));
+            JsonObject response = AoeServices.clanService.getInfoClan(clanId);
             rc.response().end(response.toString());
-        }
-        catch (Exception e){
+        }catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
             rc.response().end(response.toString());
         }
     }
+
+    public static void updateClan(RoutingContext rc){
+        try{
+            long clanId = Long.parseLong(rc.request().getParam("clanId"));
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            JsonObject response = AoeServices.clanService.updateClan(clanId,json);
+            rc.response().end(response.toString());
+        }catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
 }
