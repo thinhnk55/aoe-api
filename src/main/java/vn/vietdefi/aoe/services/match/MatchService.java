@@ -270,7 +270,7 @@ public class MatchService implements IMatchService{
             }
             String query = "UPDATE `match` SET status = ? ,time_expired = ? WHERE match_id = ?";
             bridge.update(query,MatchConstants.MATCH_CANCELLED,matchId);
-            AoeServices.starService.refundMoney(matchId);
+//            AoeServices.starService.refundMoney(matchId);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

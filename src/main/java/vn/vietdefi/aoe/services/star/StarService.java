@@ -53,12 +53,12 @@ public class StarService implements IStarService {
     }
 
     @Override
-    public JsonObject starRechargeLog(long userId, int page) {
+    public JsonObject starRechargeLog(long userId,int recordPerPage, int page) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            int offset = (page - 1) * StarConstant.SIZE_DEFAULT;
+            int offset = (page - 1) * recordPerPage;
             String query = "SELECT amount, create_time FROM aoe_star WHERE user_id = ? AND service = ? LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, userId, StarConstant.STAR_RECHARGE, StarConstant.SIZE_DEFAULT, offset);
+            JsonArray data = bridge.query(query, userId, StarConstant.STAR_RECHARGE_SERVICE, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception exception) {
             String stacktrace = ExceptionUtils.getStackTrace(exception);
@@ -68,12 +68,12 @@ public class StarService implements IStarService {
     }
 
     @Override
-    public JsonObject starTransactionLog(long userId, int page) {
+    public JsonObject starTransactionLog(long userId,int recordPerPage, int page) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            int offset = (page - 1) * StarConstant.SIZE_DEFAULT;
+            int offset = (page - 1) * recordPerPage;
             String query = "SELECT id, amount, balance, service, create_time FROM aoe_star_transaction WHERE user_id = ? LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, userId, StarConstant.SIZE_DEFAULT, offset);
+            JsonArray data = bridge.query(query, userId, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception exception) {
             String stacktrace = ExceptionUtils.getStackTrace(exception);
@@ -81,37 +81,6 @@ public class StarService implements IStarService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
-
-    @Override
-    public JsonObject addStar(JsonObject data) {
-        try {
-            int amount = data.get("amount").getAsInt();
-            int service = data.get("service").getAsInt();
-            String username = data.get("username").getAsString();
-            long referId = data.get("referId").getAsLong();
-            return balanceTransactionRecord(amount, service, username, referId);
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
-    @Override
-    public JsonObject subStar(JsonObject data) {
-        try {
-            int amount = -data.get("amount").getAsInt();
-            int service = data.get("service").getAsInt();
-            String username = data.get("username").getAsString();
-            long referId = data.get("referId").getAsLong();
-            return balanceTransactionRecord(amount, service, username, referId);
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
     @Override
     public JsonObject getDetailTransaction(long id) {
         try {
@@ -124,11 +93,11 @@ public class StarService implements IStarService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
-
-    private JsonObject balanceTransactionRecord(int amount, int service, String username, long referId) {
+    @Override
+    public JsonObject exchangeStar(int amount, int service, String username, long referId) {
         try (Connection connection = HikariClients.instance().defaulSQLJavaBridge().sqlClient.getConnection();
              PreparedStatement stStarWallet = connection.prepareStatement("SELECT * FROM aoe_star WHERE username = ? FOR UPDATE");
-             PreparedStatement stUpdateStarWallet = connection.prepareStatement("UPDATE aoe_star SET balance = ? WHERE username = ?");
+             PreparedStatement stUpdateStarWallet = connection.prepareStatement("UPDATE aoe_star SET balance = balance + ? WHERE username = ?");
              PreparedStatement stInsertStarTransaction = connection.prepareStatement("INSERT INTO aoe_star_transaction VALUES(user_id, username, service, refer_id, amount, balance, create_time) WHERE username = ?", Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
             stStarWallet.setString(1, username);
@@ -141,7 +110,7 @@ public class StarService implements IStarService {
                         return BaseResponse.createFullMessageResponse(12, "insufficient_balance");
                     }
                     //update star wallet
-                    stUpdateStarWallet.setInt(1, newBalance);
+                    stUpdateStarWallet.setInt(1, amount);
                     stUpdateStarWallet.setString(2, username);
                     int rowUpdateStarWallet = stUpdateStarWallet.executeUpdate();
                     //insert star transaction
