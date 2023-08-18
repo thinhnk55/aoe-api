@@ -23,19 +23,6 @@ public class GamerRouter {
             rc.response().end(response.toString());
         }
     }
-    public static void deleteAccountant(RoutingContext rc){
-        try{
-            long userid = Long.parseLong(rc.request().getParam("gamerId"));
-            JsonObject response = AoeServices.gamerService.deleteAccountant(userid);
-            rc.response().end(response.toString());
-        }
-        catch (Exception e){
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
-            rc.response().end(response.toString());
-        }
-    }
     public static void updateInfo(RoutingContext rc){
         try{
             long userid = Long.parseLong(rc.request().getParam("gamerId"));

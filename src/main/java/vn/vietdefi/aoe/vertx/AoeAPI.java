@@ -68,16 +68,10 @@ public class AoeAPI {
                 .handler(GamerRouter::create);
         router.post(ApiConfig
                         .instance()
-                        .getPath("/gamer/update-info"))
+                        .getPath("/gamer/update"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(GamerRouter::updateInfo);
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/gamer/delete-accountant"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(GamerRouter::deleteAccountant);
     }
     public static void casterAPI(Router router){
         router.post(ApiConfig

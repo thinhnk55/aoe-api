@@ -54,6 +54,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
             }
             return BaseResponse.createFullMessageResponse(12, "service_not_found");
         }catch (Exception e){
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(12, "system_error");
         }
     }
@@ -104,6 +105,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
         //Cap nhat lai refer_id cho giao dich tru sao
         AoeServices.starService.updateReferId(starTransaction.get("id").getAsLong(),
                 donate.get("id").getAsLong());
+
         return BaseResponse.createFullMessageResponse(0, "success", donate);
     }
 
@@ -121,7 +123,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
         }
         JsonObject profile = response.getAsJsonObject("data");
         //Lay thong tin gamer
-        response = AoeServices.gamerService.getById(message.receiverId);
+        response = AoeServices.gamerService.getGamerByUserId(message.receiverId);
         if(!BaseResponse.isSuccessFullMessage(response)){
             BaseResponse.createFullMessageResponse(41, "gamer_not_found");
         }

@@ -66,8 +66,17 @@ public class GamerService implements IGamerService {
     }
 
     @Override
-    public JsonObject getById(long id) {
-        return null;
+    public JsonObject getGamerByUserId(long user_id) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM gamer WHERE user_id = ?";
+            JsonObject data = bridge.queryOne(query, user_id);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
     }
 
     public JsonObject updateInfo(JsonObject json) {
@@ -118,27 +127,6 @@ public class GamerService implements IGamerService {
         } catch (Exception e) {
             String stackTrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stackTrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
-    public JsonObject deleteAccountant(long userid) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT status FROM gamer WHERE user_id = ?";
-            Integer status = bridge.queryInteger(query, userid);
-            if (status == null) {
-                return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
-            } else if (status == 1) {
-                return BaseResponse.createFullMessageResponse(13, "accountant_deleted");
-            } else {
-                query = "UPDATE gamer SET status = 1 WHERE user_id = ?";
-                bridge.update(query, userid);
-            }
-            return BaseResponse.createFullMessageResponse(0, "success");
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
