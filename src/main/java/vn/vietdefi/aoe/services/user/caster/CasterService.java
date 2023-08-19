@@ -41,15 +41,12 @@ public class CasterService implements ICasterService {
             detail.add("sport", json.get("sport"));
             JsonArray image = json.get("image").getAsJsonArray();
             //create information user
-            String username = json.get("username").getAsString();
-            JsonObject createUser = new JsonObject();
-            createUser.addProperty("username", phone_number);
             query = "SELECT id FROM user WHERE username = ?";
-            if (bridge.queryExist(query, username))
+            if (bridge.queryExist(query, phone_number))
                 return BaseResponse.createFullMessageResponse(12, "username_exist");
             String password = StringUtil.generateRandomStringNumberCharacter(12);
 
-            long userid = ApiServices.authService.register(username, password, UserConstant.ROLE_USER,UserConstant.STATUS_NORMAL).get("data").getAsJsonObject().get("id").getAsLong();
+            long userid = ApiServices.authService.register(phone_number, password, UserConstant.ROLE_USER,UserConstant.STATUS_NORMAL).get("data").getAsJsonObject().get("id").getAsLong();
             query = "INSERT INTO aoe_caster (user_id,fullname,nick_name,avatar,detail,phone,image,clan_id)VALUES(?,?,?,?,?,?,?,?)";
             bridge.update(query, userid, fullname, nickname, avatar, detail, phone_number, image, clanId);
             return BaseResponse.createFullMessageResponse(0, "success");

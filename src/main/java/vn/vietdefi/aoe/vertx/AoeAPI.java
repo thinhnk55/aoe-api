@@ -234,7 +234,7 @@ public class AoeAPI {
                 .handler(CasterRouter::getCasterByUserId);
     }
     public static void clanApi(Router router){
-        router.post(ApiConfig.instance().getPath("/clan/get"))
+        router.get(ApiConfig.instance().getPath("/clan/get"))
                 .handler(ClanRouter::getInfoClan);
         router.post(ApiConfig.instance().getPath("/clan/create"))
                 .handler(BodyHandler.create(false))

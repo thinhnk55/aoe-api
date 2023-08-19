@@ -53,7 +53,7 @@ public class CasterRouter {
     }
     public static void getCasterByUserId(RoutingContext rc){
         try{
-            long id = Long.parseLong(rc.request().getParam("userId"));
+            long id = Long.parseLong(rc.request().getParam("caster_id"));
             JsonObject response = AoeServices.casterService.getCasterByUserId(id);
             rc.response().end(response.toString());
         }
