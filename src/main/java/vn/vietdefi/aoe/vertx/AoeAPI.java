@@ -5,6 +5,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
 import vn.vietdefi.aoe.vertx.router.clan.ClanRouter;
 import vn.vietdefi.aoe.vertx.router.donate.DonateRouter;
+import vn.vietdefi.aoe.vertx.router.event.EventRouter;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
 import vn.vietdefi.aoe.vertx.router.match.MatchRouter;
 import vn.vietdefi.aoe.vertx.router.profile.ProfileRouter;
@@ -25,6 +26,7 @@ public class AoeAPI {
         clanApi(router);
         matchApi(router);
         donateApi(router);
+        eventApi(router);
     }
     private static void donateApi(Router router) {
         router.post(ApiConfig.instance().getPath("/donate/gamer"))
@@ -40,6 +42,32 @@ public class AoeAPI {
                 .handler(DonateRouter::listFanDonate);
         router.get(ApiConfig.instance().getPath("/donate/list-top-donate"))
                 .handler(DonateRouter::listTopDonate);
+    }
+    private static void eventApi(Router router) {
+        router.post(ApiConfig.instance().getPath("/event/create"))
+                        .handler(BodyHandler.create())
+                                .handler(EventRouter::createEvent);
+        router.post(ApiConfig.instance().getPath("/event/lock"))
+                .handler(BodyHandler.create())
+//                .handler(AuthRouter::authorizeAdmin)
+                .handler(EventRouter::lockEvent);
+        router.get(ApiConfig.instance().getPath("/event/info"))
+                .handler(EventRouter::getEvent);
+        router.post(ApiConfig.instance().getPath("/event/join"))
+                .handler(BodyHandler.create())
+//                .handler(AuthRouter::authorizeUser)
+                .handler(EventRouter::addParticipant);
+        router.get(ApiConfig.instance().getPath("/event/list/participants"))
+                .handler(EventRouter::getListParticipants);
+        router.get(ApiConfig.instance().getPath("/event/list"))
+                .handler(EventRouter::getEventByStatus);
+        router.get(ApiConfig.instance().getPath("/event/list/winning"))
+                .handler(EventRouter::getListWinning);
+        router.get(ApiConfig.instance().getPath("/event/bymatch"))
+                .handler(EventRouter::getEventByMatch);
+        router.get(ApiConfig.instance().getPath("/event/history/participant"))
+                .handler(AuthRouter::authorizeUser)
+                .handler(EventRouter::getListHistoryParticipant);
     }
 
     private static void walletApi(Router router) {
@@ -151,7 +179,7 @@ public class AoeAPI {
                         .getPath("/match/user/suggest/update"))
                 .handler(BodyHandler.create(false))
                 .handler(MatchRouter::updateMatchSuggest);
-        router.post(ApiConfig
+        router.get(ApiConfig
                         .instance()
                         .getPath("/match/user/suggest/list"))
                 .handler(MatchRouter::getListMatchSuggested);
@@ -198,12 +226,14 @@ public class AoeAPI {
                 .handler(ClanRouter::getInfoClan);
         router.post(ApiConfig.instance().getPath("/clan/create"))
                 .handler(BodyHandler.create(false))
-//                .handler(AuthRouter::authorizeAdmin)
+                .handler(AuthRouter::authorizeAdmin)
                 .handler(ClanRouter::createClan);
         router.post(ApiConfig.instance().getPath("/clan/update"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(ClanRouter::updateClan);
+        router.get(ApiConfig.instance().getPath("/clan/list"))
+                .handler(ClanRouter::getListClan);
     }
 
     public static void profileApi(Router router) {

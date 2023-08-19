@@ -9,4 +9,5 @@ public interface IClanService {
     JsonObject updateClan(long clanId,JsonObject json);
     JsonObject getInfoClan(long clanId);
     JsonObject getClan(long id);
+    JsonObject getListClan();
 }

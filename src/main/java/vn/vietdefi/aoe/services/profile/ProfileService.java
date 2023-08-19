@@ -82,4 +82,24 @@ public class ProfileService implements IProfileService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    @Override
+    public JsonObject getUserProfile(JsonObject data) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long userid = data.get("user_id").getAsLong();
+            String query = "SELECT * FROM aoe_profile WHERE user_id = ?";
+            JsonObject user = bridge.queryOne(query, userid);
+            if (user == null) {
+                return createUserProfile(userid);
+            }
+            data.addProperty("username",user.get("username").getAsString());
+            data.addProperty("nick_name",user.get("nick_name").getAsString());
+
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 }

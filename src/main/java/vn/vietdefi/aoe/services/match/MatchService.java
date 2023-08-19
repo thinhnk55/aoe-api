@@ -112,6 +112,8 @@ public class MatchService implements IMatchService {
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "not_found_match");
             }
+            JsonObject user = AoeServices.profileService.getUserProfileByUserId(data.get("suggester_id").getAsLong());
+            data.addProperty("suggester", user.get("data").getAsJsonObject().get("nick_name").getAsString());
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -257,10 +259,13 @@ public class MatchService implements IMatchService {
             if (!BaseResponse.isSuccessFullMessage(res)) {
                 return res;
             }
+            JsonObject updateDb =new JsonObject();
             data = data.get("data").getAsJsonObject();
             data.get("detail").getAsJsonObject().add("result", json.get("result").getAsJsonArray());
-            data.addProperty("state", MatchConstants.MATCH_FINISHED);
-            bridge.updateObjectToDb("aoe_match", "id", data);
+            updateDb.addProperty("id",data.get("id").getAsLong());
+            updateDb.add("detail",data.get("detail").getAsJsonObject());
+            updateDb.addProperty("state", MatchConstants.MATCH_FINISHED);
+            bridge.updateObjectToDb("aoe_match", "id", updateDb);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

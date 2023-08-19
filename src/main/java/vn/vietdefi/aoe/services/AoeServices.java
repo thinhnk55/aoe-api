@@ -2,6 +2,8 @@ package vn.vietdefi.aoe.services;
 
 import vn.vietdefi.aoe.services.clan.ClanService;
 import vn.vietdefi.aoe.services.clan.IClanService;
+import vn.vietdefi.aoe.services.event.EventService;
+import vn.vietdefi.aoe.services.event.IEventService;
 import vn.vietdefi.aoe.services.profile.IProfileService;
 import vn.vietdefi.aoe.services.profile.ProfileService;
 import vn.vietdefi.aoe.services.user.IUserService;
@@ -26,5 +28,6 @@ public class AoeServices {
     public static IUserService userService = new UserService();
     public static IProfileService profileService = new ProfileService();
     public static IDonateService donateService = new DonateService();
+    public static IEventService eventService = new EventService();
 
 }
