@@ -506,6 +506,11 @@ public class MatchService implements IMatchService {
     }
 
 
+    @Override
+    public long totalMatch(long userId) {
+        return 0;
+    }
+
     private boolean checkStateMatch(long matchId, int state) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();

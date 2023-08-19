@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
@@ -52,9 +53,11 @@ public class ClanRouter {
 
     public static void getListClan(RoutingContext rc) {
         try{
-            JsonObject response = AoeServices.clanService.getListClan();
+            long page = Long.parseLong(rc.request().getParam("page", "1"));
+            JsonObject response = AoeServices.clanService.getListClan(page,StarConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
-        }catch (Exception e) {
+        }
+        catch (Exception e){
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");

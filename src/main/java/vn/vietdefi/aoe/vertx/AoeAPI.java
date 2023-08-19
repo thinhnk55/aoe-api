@@ -42,6 +42,10 @@ public class AoeAPI {
                 .handler(DonateRouter::listFanDonate);
         router.get(ApiConfig.instance().getPath("/donate/list-top-donate"))
                 .handler(DonateRouter::listTopDonate);
+        router.get(ApiConfig.instance().getPath("/donate/list-top-donate-time"))
+                .handler(DonateRouter::listTopDonateByTime);
+        router.get(ApiConfig.instance().getPath("/match/user/donate"))
+                .handler(DonateRouter::listTopByTime);
     }
     private static void eventApi(Router router) {
         router.post(ApiConfig.instance().getPath("/event/create"))
@@ -201,6 +205,14 @@ public class AoeAPI {
                         .instance()
                         .getPath("/gamer/get"))
                 .handler(GamerRouter::getGamerByUserId);
+        router.get(ApiConfig.instance().getPath("/gamer/list-of-match"))
+                .handler(GamerRouter::listGamerByMatchId);
+        router.get(ApiConfig.instance().getPath("/gamer/list"))
+                .handler(GamerRouter::listGamer);
+        router.get(ApiConfig.instance().getPath("/gamer/list-of-clan"))
+                .handler(GamerRouter::listGamerOfClan);
+        router.get(ApiConfig.instance().getPath("/gamer/match"))
+                .handler(GamerRouter::listMatch);
     }
 
     public static void casterAPI(Router router) {
@@ -245,5 +257,8 @@ public class AoeAPI {
         router.post(ApiConfig.instance().getPath("/profile/search"))
                 .handler(BodyHandler.create(false))
                 .handler(ProfileRouter::searchProfile);
+        router.post(ApiConfig.instance().getPath("/profile/update-language"))
+                .handler(BodyHandler.create(false))
+                .handler(ProfileRouter::updateLanguage);
     }
 }

@@ -93,11 +93,27 @@ public class ProfileService implements IProfileService {
             if (user == null) {
                 return createUserProfile(userid);
             }
-            data.addProperty("username",user.get("username").getAsString());
-            data.addProperty("nick_name",user.get("nick_name").getAsString());
+            data.addProperty("username", user.get("username").getAsString());
+            data.addProperty("nick_name", user.get("nick_name").getAsString());
             data.addProperty("avatar",user.get("avatar").getAsString());
 
             return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject updateLanguage(long id, int state) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE aoe_profile SET language_state = ? WHERE user_id = ?";
+            int row = bridge.update(query, state, id);
+            if(row == 0){
+                return BaseResponse.createFullMessageResponse(10, "user_not_found");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");

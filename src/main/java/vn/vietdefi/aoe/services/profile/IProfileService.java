@@ -7,4 +7,6 @@ public interface IProfileService {
     JsonObject updateUserProfile(JsonObject data);
     JsonObject searchProfile(JsonObject data);
     JsonObject getUserProfile(JsonObject data);
+
+    JsonObject updateLanguage(long id, int state);
 }

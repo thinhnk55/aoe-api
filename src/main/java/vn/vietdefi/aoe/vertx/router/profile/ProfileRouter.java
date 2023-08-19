@@ -52,4 +52,21 @@ public class ProfileRouter {
             rc.response().end(response.toString());
         }
     }
+
+    public static void updateLanguage(RoutingContext rc) {
+        try {
+            long id = Long.parseLong(rc.request().getHeader("userId"));
+            String request = rc.body().asString();
+            JsonObject data = GsonUtil.toJsonObject(request);
+            int state = data.get("state").getAsInt();
+            JsonObject response = AoeServices.profileService.updateLanguage(id, state);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
 }

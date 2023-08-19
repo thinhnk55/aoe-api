@@ -1,5 +1,6 @@
 package vn.vietdefi.aoe.services.clan;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -92,11 +93,17 @@ public class ClanService implements IClanService{
     }
 
     @Override
-    public JsonObject getListClan() {
+    public JsonObject getListClan(long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT avatar,clan_name FROM aoe_clan WHERE  status = 0";
-            return BaseResponse.createFullMessageResponse(0, "success",bridge.query(query));
+            JsonObject result = new JsonObject();
+            long offset = (page - 1) * recordPerPage;
+            String countQuery = "SELECT COUNT(*) AS total_rows FROM aoe_clan";
+            result.addProperty("total_page", bridge.queryInteger(countQuery) / recordPerPage + 1);
+            String query = "SELECT * FROM aoe_clan WHERE status = 0";
+            JsonArray data = bridge.query(query, recordPerPage, offset);
+            result.add("gamer", data);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);

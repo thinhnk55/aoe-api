@@ -1,8 +1,11 @@
 package vn.vietdefi.aoe.services.user.gamer;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.match.MatchConstants;
 import vn.vietdefi.api.services.ApiServices;
 import vn.vietdefi.api.services.auth.UserConstant;
 import vn.vietdefi.common.BaseResponse;
@@ -81,6 +84,7 @@ public class GamerService implements IGamerService {
                 JsonObject clan = AoeServices.clanService.getInfoClan(clanId);
                 data.add("clan_name", clan.get("clan_name"));
             }
+            AoeServices.donateService.totalUserDonate(id);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -137,6 +141,82 @@ public class GamerService implements IGamerService {
         } catch (Exception e) {
             String stackTrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stackTrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject listGamerByMatchId(long matchId) {
+        try {
+            JsonObject response = AoeServices.matchService.getById(matchId);
+            if(!BaseResponse.isSuccessFullMessage(response)) {
+                return response;
+            }
+            JsonArray gamers = response.getAsJsonObject("data").get("detail").getAsJsonArray();
+            return null;
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject listGamer(long page, long recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            JsonObject result = new JsonObject();
+            long offset = (page - 1) * recordPerPage;
+            String countQuery = "SELECT COUNT(*) AS total_rows FROM gamer";
+            result.addProperty("total_page", bridge.queryInteger(countQuery) / recordPerPage + 1);
+            String query = "SELECT * FROM gamer LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, recordPerPage, offset);
+            result.add("gamer", data);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject listGamerOfClan(long id, long page, long recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            JsonObject result = new JsonObject();
+            long offset = (page - 1) * recordPerPage;
+            String countQuery = "SELECT COUNT(*) AS total_rows FROM gamer WHERE clan_id = ?";
+            result.addProperty("total_page", bridge.queryInteger(countQuery, id) / recordPerPage + 1);
+            String query = "SELECT * FROM gamer WHERE clan_id = ? LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query,id, recordPerPage, offset);
+            result.add("gamer", data);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject listMatch(long id, long page, long recordPerPage) {
+        try {
+            JsonObject response = new JsonObject();
+            JsonObject data = AoeServices.matchService.getListMatch(MatchConstants.MATCH_VOTING, page, recordPerPage);
+            JsonArray result = data.getAsJsonObject("data").getAsJsonArray("match");
+            for(JsonElement element : result) {
+                JsonArray teams = element.getAsJsonObject().getAsJsonArray("team_player");
+                for(JsonElement team : teams) {
+                    if(team.getAsJsonObject().get("gamer_id").getAsInt() == id){
+                        response.add("team_player", team);
+                    }
+                }
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", response);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }

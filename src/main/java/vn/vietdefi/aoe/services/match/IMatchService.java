@@ -20,6 +20,7 @@ public interface IMatchService {
     JsonObject getListMatchSuggested(long userId,long page, long recordPerPage);
     JsonObject addStarCurrentMatch(long matchId, long amount);
     JsonObject confirmMatch(JsonObject data);
+    long totalMatch(long userId);
 
 
     JsonObject cancelMatchSuggest(JsonObject date);

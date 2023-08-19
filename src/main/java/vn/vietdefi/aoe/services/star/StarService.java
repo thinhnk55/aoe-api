@@ -1,7 +1,6 @@
 package vn.vietdefi.aoe.services.star;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
@@ -90,8 +89,11 @@ public class StarService implements IStarService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
+            long currentTime = System.currentTimeMillis();
+            long daysInMillis = time * 24 * 60 * 60 * 1000;
+            currentTime = currentTime + daysInMillis;
             String query = "SELECT * FROM aoe_star_transaction WHERE user_id = ? AND create_time > ? ORDER BY create_time DESC LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, userId, recordPerPage, offset);
+            JsonArray data = bridge.query(query, userId,currentTime, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -129,7 +131,6 @@ public class StarService implements IStarService {
             }
         }else if (service == StarConstant.SERVICE_DONATE_GAMER){
             JsonObject response = AoeServices.gamerService.getGamerByUserId(userId);
-
         }
     }
 
