@@ -240,10 +240,13 @@ public class MatchService implements IMatchService {
                 return res;
             }
             data = data.get("data").getAsJsonObject();
-            data.get("detail").getAsJsonObject().addProperty("link_livestream", json.get("link_livestream").getAsString());
-            data.addProperty("state", MatchConstants.MATCH_ONGOING);
-            data.addProperty("time_expired", System.currentTimeMillis());
-            bridge.updateObjectToDb("aoe_match", "id", data);
+            JsonObject updateIntoDb = new JsonObject();
+            updateIntoDb.addProperty("id",matchId);
+            updateIntoDb.add("detail",data.get("detail"));
+            updateIntoDb.get("detail").getAsJsonObject().addProperty("link_livestream", json.get("link_livestream").getAsLong());
+            updateIntoDb.addProperty("state", MatchConstants.MATCH_STOP_VOTING);
+            updateIntoDb.addProperty("time_expired", System.currentTimeMillis());
+            bridge.updateObjectToDb("aoe_match", "id", updateIntoDb);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
