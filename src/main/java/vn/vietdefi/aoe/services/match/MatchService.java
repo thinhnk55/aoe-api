@@ -243,7 +243,7 @@ public class MatchService implements IMatchService {
             JsonObject updateIntoDb = new JsonObject();
             updateIntoDb.addProperty("id",matchId);
             updateIntoDb.add("detail",data.get("detail"));
-            updateIntoDb.get("detail").getAsJsonObject().addProperty("link_livestream", json.get("link_livestream").getAsLong());
+            updateIntoDb.get("detail").getAsJsonObject().addProperty("link_livestream", json.get("link_livestream").getAsString());
             updateIntoDb.addProperty("state", MatchConstants.MATCH_STOP_VOTING);
             updateIntoDb.addProperty("time_expired", System.currentTimeMillis());
             bridge.updateObjectToDb("aoe_match", "id", updateIntoDb);
