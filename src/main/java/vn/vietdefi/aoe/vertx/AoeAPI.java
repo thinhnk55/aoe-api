@@ -12,7 +12,6 @@ import vn.vietdefi.aoe.vertx.router.user.UserRouter;
 import vn.vietdefi.aoe.vertx.router.wallet.WalletRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
-import vn.vietdefi.api.vertx.router.TelegramRouter;
 
 public class AoeAPI {
     public static void configAPI(Router router) {
@@ -82,14 +81,6 @@ public class AoeAPI {
         router.post(ApiConfig.instance().getPath("/user/change-password"))
                 .handler(BodyHandler.create(false))
                 .handler(UserRouter::changePassword);
-        router.post(ApiConfig.instance().getPath("/user/tele-link"))
-                .handler(UserRouter::requestLinkAccount);
-        router.post(ApiConfig.instance().getPath("/user/send-otp"))
-                .handler(BodyHandler.create(false))
-                .handler(UserRouter::sendOtp);
-        router.post(ApiConfig.instance().getPath("/user/forgot-password"))
-                .handler(BodyHandler.create(false))
-                .handler(UserRouter::forgotPassword);
     }
 
     private static void matchApi(Router router) {

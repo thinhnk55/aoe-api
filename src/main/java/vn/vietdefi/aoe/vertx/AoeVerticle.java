@@ -7,7 +7,6 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CorsHandler;
 import vn.vietdefi.api.vertx.ApiConfig;
-import vn.vietdefi.api.vertx.AuthHttpAPI;
 import vn.vietdefi.bank.vertx.BankHttpAPI;
 import vn.vietdefi.websocket.WebsocketServer;
 import java.util.HashSet;

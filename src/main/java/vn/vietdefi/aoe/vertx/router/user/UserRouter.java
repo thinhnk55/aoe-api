@@ -48,46 +48,4 @@ public class UserRouter {
             rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
         }
     }
-
-    public static void sendOtp(RoutingContext routingContext) {
-        try {
-            String request = routingContext.body().asString();
-            JsonObject data = GsonUtil.toJsonObject(request);
-            String phoneNumber = data.get("phoneNumber").getAsString();
-            JsonObject response = ApiServices.telegramService.sendTelegramOTPByPhoneNumber(phoneNumber);
-            routingContext.response().end(response.toString());
-        } catch (Exception exception) {
-            String stacktrace = ExceptionUtils.getStackTrace(exception);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
-            routingContext.response().end(response.toString());
-        }
-    }
-    public static void forgotPassword(RoutingContext routingContext) {
-        try {
-            String request = routingContext.body().asString();
-            JsonObject data = GsonUtil.toJsonObject(request);
-            JsonObject response = AoeServices.userService.forgotPassword(data);
-            routingContext.response().end(response.toString());
-        } catch (Exception exception) {
-            String stacktrace = ExceptionUtils.getStackTrace(exception);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
-            routingContext.response().end(response.toString());
-        }
-    }
-    public static void requestLinkAccount(RoutingContext rc) {
-        try {
-            long userid = Long.parseLong(rc.request().getHeader("userid"));
-            JsonObject data = new JsonObject();
-            data.addProperty("userid", userid);
-            JsonObject response = ApiServices.telegramService.requestLinkAccount(data);
-            rc.response().end(response.toString());
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
-            rc.response().end(response.toString());
-        }
-    }
 }
