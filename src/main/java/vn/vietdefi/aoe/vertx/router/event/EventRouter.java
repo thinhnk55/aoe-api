@@ -54,12 +54,11 @@ public class EventRouter {
 
     public static void addParticipant(RoutingContext rc){
         try{
-            long eventId =  Long.parseLong(rc.request().getParam("eventId"));
             long userId = Long.parseLong(rc.request().getHeader("userid"));
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
             json.addProperty("userid",userId);
-            JsonObject response = AoeServices.eventService.addParticipant(eventId,json);
+            JsonObject response = AoeServices.eventService.addParticipant(json);
             rc.response().end(response.toString());
         }
         catch (Exception e){
@@ -72,7 +71,7 @@ public class EventRouter {
     public static void getListParticipants(RoutingContext rc){
         try{
             long eventId =  Long.parseLong(rc.request().getParam("eventId"));
-            long page = Long.parseLong(rc.request().getParam("page"));
+            long page = Long.parseLong(rc.request().getParam("page","1"));
             JsonObject response = AoeServices.eventService.getListParticipants(eventId,page,20);
             rc.response().end(response.toString());
         }
@@ -83,11 +82,11 @@ public class EventRouter {
             rc.response().end(response.toString());
         }
     }
-    public static void getEventByStatus(RoutingContext rc){
+    public static void getEventByState(RoutingContext rc){
         try{
-            int status =  Integer.parseInt(rc.request().getParam("status"));
-            long page = Long.parseLong(rc.request().getParam("page"));
-            JsonObject response = AoeServices.eventService.getEventByStatus(status,page,20);
+            int state =  Integer.parseInt(rc.request().getParam("state"));
+            long page = Long.parseLong(rc.request().getParam("page","1"));
+            JsonObject response = AoeServices.eventService.getEventByStatus(state,page,20);
             rc.response().end(response.toString());
         }
         catch (Exception e){

@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS aoe_profile  (
     username    VARCHAR(128) UNIQUE NOT NULL,
     nick_name    VARCHAR(2048) UNIQUE NOT NULL,
     level        INT NOT NULL DEFAULT 0,
-    avatar       VARCHAR(2048) NOT NULL
+    avatar       VARCHAR(2048) NOT NULL DEFAULT ''
 );
 
 

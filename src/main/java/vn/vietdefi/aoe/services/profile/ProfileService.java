@@ -95,6 +95,7 @@ public class ProfileService implements IProfileService {
             }
             data.addProperty("username",user.get("username").getAsString());
             data.addProperty("nick_name",user.get("nick_name").getAsString());
+            data.addProperty("avatar",user.get("avatar").getAsString());
 
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {

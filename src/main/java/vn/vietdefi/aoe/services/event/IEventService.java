@@ -8,10 +8,10 @@ public interface IEventService {
     JsonObject lockEvent(JsonObject data);
 
     JsonObject getEvent(long eventId);
-    JsonObject addParticipant(long eventId,JsonObject json);
+    JsonObject addParticipant(JsonObject json);
 
     JsonObject getListParticipants(long eventId, long page, long recordPerPage);
-    JsonObject getEventByStatus(int status, long page, long recordPerPage);
+    JsonObject getEventByStatus(int state, long page, long recordPerPage);
 
     JsonObject getEventByMatch(long match_id);
 

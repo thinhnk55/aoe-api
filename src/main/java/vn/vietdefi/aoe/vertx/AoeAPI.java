@@ -55,12 +55,12 @@ public class AoeAPI {
                 .handler(EventRouter::getEvent);
         router.post(ApiConfig.instance().getPath("/event/join"))
                 .handler(BodyHandler.create())
-//                .handler(AuthRouter::authorizeUser)
+                .handler(AuthRouter::authorizeUser)
                 .handler(EventRouter::addParticipant);
         router.get(ApiConfig.instance().getPath("/event/list/participants"))
                 .handler(EventRouter::getListParticipants);
         router.get(ApiConfig.instance().getPath("/event/list"))
-                .handler(EventRouter::getEventByStatus);
+                .handler(EventRouter::getEventByState);
         router.get(ApiConfig.instance().getPath("/event/list/winning"))
                 .handler(EventRouter::getListWinning);
         router.get(ApiConfig.instance().getPath("/event/bymatch"))
@@ -136,7 +136,7 @@ public class AoeAPI {
                 .handler(MatchRouter::getOutstandingMatch);
         router.post(ApiConfig
                         .instance()
-                        .getPath("/match/VotingMatch/stop"))
+                        .getPath("/match/voting/stop"))
                 .handler(BodyHandler.create(false))
                 .handler(MatchRouter::StopVotingMatch);
         router.post(ApiConfig
