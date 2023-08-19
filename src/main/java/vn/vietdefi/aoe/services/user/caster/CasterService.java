@@ -27,15 +27,15 @@ public class CasterService implements ICasterService {
             query = "SELECT user_id FROM caster WHERE phone = ?";
             caster = bridge.queryOne(query, phone_number);
             if (caster != null) return BaseResponse.createFullMessageResponse(10, "phone_number_used");
-            JsonObject detail = new JsonObject();
-            detail.add("nationality", json.get("nationality"));
-            detail.add("address", json.get("address"));
-            detail.add("date_of_birth", json.get("date_of_birth"));
-            detail.add("fanpage_link", json.get("fanpage_link"));
-            detail.add("fgroup_link", json.get("fgroup_link"));
-            detail.add("youtube_link", json.get("youtube_link"));
-            detail.add("tiktok_link", json.get("tiktok_link"));
-            detail.add("sport", json.get("sport"));
+            JsonObject detail = json.get("detail").getAsJsonObject();
+//            detail.add("nationality", json.get("nationality"));
+//            detail.add("address", json.get("address"));
+//            detail.add("date_of_birth", json.get("date_of_birth"));
+//            detail.add("fanpage_link", json.get("fanpage_link"));
+//            detail.add("fgroup_link", json.get("fgroup_link"));
+//            detail.add("youtube_link", json.get("youtube_link"));
+//            detail.add("tiktok_link", json.get("tiktok_link"));
+//            detail.add("sport", json.get("sport"));
             JsonArray image = json.get("image").getAsJsonArray();
             //create information user
             String username = json.get("username").getAsString();
@@ -57,37 +57,23 @@ public class CasterService implements ICasterService {
         }
     }
     @Override
-    public JsonObject updateCaster(long casterId, JsonObject json) {
+    public JsonObject updateCaster(JsonObject json) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String fullname = json.get("fullname").getAsString();
+            long casterId = json.get("user_id").getAsLong();
+            //check nick name
             String nickname = json.get("nick_name").getAsString();
-            String query = "SELECT user_id FROM caster WHERE nick_name = ?";
-            JsonObject caster = bridge.queryOne(query, nickname);
-            if (caster != null && caster.get("user_id").getAsInt() != casterId)
-                return BaseResponse.createFullMessageResponse(11, "nickname_used");
-            String avatar = json.get("avatar").getAsString();
+            String query = "SELECT user_id FROM caster WHERE nick_name = ? and user_id != ?";
+            boolean isNameExist = bridge.queryExist(query, nickname, casterId);
+            if (isNameExist)
+                return BaseResponse.createFullMessageResponse(11, "nick_name_exist");
+            //check phone number
             String phone_number = json.get("phone").getAsString();
-            long clanId = json.get("clan_id").getAsLong();
-            query = "SELECT user_id FROM caster WHERE phone = ?";
-            caster = bridge.queryOne(query, phone_number);
-            if (caster != null && caster.get("user_id").getAsInt() != casterId)
-                return BaseResponse.createFullMessageResponse(10, "phone_number_used");
-
-            JsonObject detail = new JsonObject();
-            detail.add("address", json.get("address"));
-            detail.add("date_of_birth", json.get("date_of_birth"));
-            detail.add("fanpage_link", json.get("fanpage_link"));
-            detail.add("fgroup_link", json.get("fgroup_link"));
-            detail.add("youtube_link", json.get("youtube_link"));
-            detail.add("tiktok_link", json.get("tiktok_link"));
-            detail.add("sport", json.get("sport"));
-            JsonArray image = json.get("image").getAsJsonArray();
-
-            query = "UPDATE caster SET fullname = ?,nick_name = ?,avatar = ?, phone = ? ,detail = ?,image = ?,clan_id =? WHERE user_id =? ";
-            if (bridge.update(query, fullname, nickname, avatar, phone_number, detail, image,clanId, casterId) == 0) {
-                return BaseResponse.createFullMessageResponse(10, "nothing_to_update");
-            }
+            query = "SELECT user_id FROM caster WHERE phone = ? and user_id != ?";
+            boolean isPhoneExist = bridge.queryExist(query, phone_number, casterId);
+            if (isPhoneExist)
+                return BaseResponse.createFullMessageResponse(10, "phone_number_exist");
+            bridge.updateObjectToDb("aoe_caster", "user_id", json);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS aoe_caster
     fullname   VARCHAR(256)                 DEFAULT '' NOT NULL,
     nick_name  VARCHAR(128)                 DEFAULT '' NOT NULL,
     avatar     TEXT                         DEFAULT '' NOT NULL,
-    detail     JSON,
+    detail     JSON,                                            #address, date_of_birth, fanpage_link, fgroup_link, youtube_link, tiktok_link, sport
     phone      VARCHAR(64)                  DEFAULT '' NOT NULL,
     image      JSON                         DEFAULT '' NOT NULL,
     is_deleted INT                          DEFAULT 0  NULL,

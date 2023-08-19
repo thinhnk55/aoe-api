@@ -81,7 +81,7 @@ public class GamerService implements IGamerService {
             long clanId = data.get("clan_id").getAsLong();
             data.remove("username");
             if(clanId != 0) {
-                JsonObject clan = AoeServices.clanService.getInfoClan(clanId);
+                JsonObject clan = AoeServices.clanService.getClanInfo(clanId);
                 data.add("clan_name", clan.get("clan_name"));
             }
             AoeServices.donateService.totalUserDonate(id);

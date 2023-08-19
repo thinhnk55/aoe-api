@@ -26,7 +26,7 @@ public class ClanRouter {
     public static void getInfoClan(RoutingContext rc){
         try{
             long clanId = Long.parseLong(rc.request().getParam("clanId"));
-            JsonObject response = AoeServices.clanService.getInfoClan(clanId);
+            JsonObject response = AoeServices.clanService.getClanInfo(clanId);
             rc.response().end(response.toString());
         }catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -38,10 +38,9 @@ public class ClanRouter {
 
     public static void updateClan(RoutingContext rc){
         try{
-            long clanId = Long.parseLong(rc.request().getParam("clanId"));
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.clanService.updateClan(clanId,json);
+            JsonObject response = AoeServices.clanService.updateClan(json);
             rc.response().end(response.toString());
         }catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
