@@ -22,5 +22,6 @@ public interface IAuthService {
     JsonObject changeRole(String username, int role);
     JsonObject changeStatus(long userId, int status);
     JsonObject changeStatus(String username, int status);
-    JsonObject changePassword(JsonObject json, long userId);
+    JsonObject changePassword(long userId, String password, String newPassword);
+    long getUserIdByUserName(String username);
 }

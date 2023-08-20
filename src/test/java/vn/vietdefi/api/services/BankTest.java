@@ -48,11 +48,11 @@ public class BankTest {
             response = ApiServices.authService.changeStatus("0836993400",
                     UserConstant.STATUS_ACCOUNT_GENERATE);
             DebugLogger.info("{}", response.toString());
-            response = ApiServices.authService.get("0836993400");
-            DebugLogger.info("{}", response);
-            response = ApiServices.authService.register("0836993400",
-                    "123456", UserConstant.ROLE_SUPER_ADMIN, UserConstant.STATUS_NORMAL);
-            DebugLogger.info("{}", response);
+//            response = ApiServices.authService.get("0836993400");
+//            DebugLogger.info("{}", response);
+//            response = ApiServices.authService.register("0836993400",
+//                    "123456", UserConstant.ROLE_SUPER_ADMIN, UserConstant.STATUS_NORMAL);
+//            DebugLogger.info("{}", response);
         }
     }
 

@@ -2,7 +2,6 @@ package vn.vietdefi.api.services.auth;
 
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -51,10 +50,6 @@ public class AuthService implements IAuthService {
             data.addProperty("create_time", createTime);
             data.addProperty("token", token);
             data.addProperty("token_expired", tokenExpired);
-            JsonObject response = AoeServices.profileService.getUserProfileByUserId(userId);
-            data.add("aoe_profile", response.getAsJsonObject("data"));
-            response = AoeServices.starService.getStarWalletByUserId(userId);
-            data.add("aoe_star", response.getAsJsonObject("data"));
             return BaseResponse.createFullMessageResponse(0, "success", data);
         }catch (Exception e){
             e.printStackTrace();
@@ -109,23 +104,7 @@ public class AuthService implements IAuthService {
             if(status != UserConstant.STATUS_NORMAL){
                 return BaseResponse.createFullMessageResponse(12, "account_locked", data);
             }
-            long tokenExpired = data.get("token_expired").getAsLong();
-            long now = System.currentTimeMillis();
-            if(tokenExpired < now) {
-                String token = StringUtil.generateRandomStringNumberCharacter(32);
-                tokenExpired = now + UserConstant.TOKEN_EXPIRED_TIME;
-                query = "UPDATE user SET token = ?, token_expired = ? WHERE id =?";
-                bridge.query(query, token, tokenExpired, data.get("id").getAsInt());
-                data.addProperty("token", token);
-                data.addProperty("token_expired", tokenExpired);
-            }
-            data.remove("password");
-            long userId = data.get("id").getAsLong();
-            JsonObject response = AoeServices.profileService.getUserProfileByUserId(userId);
-            data.add("aoe_profile", response.getAsJsonObject("data"));
-            response = AoeServices.starService.getStarWalletByUserId(userId);
-            data.add("aoe_star", response.getAsJsonObject("data"));
-            return BaseResponse.createFullMessageResponse(0, "success", data);
+            return generateToken(data);
         }catch (Exception e){
             e.printStackTrace();
             return BaseResponse.createFullMessageResponse(1, "system_error");
@@ -139,12 +118,21 @@ public class AuthService implements IAuthService {
             if(data == null){
                 return BaseResponse.createFullMessageResponse(10, "user_not_exist");
             }
+            return generateToken(data);
+        }catch (Exception e){
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+    public JsonObject generateToken(JsonObject data){
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long tokenExpired = data.get("token_expired").getAsLong();
             long now = System.currentTimeMillis();
-            if(tokenExpired < now) {
+            if (tokenExpired < now) {
                 String token = StringUtil.generateRandomStringNumberCharacter(32);
                 tokenExpired = now + UserConstant.TOKEN_EXPIRED_TIME;
-                query = "UPDATE user SET token = ?, token_expired = ? WHERE id =?";
+                String query = "UPDATE user SET token = ?, token_expired = ? WHERE id =?";
                 bridge.query(query, token, tokenExpired, data.get("id").getAsInt());
                 data.addProperty("token", token);
                 data.addProperty("token_expired", tokenExpired);
@@ -152,7 +140,7 @@ public class AuthService implements IAuthService {
             data.remove("password");
             return BaseResponse.createFullMessageResponse(0, "sucess", data);
         }catch (Exception e){
-            e.printStackTrace();
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
@@ -164,18 +152,7 @@ public class AuthService implements IAuthService {
             if(data == null){
                 return BaseResponse.createFullMessageResponse(10, "user_not_exist");
             }
-            long tokenExpired = data.get("token_expired").getAsLong();
-            long now = System.currentTimeMillis();
-            if(tokenExpired < now) {
-                String token = StringUtil.generateRandomStringNumberCharacter(32);
-                tokenExpired = now + UserConstant.TOKEN_EXPIRED_TIME;
-                query = "UPDATE user SET token = ?, token_expired = ? WHERE id =?";
-                bridge.query(query, token, tokenExpired, data.get("id").getAsInt());
-                data.addProperty("token", token);
-                data.addProperty("token_expired", tokenExpired);
-            }
-            data.remove("password");
-            return BaseResponse.createFullMessageResponse(0, "sucess", data);
+            return generateToken(data);
         }catch (Exception e){
             e.printStackTrace();
             return BaseResponse.createFullMessageResponse(1, "system_error");
@@ -236,11 +213,9 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public JsonObject changePassword(JsonObject json, long userId) {
+    public JsonObject changePassword(long userId, String password, String newPassword) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String password = json.get("password").getAsString();
-            String newPassword = json.get("newPassword").getAsString();
             String hashedPassword = StringUtil.sha256(password);
             String hashedNewPassword = StringUtil.sha256(newPassword);
             String query = "SELECT password FROM user WHERE id = ?";
@@ -326,6 +301,21 @@ public class AuthService implements IAuthService {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+    @Override
+    public long getUserIdByUserName(String username) {
+        try{
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT id FROM user WHERE username = ?";
+            Long id = bridge.queryLong(query, username);
+            if(id != null){
+                return id;
+            }
+            return 0;
+        }catch (Exception e){
+            e.printStackTrace();
+            return 0;
         }
     }
 }
