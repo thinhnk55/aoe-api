@@ -13,18 +13,25 @@ public class AuthService implements IAuthService {
     public JsonObject register(String username, String password, int role, int status) {
         try{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT id FROM user WHERE username = ?";
+            String query = "SELECT * FROM user WHERE username = ?";
             JsonObject data = bridge.queryOne(query, username);
             if(data != null){
                 int oldStatus = data.get("status").getAsInt();
-                if(oldStatus != UserConstant.STATUS_ACCOUNT_GENERATE){
+                if(status != UserConstant.STATUS_ACCOUNT_GENERATE
+                        && oldStatus == UserConstant.STATUS_ACCOUNT_GENERATE){
                     long id = data.get("id").getAsLong();
                     String hashedPassword = StringUtil.sha256(password);
                     long createTime = System.currentTimeMillis();
                     String token = StringUtil.generateRandomStringNumberCharacter(32);
                     long tokenExpired = System.currentTimeMillis() + UserConstant.TOKEN_EXPIRED_TIME;
-                    query = "UPDATE user SET password = ?, create_time = ?, token = ?, token_expired = ? WHERE id = ?";
-                    bridge.update(query, hashedPassword, createTime, token, tokenExpired, id);
+                    data.addProperty("role", role);
+                    data.addProperty("status", status);
+                    data.addProperty("create_time", createTime);
+                    data.addProperty("token", token);
+                    data.addProperty("token_expired", tokenExpired);
+                    query = "UPDATE user SET  password = ?, role = ?, status = ?, create_time = ?, token = ?, token_expired = ? WHERE id = ?";
+                    bridge.update(query, hashedPassword, role, status, createTime, token, tokenExpired, id);
+                    data.remove("password");
                     return BaseResponse.createFullMessageResponse(0, "success", data);
                 }else {
                     return BaseResponse.createFullMessageResponse(10, "user_exist");
