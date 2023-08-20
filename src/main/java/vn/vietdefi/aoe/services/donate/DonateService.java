@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.aoe.services.star.StarConstant;
-import vn.vietdefi.aoe.services.star.StarService;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -24,12 +23,11 @@ public class DonateService implements IDonateService {
             String nick_name = profile.get("nick_name").getAsString();
             response = verifyTarget(service, target_id);
             if (!BaseResponse.isSuccessFullMessage(response)) {
-                return BaseResponse.createFullMessageResponse(11, "target_not_found");
+                return BaseResponse.createFullMessageResponse(11, "donate_reject");
             }
             //Tru sao trong tai khoan message.sender
-            response = AoeServices.starService.exchangeStar(-star,
-                    StarConstant.SERVICE_DONATE_MATCH,
-                    username, 0);
+            response = AoeServices.starService.exchangeStar(username, StarConstant.SERVICE_DONATE_MATCH, -star,
+                    0);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(12, "exchange_star_failed");
             }
@@ -59,9 +57,8 @@ public class DonateService implements IDonateService {
                     donate_id);
             if (service == StarConstant.SERVICE_DONATE_GAMER
                     || service == StarConstant.SERVICE_DONATE_CASTER) {
-                response = AoeServices.starService.exchangeStar(star,
-                        service,
-                        target_id, donate_id);
+                response = AoeServices.starService.exchangeStar(target_id, service, star,
+                        donate_id);
                 if (BaseResponse.isSuccessFullMessage(response)) {
                     long add_star_transaction_id = response.getAsJsonObject("data")
                             .get("id").getAsLong();
@@ -83,6 +80,21 @@ public class DonateService implements IDonateService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             bridge.insertObjectToDB("aoe_donate", data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+    @Override
+    public JsonObject getDonateById(long id) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM aoe_donate WHERE id = ?";
+            JsonObject data = bridge.queryOne(query, id);
+            if(data == null){
+                return BaseResponse.createFullMessageResponse(10, "donate_not_found");
+            }
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -139,7 +151,7 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public long totalUserDonate(long id) {
+    public long getTotalDonateByUserId(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT count(*) FROM aoe_donate_gamer WHERE gamer_id = ? GROUP BY gamer_id";
@@ -152,7 +164,7 @@ public class DonateService implements IDonateService {
 
     private JsonObject verifyTarget(int service, long targetId) {
         if (service == StarConstant.SERVICE_DONATE_MATCH) {
-            return AoeServices.matchService.getById(targetId);
+            return AoeServices.matchService.checkAcceptDonate(targetId);
         }
         if (service == StarConstant.SERVICE_DONATE_GAMER) {
             return AoeServices.gamerService.getGamerByUserId(targetId);

@@ -133,9 +133,8 @@ public class AoeBankHandlerService implements IBankHandlerService {
             long star_transaction_id = transaction.star_transaction_id;
             if(star_transaction_id == 0){
                 long star = transaction.amount / StarConstant.STAR_PRICE_RATE;
-                response = AoeServices.starService.exchangeStar(star,
-                        StarConstant.SERVICE_STAR_RECHARGE,
-                        message.sender, transaction.id);
+                response = AoeServices.starService.exchangeStar(message.sender, StarConstant.SERVICE_STAR_RECHARGE, star,
+                        transaction.id);
                 if (!BaseResponse.isSuccessFullMessage(response)) {
                     BaseResponse.createFullMessageResponse(23, "exchange_star_failed");
                 }

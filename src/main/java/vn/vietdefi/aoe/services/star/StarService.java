@@ -129,13 +129,20 @@ public class StarService implements IStarService {
                 JsonObject account = response.getAsJsonObject("data");
                 data.add("refer", account);
             }
-        }else if (service == StarConstant.SERVICE_DONATE_GAMER){
-            JsonObject response = AoeServices.gamerService.getGamerByUserId(userId);
+        }else if (service == StarConstant.SERVICE_DONATE_GAMER
+        || service == StarConstant.SERVICE_DONATE_CASTER
+        || service == StarConstant.SERVICE_SUGGEST_MATCH
+        || service == StarConstant.SERVICE_DONATE_LEAGUE){
+            JsonObject response = AoeServices.donateService.getDonateById(referId);
+            if (BaseResponse.isSuccessFullMessage(response)) {
+                JsonObject gamer = response.getAsJsonObject("data");
+                data.add("refer", gamer);
+            }
         }
     }
 
     @Override
-    public JsonObject exchangeStar(long amount, int service, String username, long referId) {
+    public JsonObject exchangeStar(String username, int service, long amount, long referId) {
         String query1 = "SELECT * FROM aoe_star WHERE username = ? FOR UPDATE";
         String query2 = "UPDATE aoe_star SET balance = ? WHERE username = ?";
         String query3 = "INSERT INTO aoe_star_transaction (user_id, username, service, refer_id, amount, balance, create_time) VALUE (?,?,?,?,?,?,?)";
@@ -201,7 +208,7 @@ public class StarService implements IStarService {
     }
 
     @Override
-    public JsonObject exchangeStar(long amount, int service, long userId, long referId) {
+    public JsonObject exchangeStar(long userId, int service, long amount, long referId) {
         String query1 = "SELECT * FROM aoe_star WHERE user_id = ? FOR UPDATE";
         String query2 = "UPDATE aoe_star SET balance = ? WHERE username = ?";
         String query3 = "INSERT INTO aoe_star_transaction (user_id, username, service, refer_id, amount, balance, create_time) VALUE (?,?,?,?,?,?,?)";

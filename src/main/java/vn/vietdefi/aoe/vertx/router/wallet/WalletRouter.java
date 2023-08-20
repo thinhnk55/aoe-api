@@ -57,7 +57,7 @@ public class WalletRouter {
     public static void exchangeStar(RoutingContext rc) {
         try {
             //test
-            JsonObject response = AoeServices.starService.exchangeStar(1000,StarConstant.SERVICE_STAR_RECHARGE, "0964714430", 1);
+            JsonObject response = AoeServices.starService.exchangeStar("0964714430", StarConstant.SERVICE_STAR_RECHARGE, 1000, 1);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

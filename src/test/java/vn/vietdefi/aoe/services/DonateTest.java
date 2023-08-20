@@ -6,14 +6,8 @@ import org.junit.jupiter.api.*;
 import vn.vietdefi.aoe.services.donate.DonateService;
 import vn.vietdefi.aoe.services.donate.IDonateService;
 import vn.vietdefi.aoe.services.star.StarConstant;
-import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
-import vn.vietdefi.util.network.OkHttpUtil;
 import vn.vietdefi.util.sql.HikariClients;
-import vn.vietdefi.util.string.StringUtil;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class DonateTest {
     @BeforeAll
@@ -38,8 +32,8 @@ public class DonateTest {
         }
         @Test
         public void test0(){
-            JsonObject response = AoeServices.starService.exchangeStar(100000,
-                    StarConstant.SERVICE_STAR_RECHARGE, 1, 0);
+            JsonObject response = AoeServices.starService.exchangeStar(1, StarConstant.SERVICE_STAR_RECHARGE, 100000,
+                    0);
             DebugLogger.info("{}", response);
             IDonateService donateService = new DonateService();
             response = AoeServices.starService.getStarWalletByUserId(5);

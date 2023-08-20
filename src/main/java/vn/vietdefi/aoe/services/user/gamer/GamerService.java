@@ -84,7 +84,7 @@ public class GamerService implements IGamerService {
                 JsonObject clan = AoeServices.clanService.getClanInfo(clanId);
                 data.add("clan_name", clan.get("clan_name"));
             }
-            AoeServices.donateService.totalUserDonate(id);
+            AoeServices.donateService.getTotalDonateByUserId(id);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -203,7 +203,7 @@ public class GamerService implements IGamerService {
     public JsonObject listMatch(long id, long page, long recordPerPage) {
         try {
             JsonObject response = new JsonObject();
-            JsonObject data = AoeServices.matchService.getListMatch(MatchConstants.MATCH_VOTING, page, recordPerPage);
+            JsonObject data = AoeServices.matchService.getListMatch(MatchConstants.STATE_VOTING, page, recordPerPage);
             JsonArray result = data.getAsJsonObject("data").getAsJsonArray("match");
             for(JsonElement element : result) {
                 JsonArray teams = element.getAsJsonObject().getAsJsonArray("team_player");

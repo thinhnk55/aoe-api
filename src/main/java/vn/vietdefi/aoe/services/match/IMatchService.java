@@ -3,7 +3,7 @@ package vn.vietdefi.aoe.services.match;
 import com.google.gson.JsonObject;
 
 public interface IMatchService {
-    JsonObject CreateMatch(JsonObject data);
+    JsonObject createMatch(JsonObject data);
     JsonObject updateMatch(JsonObject data);
     JsonObject getListMatch(int state , long page, long recordPerPage);
     JsonObject getById(long match_id);
@@ -15,13 +15,8 @@ public interface IMatchService {
     JsonObject startMatch(JsonObject json);
     JsonObject endMatch(JsonObject json);
     JsonObject cancelMatch(long match);
-    JsonObject createMatchSuggest(JsonObject data ,long userId);
-    JsonObject updateMatchSuggest( long matchSuggestId,JsonObject data);
-    JsonObject getListMatchSuggested(long userId,long page, long recordPerPage);
+
     JsonObject addStarCurrentMatch(long matchId, long amount);
-    JsonObject confirmMatch(JsonObject data);
     long totalMatch(long userId);
-
-
-    JsonObject cancelMatchSuggest(JsonObject date);
+    JsonObject checkAcceptDonate(long targetId);
 }

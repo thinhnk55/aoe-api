@@ -10,17 +10,20 @@ CREATE TABLE IF NOT EXISTS aoe_match  (
      create_time BIGINT NOT NULL,
      suggester_id BIGINT NOT NULL,
      team_player TEXT NOT NULL
-) ;
-create table aoe_match_suggest
+);
+CREATE TABLE aoe_match_suggest
 (
-    id           BIGINT        PRIMARY KEY   AUTO_INCREMENT   ,
-    suggester_id BIGINT        NOT NULL,
-    type         INT           NOT NULL,
-    format       INT           NOT NULL,
-    team_play    TEXT          NOT NULL,
-    detail       TEXT          NOT NULL,
-    star_current INT           NULL,
-    create_time  BIGINT        NOT NULL,
-    state        INT           NOT NULL default 0
+    id                              BIGINT             PRIMARY KEY   AUTO_INCREMENT,
+    sub_star_transaction_id         BIGINT             NOT NULL,
+    refund_star_transaction_id      BIGINT             NOT NULL DEFAULT 0,
+    suggester_id                    BIGINT             NOT NULL,
+    match_id                        BIGINT             NOT NULL DEFAULT 0,
+    type                            INT                NOT NULL,
+    format                          INT                NOT NULL,
+    team_play                       TEXT               NOT NULL,
+    detail                          TEXT               NOT NULL,
+    amount                          INT                NOT NULL,
+    create_time                     BIGINT             NOT NULL,
+    state                           INT                NOT NULL DEFAULT 0
 );
 

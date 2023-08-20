@@ -6,6 +6,8 @@ import vn.vietdefi.aoe.services.clan.ClanService;
 import vn.vietdefi.aoe.services.clan.IClanService;
 import vn.vietdefi.aoe.services.event.EventService;
 import vn.vietdefi.aoe.services.event.IEventService;
+import vn.vietdefi.aoe.services.matchsuggest.IMatchSuggestService;
+import vn.vietdefi.aoe.services.matchsuggest.MatchSuggestService;
 import vn.vietdefi.aoe.services.profile.IProfileService;
 import vn.vietdefi.aoe.services.profile.ProfileService;
 import vn.vietdefi.aoe.services.donate.DonateService;
@@ -24,6 +26,7 @@ public class AoeServices {
     public static ICasterService casterService = new CasterService();
     public static IClanService clanService = new ClanService();
     public static IMatchService matchService = new MatchService();
+    public static IMatchSuggestService suggestService = new MatchSuggestService();
     public static IStarService starService = new StarService();
     public static IAoeAuthService aoeAuthService = new AoeAuthService();
     public static IProfileService profileService = new ProfileService();

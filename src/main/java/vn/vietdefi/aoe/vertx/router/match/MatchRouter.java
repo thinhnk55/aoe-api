@@ -17,7 +17,7 @@ public class MatchRouter {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
             json.addProperty("userid",adminId);
-            JsonObject response = AoeServices.matchService.CreateMatch(json);
+            JsonObject response = AoeServices.matchService.createMatch(json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -176,9 +176,8 @@ public class MatchRouter {
     }
     public static void cancelMatchSuggest(RoutingContext rc){
         try {
-            String data = rc.body().asString();
-            JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.matchService.cancelMatchSuggest(json);
+            long id = Long.parseLong(rc.request().getParam("id"));
+            JsonObject response = AoeServices.suggestService.cancelMatchSuggest(id);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -197,7 +196,7 @@ public class MatchRouter {
             long userid = Long.parseLong(rc.request().getHeader("userid"));
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.matchService.createMatchSuggest(json,userid);
+            JsonObject response = AoeServices.suggestService.createMatchSuggest(json,userid);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -213,7 +212,7 @@ public class MatchRouter {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
             long matchSuggesterId = json.get("id").getAsLong();
-            JsonObject response = AoeServices.matchService.updateMatchSuggest(matchSuggesterId,json);
+            JsonObject response = AoeServices.suggestService.updateMatchSuggest(matchSuggesterId,json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -224,11 +223,11 @@ public class MatchRouter {
         }
     }
 
-    public static void getListMatchSuggested(RoutingContext rc){
+    public static void getListMatchSuggested(RoutingContext rc) {
         try {
             long userid = Long.parseLong(rc.request().getHeader("userid"));
-            long page = Long.parseLong(rc.request().getParam("page","1"));
-            JsonObject response = AoeServices.matchService.getListMatchSuggested(userid,page,MatchConstants.ITEMS_PER_PAGE);
+            long page = Long.parseLong(rc.request().getParam("page", "1"));
+            JsonObject response = AoeServices.suggestService.getListMatchSuggested(userid, page, MatchConstants.ITEMS_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -238,7 +237,4 @@ public class MatchRouter {
             rc.response().end(response.toString());
         }
     }
-
-
-
 }
