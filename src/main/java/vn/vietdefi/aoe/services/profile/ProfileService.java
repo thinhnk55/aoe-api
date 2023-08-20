@@ -8,6 +8,7 @@ import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
+import vn.vietdefi.util.string.StringUtil;
 
 public class ProfileService implements IProfileService {
     private JsonObject createUserProfile(long userId) {
@@ -21,7 +22,7 @@ public class ProfileService implements IProfileService {
                 JsonObject data = new JsonObject();
                 data.addProperty("user_id", userId);
                 data.addProperty("username", username);
-                data.addProperty("nick_name", username);
+                data.addProperty("nick_name", StringUtil.addThreeStarsToPhoneNumber(username));
                 data.addProperty("level", 0);
                 String query = "INSERT INTO aoe_profile(user_id, username, nick_name) VALUES(?,?,?)";
                 bridge.update(query, userId, username, username);
@@ -50,53 +51,14 @@ public class ProfileService implements IProfileService {
     }
 
     @Override
-    public JsonObject updateUserProfile(JsonObject data) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long userId = data.get("user_id").getAsLong();
-            String query = "SELECT * FROM aoe_profile WHERE user_id = ?";
-            if (bridge.queryExist(query, userId)) {
-                bridge.updateObjectToDb("aoe_profile", "user_id", data);
-                return BaseResponse.createFullMessageResponse(0, "success", data);
-            } else {
-                return BaseResponse.createFullMessageResponse(10, "user_not_found");
+    public JsonObject updateUserProfile(long userId, JsonObject data) {
+        try{
+            long user_id = data.get("user_id").getAsLong();
+            if(user_id != userId){
+                return BaseResponse.createFullMessageResponse(10, "update_reject");
             }
-        } catch (Exception e) {
-            DebugLogger.error(ExceptionUtils.getStackTrace(e));
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
-    @Override
-    public JsonObject searchProfile(JsonObject data) {
-        try {
-            String username = data.get("username").getAsString();
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            StringBuilder query = new StringBuilder();
-            query.append("SELECT * FROM aoe_profile WHERE username LIKE '%")
-                    .append(username).append("%' LIMIT 10");
-            JsonArray results = bridge.query(query.toString());
-            return BaseResponse.createFullMessageResponse(0, "success", results);
-        } catch (Exception e) {
-            DebugLogger.error(ExceptionUtils.getStackTrace(e));
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
-    @Override
-    public JsonObject getUserProfile(JsonObject data) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long userid = data.get("user_id").getAsLong();
-            String query = "SELECT * FROM aoe_profile WHERE user_id = ?";
-            JsonObject user = bridge.queryOne(query, userid);
-            if (user == null) {
-                return createUserProfile(userid);
-            }
-            data.addProperty("username", user.get("username").getAsString());
-            data.addProperty("nick_name", user.get("nick_name").getAsString());
-            data.addProperty("avatar",user.get("avatar").getAsString());
-
+            bridge.updateObjectToDb("aoe_profile", data);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -105,11 +67,27 @@ public class ProfileService implements IProfileService {
     }
 
     @Override
-    public JsonObject updateLanguage(long id, int state) {
+    public JsonObject searchProfile(String username) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE aoe_profile SET language_state = ? WHERE user_id = ?";
-            int row = bridge.update(query, state, id);
+            String query = new StringBuilder()
+                    .append("SELECT * FROM aoe_profile WHERE username LIKE '%")
+                    .append(username).append("%' LIMIT 10")
+                    .toString();
+            JsonArray results = bridge.query(query);
+            return BaseResponse.createFullMessageResponse(0, "success", results);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject updateLanguage(long id, int lang) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE aoe_profile SET lang = ? WHERE user_id = ?";
+            int row = bridge.update(query, lang, id);
             if(row == 0){
                 return BaseResponse.createFullMessageResponse(10, "user_not_found");
             }

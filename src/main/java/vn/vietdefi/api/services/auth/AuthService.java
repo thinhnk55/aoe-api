@@ -101,8 +101,11 @@ public class AuthService implements IAuthService {
                 return BaseResponse.createFullMessageResponse(11, "invalid_password");
             }
             int status = data.get("status").getAsInt();
+            if(status == UserConstant.STATUS_LOCKED){
+                return BaseResponse.createFullMessageResponse(12, "account_locked");
+            }
             if(status != UserConstant.STATUS_NORMAL){
-                return BaseResponse.createFullMessageResponse(12, "account_locked", data);
+                return BaseResponse.createFullMessageResponse(13, "login_reject");
             }
             return generateToken(data);
         }catch (Exception e){

@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS aoe_profile  (
     nick_name      VARCHAR(2048) UNIQUE NOT NULL,
     level          INT NOT NULL DEFAULT 0,
     avatar         VARCHAR(2048) NOT NULL,
-    language_state INT DEFAULT 1
+    lang           INT DEFAULT 0
 );
 
 

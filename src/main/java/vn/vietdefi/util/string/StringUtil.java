@@ -1,7 +1,5 @@
 package vn.vietdefi.util.string;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Random;
@@ -71,5 +69,13 @@ public class StringUtil {
 
     public static String generateUUID() {
         return UUID.randomUUID().toString();
+    }
+
+    public static String addThreeStarsToPhoneNumber(String phone) {
+        StringBuilder sb = new StringBuilder(phone);
+        int end = phone.length()-3;
+        int start = end - 3;
+        sb.replace(start, end, "***");
+        return sb.toString();
     }
 }

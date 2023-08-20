@@ -25,9 +25,10 @@ public class ProfileRouter {
 
     public static void updateProfile(RoutingContext rc) {
         try {
+            long userId = Long.parseLong(rc.request().getHeader("userid"));
             String request = rc.body().asString();
             JsonObject data = GsonUtil.toJsonObject(request);
-            JsonObject response = AoeServices.profileService.updateUserProfile(data);
+            JsonObject response = AoeServices.profileService.updateUserProfile(userId, data);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -42,7 +43,8 @@ public class ProfileRouter {
         try {
             String request = rc.body().asString();
             JsonObject data = GsonUtil.toJsonObject(request);
-            JsonObject response = AoeServices.profileService.searchProfile(data);
+            String username = data.get("username").getAsString();
+            JsonObject response = AoeServices.profileService.searchProfile(username);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -58,8 +60,8 @@ public class ProfileRouter {
             long id = Long.parseLong(rc.request().getHeader("userId"));
             String request = rc.body().asString();
             JsonObject data = GsonUtil.toJsonObject(request);
-            int state = data.get("state").getAsInt();
-            JsonObject response = AoeServices.profileService.updateLanguage(id, state);
+            int lang = data.get("lang").getAsInt();
+            JsonObject response = AoeServices.profileService.updateLanguage(id, lang);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -2,6 +2,7 @@ package vn.vietdefi.aoe.vertx;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import vn.vietdefi.aoe.vertx.router.auth.AoeAuthRouter;
 import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
 import vn.vietdefi.aoe.vertx.router.clan.ClanRouter;
 import vn.vietdefi.aoe.vertx.router.donate.DonateRouter;
@@ -88,14 +89,14 @@ public class AoeAPI {
     private static void authApi(Router router) {
         router.post(ApiConfig
                         .instance()
-                        .getPath("/auth/register"))
+                        .getPath("/register"))
                 .handler(BodyHandler.create(false))
-                .handler(AuthRouter::register);
+                .handler(AoeAuthRouter::register);
         router.post(ApiConfig
                         .instance()
-                        .getPath("/auth/login"))
+                        .getPath("/login"))
                 .handler(BodyHandler.create(false))
-                .handler(AuthRouter::login);
+                .handler(AoeAuthRouter::login);
         router.post(ApiConfig.instance().getPath("/auth/logout"))
                 .handler(AuthRouter::logout);
     }

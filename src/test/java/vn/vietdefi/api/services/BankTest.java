@@ -40,7 +40,11 @@ public class BankTest {
         void repeatTest1(){
         }
         @Test
-        public void test0(){
+        public void test0() {
+            DebugLogger.info("{}", StringUtil.addThreeStarsToPhoneNumber("0836993400"));
+        }
+        @Test
+        public void test1(){
             JsonObject response;
             response = ApiServices.authService.changeRole("0836993400",
                     UserConstant.ROLE_SUPER_ADMIN);

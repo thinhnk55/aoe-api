@@ -4,9 +4,7 @@ import com.google.gson.JsonObject;
 
 public interface IProfileService {
     JsonObject getUserProfileByUserId(long userId);
-    JsonObject updateUserProfile(JsonObject data);
-    JsonObject searchProfile(JsonObject data);
-    JsonObject getUserProfile(JsonObject data);
-
+    JsonObject updateUserProfile(long userId, JsonObject data);
+    JsonObject searchProfile(String username);
     JsonObject updateLanguage(long id, int state);
 }
