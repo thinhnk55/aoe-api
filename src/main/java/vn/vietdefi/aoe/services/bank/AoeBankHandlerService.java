@@ -104,7 +104,8 @@ public class AoeBankHandlerService implements IBankHandlerService {
                 StarConstant.SERVICE_DONATE_GAMER, message.receiverId, "");
     }
 
-    private JsonObject starRecharge(BankTransaction transaction, AoeBankAction message) {
+    private JsonObject starRecharge(BankTransaction transaction,
+                                    AoeBankAction message) {
         try {
             //Kiem tra user message.sender có ton tai khong
             String username = message.sender;
@@ -112,7 +113,8 @@ public class AoeBankHandlerService implements IBankHandlerService {
             if(!BaseResponse.isSuccessFullMessage(response)){
                 //Tao mot tai khoan tuong ung voi mat khau ngau nhien
                 String password = StringUtil.generateRandomStringNumberCharacter(8);
-                response =  ApiServices.authService.register(username, password, UserConstant.ROLE_USER, UserConstant.STATUS_NORMAL);
+                response =  ApiServices.authService.register(username, password, UserConstant.ROLE_USER,
+                        UserConstant.STATUS_ACCOUNT_GENERATE);
                 if(!BaseResponse.isSuccessFullMessage(response)){
                     BaseResponse.createFullMessageResponse(20, "create_sender_user_failed");
                 }

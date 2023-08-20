@@ -9,7 +9,6 @@ import vn.vietdefi.aoe.vertx.router.event.EventRouter;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
 import vn.vietdefi.aoe.vertx.router.match.MatchRouter;
 import vn.vietdefi.aoe.vertx.router.profile.ProfileRouter;
-import vn.vietdefi.aoe.vertx.router.user.UserRouter;
 import vn.vietdefi.aoe.vertx.router.wallet.WalletRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
@@ -17,7 +16,6 @@ import vn.vietdefi.api.vertx.router.AuthRouter;
 public class AoeAPI {
     public static void configAPI(Router router) {
         authApi(router);
-        userApi(router);
         adminApi(router);
         gamerApi(router);
         casterAPI(router);
@@ -105,15 +103,6 @@ public class AoeAPI {
 
     }
 
-    private static void userApi(Router router) {
-        router.post(ApiConfig.instance().getPath("/user/lock"))
-                .handler(UserRouter::lockUser);
-        router.post(ApiConfig.instance().getPath("/user/unlock"))
-                .handler(UserRouter::unLockUser);
-        router.post(ApiConfig.instance().getPath("/user/change-password"))
-                .handler(BodyHandler.create(false))
-                .handler(UserRouter::changePassword);
-    }
 
     private static void matchApi(Router router) {
         router.post(ApiConfig
