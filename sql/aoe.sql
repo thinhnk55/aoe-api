@@ -1,10 +1,12 @@
+#DROP TABLE aoe_profile;
 CREATE TABLE IF NOT EXISTS aoe_profile  (
     user_id        BIGINT PRIMARY KEY NOT NULL,
     username       VARCHAR(128) UNIQUE NOT NULL,
-    nick_name      VARCHAR(2048) UNIQUE NOT NULL,
-    level          INT NOT NULL DEFAULT 0,
-    avatar         VARCHAR(2048) NOT NULL,
-    lang           INT DEFAULT 0
+    nick_name      VARCHAR(128) NOT NULL,
+    exp            INT NOT NULL DEFAULT 0,
+    rank            INT NOT NULL DEFAULT 0,
+    avatar         VARCHAR(2048) NOT NULL DEFAULT '',
+    lang           INT NOT NULL DEFAULT 0
 );
 
 
@@ -25,19 +27,17 @@ CREATE TABLE IF NOT EXISTS gamer
     phone        VARCHAR(16)                  NOT NULL,
     username     VARCHAR(128)                 NULL
 );
-
-
 CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nick_name);
 
 
 CREATE TABLE IF NOT EXISTS aoe_caster
 (
     user_id    BIGINT      PRIMARY KEY                 NOT NULL ,
-    fullname   VARCHAR(256)                 DEFAULT '' NOT NULL,
+    full_name   VARCHAR(256)                 DEFAULT '' NOT NULL,
     nick_name  VARCHAR(128)                 DEFAULT '' NOT NULL,
     avatar     TEXT                         DEFAULT '' NOT NULL,
     detail     JSON,                                            #address, date_of_birth, fanpage_link, fgroup_link, youtube_link, tiktok_link, sport
-    phone      VARCHAR(64)                  DEFAULT '' NOT NULL,
+    phone      VARCHAR(32)                  DEFAULT '' NOT NULL,
     image      JSON                         DEFAULT '' NOT NULL,
     is_deleted INT                          DEFAULT 0  NULL,
     clan_id    BIGINT                       DEFAULT 0  NULL

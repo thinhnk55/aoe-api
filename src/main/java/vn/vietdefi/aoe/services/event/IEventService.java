@@ -17,5 +17,5 @@ public interface IEventService {
 
     JsonObject getListWinning(long eventId, int luckyNumber,int limit);
 
-    JsonObject getListEventParticipant(long userid, int page);
+    JsonObject getListEventParticipant(long userid, long page, long recordPerPage);
 }

@@ -146,11 +146,10 @@ public class EventService implements IEventService {
             long offset = (page - 1) * recordPerPage;
             String query = "SELECT * FROM aoe_event_participants WHERE event_id = ? LIMIT ? OFFSET ?";
             JsonArray json = bridge.query(query, eventId, recordPerPage, offset);
-            for (JsonElement user : json) {
-                AoeServices.profileService.getUserProfile(user.getAsJsonObject());
-            }
+//            for (JsonElement user : json) {
+//                AoeServices.profileService.getUserProfileByUserId(user.getAsJsonObject());
+//            }
             query = "SELECT COUNT(*) AS total FROM aoe_event_participants  WHERE event_id = ? ";
-
             JsonObject data = bridge.queryOne(query, eventId);
             data.add("participant", json);
             return BaseResponse.createFullMessageResponse(0, "success", data);
@@ -217,10 +216,10 @@ public class EventService implements IEventService {
                             .append("LIMIT ?").toString();
             JsonArray json = bridge.query(query, luckyNumber, eventId, luckyNumber, limit);
 
-            for (JsonElement user : json) {
-                AoeServices.profileService.getUserProfile(user.getAsJsonObject());
-                user.getAsJsonObject().addProperty("lucky_number_of_event", luckyNumber);
-            }
+//            for (JsonElement user : json) {
+//                AoeServices.profileService.getUserProfile(user.getAsJsonObject());
+//                user.getAsJsonObject().addProperty("lucky_number_of_event", luckyNumber);
+//            }
             return BaseResponse.createFullMessageResponse(0, "success", json);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -230,12 +229,12 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public JsonObject getListEventParticipant(long userid, int page) {
+    public JsonObject getListEventParticipant(long userid, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long offset = (page - 1) * 15L;
-            String query = "SELECT event_id,lucky_number FROM event_participants  WHERE user_id = ? LIMIT 15 OFFSET ?";
-            JsonArray json = bridge.query(query, userid, offset);
+            long offset = (page - 1) * recordPerPage;
+            String query = "SELECT event_id,lucky_number FROM event_participants  WHERE user_id = ? LIMIT ? OFFSET ?";
+            JsonArray json = bridge.query(query, userid, recordPerPage, offset);
             JsonArray data = new JsonArray();
             for (JsonElement event : json) {
                 long eventId = event.getAsJsonObject().get("event_id").getAsLong();

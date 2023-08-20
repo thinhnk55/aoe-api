@@ -131,7 +131,8 @@ public class EventRouter {
         try{
             long userid =  Long.parseLong(rc.request().getHeader("userid"));
             int page =  Integer.parseInt(rc.request().getParam("page","1"));
-            JsonObject response = AoeServices.eventService.getListEventParticipant(userid,page);
+            JsonObject response = AoeServices.eventService
+                    .getListEventParticipant(userid,page, 15);
             rc.response().end(response.toString());
         }
         catch (Exception e){

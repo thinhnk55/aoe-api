@@ -18,14 +18,19 @@ public class ProfileService implements IProfileService {
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             } else {
-                String username = response.getAsJsonObject("data").get("username").getAsString();
+                String username = response.getAsJsonObject("data")
+                        .get("username").getAsString();
+                String nickName = StringUtil.addThreeStarsToPhoneNumber(username);
                 JsonObject data = new JsonObject();
                 data.addProperty("user_id", userId);
                 data.addProperty("username", username);
-                data.addProperty("nick_name", StringUtil.addThreeStarsToPhoneNumber(username));
-                data.addProperty("level", 0);
+                data.addProperty("nick_name", nickName);
+                data.addProperty("exp", 0);
+                data.addProperty("rank", 0);
+                data.addProperty("avatar", "");
+                data.addProperty("lang", ProfileConstant.LANG_UNDEFINED);
                 String query = "INSERT INTO aoe_profile(user_id, username, nick_name) VALUES(?,?,?)";
-                bridge.update(query, userId, username, username);
+                bridge.update(query, userId, username, nickName);
                 return BaseResponse.createFullMessageResponse(0, "success", data);
             }
         } catch (Exception e) {
@@ -58,7 +63,7 @@ public class ProfileService implements IProfileService {
                 return BaseResponse.createFullMessageResponse(10, "update_reject");
             }
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            bridge.updateObjectToDb("aoe_profile", data);
+            bridge.updateObjectToDb("aoe_profile", "user_id", data);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -88,6 +93,21 @@ public class ProfileService implements IProfileService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE aoe_profile SET lang = ? WHERE user_id = ?";
             int row = bridge.update(query, lang, id);
+            if(row == 0){
+                return BaseResponse.createFullMessageResponse(10, "user_not_found");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+    @Override
+    public JsonObject updateNickName(long id, String nickname) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE aoe_profile SET nick_name = ? WHERE user_id = ?";
+            int row = bridge.update(query, nickname, id);
             if(row == 0){
                 return BaseResponse.createFullMessageResponse(10, "user_not_found");
             }
