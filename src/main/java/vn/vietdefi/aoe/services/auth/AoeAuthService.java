@@ -27,10 +27,13 @@ public class AoeAuthService implements IAoeAuthService{
                 response = AoeServices.starService.getStarWalletByUserId(userId);
                 if(BaseResponse.isSuccessFullMessage(response)){
                     JsonObject star = response.getAsJsonObject("data");
-                    user.add("profile", star);
+                    user.add("star", star);
                 }
+                return BaseResponse.createFullMessageResponse(0, "success", user);
+            }else{
+                return response;
             }
-            return response;
+
         }catch (Exception e){
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
