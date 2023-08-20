@@ -17,10 +17,10 @@ import vn.vietdefi.api.vertx.router.AuthRouter;
 public class AoeAPI {
     public static void configAPI(Router router) {
         authApi(router);
+        profileApi(router);
         adminApi(router);
         gamerApi(router);
         casterAPI(router);
-        profileApi(router);
         walletApi(router);
         clanApi(router);
         matchApi(router);
@@ -239,15 +239,18 @@ public class AoeAPI {
     }
 
     public static void profileApi(Router router) {
-        router.post(ApiConfig.instance().getPath("/profile/get"))
+        router.get(ApiConfig.instance().getPath("/profile/get"))
+                .handler(AuthRouter::authorizeUser)
                 .handler(ProfileRouter::getProfile);
+        router.get(ApiConfig.instance().getPath("/profile/search"))
+                .handler(AuthRouter::authorizeSupport)
+                .handler(ProfileRouter::searchProfile);
         router.post(ApiConfig.instance().getPath("/profile/update"))
+                .handler(AuthRouter::authorizeUser)
                 .handler(BodyHandler.create(false))
                 .handler(ProfileRouter::updateProfile);
-        router.post(ApiConfig.instance().getPath("/profile/search"))
-                .handler(BodyHandler.create(false))
-                .handler(ProfileRouter::searchProfile);
-        router.post(ApiConfig.instance().getPath("/profile/update-language"))
+        router.post(ApiConfig.instance().getPath("/profile/update/lang"))
+                .handler(AuthRouter::authorizeUser)
                 .handler(BodyHandler.create(false))
                 .handler(ProfileRouter::updateLanguage);
     }

@@ -75,12 +75,11 @@ public class ProfileService implements IProfileService {
     public JsonObject searchProfile(String username) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = new StringBuilder()
-                    .append("SELECT * FROM aoe_profile WHERE username LIKE '%")
-                    .append(username).append("%' LIMIT 10")
-                    .toString();
-            JsonArray results = bridge.query(query);
-            return BaseResponse.createFullMessageResponse(0, "success", results);
+            String query = "SELECT * FROM aoe_profile WHERE username LIKE ? LIMIT 10";
+            String username_query = new StringBuilder("%")
+                    .append(username).append("%").toString();
+            JsonArray data = bridge.query(query, username_query);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");

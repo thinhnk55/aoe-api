@@ -22,13 +22,10 @@ public class ProfileRouter {
             rc.response().end(response.toString());
         }
     }
-
-    public static void updateProfile(RoutingContext rc) {
+    public static void searchProfile(RoutingContext rc) {
         try {
-            long userId = Long.parseLong(rc.request().getHeader("userid"));
-            String request = rc.body().asString();
-            JsonObject data = GsonUtil.toJsonObject(request);
-            JsonObject response = AoeServices.profileService.updateUserProfile(userId, data);
+            String query = rc.request().getParam("q");
+            JsonObject response = AoeServices.profileService.searchProfile(query);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -39,12 +36,12 @@ public class ProfileRouter {
         }
     }
 
-    public static void searchProfile(RoutingContext rc) {
+    public static void updateProfile(RoutingContext rc) {
         try {
+            long userId = Long.parseLong(rc.request().getHeader("userid"));
             String request = rc.body().asString();
             JsonObject data = GsonUtil.toJsonObject(request);
-            String username = data.get("username").getAsString();
-            JsonObject response = AoeServices.profileService.searchProfile(username);
+            JsonObject response = AoeServices.profileService.updateUserProfile(userId, data);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

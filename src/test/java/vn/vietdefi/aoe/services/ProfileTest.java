@@ -45,6 +45,8 @@ public class ProfileTest {
                     "aoe_boss");
             response = AoeServices.profileService.getUserProfileByUserId(6);
             DebugLogger.info("{}", response);
+            response = AoeServices.profileService.searchProfile("400");
+            DebugLogger.info("{}", response);
         }
         @Test
         public void test1(){
