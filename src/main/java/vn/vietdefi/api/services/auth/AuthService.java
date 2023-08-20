@@ -270,4 +270,55 @@ public class AuthService implements IAuthService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+    @Override
+    public JsonObject changeRole(String username, int role) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE user SET role = ? WHERE username = ?";
+            int x = bridge.update(query, role, username);
+            if(x == 1){
+                return BaseResponse.createFullMessageResponse(0, "success");
+            }else{
+                return BaseResponse.createFullMessageResponse(10, "update_role_failure");
+            }
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+    @Override
+    public JsonObject changeStatus(long userId, int status) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE user SET status = ? WHERE id = ?";
+            int x = bridge.update(query, status, userId);
+            if(x == 1){
+                return BaseResponse.createFullMessageResponse(0, "success");
+            }else{
+                return BaseResponse.createFullMessageResponse(10, "update_role_failure");
+            }
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+    @Override
+    public JsonObject changeStatus(String username, int status) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE user SET status = ? WHERE username = ?";
+            int x = bridge.update(query, status, username);
+            if(x == 1){
+                return BaseResponse.createFullMessageResponse(0, "success");
+            }else{
+                return BaseResponse.createFullMessageResponse(10, "update_role_failure");
+            }
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 }

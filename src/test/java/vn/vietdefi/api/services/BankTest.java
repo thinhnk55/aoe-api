@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
 import vn.vietdefi.aoe.services.bank.AoeBankHandlerService;
+import vn.vietdefi.api.services.auth.UserConstant;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.bank.logic.BankController;
 import vn.vietdefi.bank.services.IBankHandlerService;
@@ -40,8 +41,11 @@ public class BankTest {
         }
         @Test
         public void test0(){
-            IBankHandlerService handler = new AoeBankHandlerService();
-            handler.completeBalanceTransaction();
+            JsonObject response;
+            response = ApiServices.authService.changeRole("0836993400", UserConstant.ROLE_SUPER_ADMIN);
+            DebugLogger.info("{}", response.toString());
+            response = ApiServices.authService.changeStatus("0836993400", UserConstant.STATUS_ACCOUNT_GENERATE);
+            DebugLogger.info("{}", response.toString());
         }
     }
 

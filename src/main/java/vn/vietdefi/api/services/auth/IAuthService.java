@@ -19,5 +19,8 @@ public interface IAuthService {
     JsonObject authorize(long userid, String token);
     JsonObject lock(long userid);
     JsonObject changeRole(long userId, int role);
+    JsonObject changeRole(String username, int role);
+    JsonObject changeStatus(long userId, int status);
+    JsonObject changeStatus(String username, int status);
     JsonObject changePassword(JsonObject json, long userId);
 }
