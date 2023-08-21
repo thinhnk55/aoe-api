@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS aoe_star (
      user_id BIGINT  PRIMARY KEY NOT NULL,
-     username VARCHAR(128) NOT NULL,
+     username VARCHAR(128) UNIQUE NOT NULL,
      balance INT NOT NULL DEFAULT 0
 );
 

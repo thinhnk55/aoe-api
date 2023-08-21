@@ -26,7 +26,7 @@ public class ClanRouter {
     public static void getInfoClan(RoutingContext rc){
         try{
             long clanId = Long.parseLong(rc.request().getParam("clanId"));
-            JsonObject response = AoeServices.clanService.getClanInfo(clanId);
+            JsonObject response = AoeServices.clanService.getClanById(clanId);
             rc.response().end(response.toString());
         }catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -8,4 +8,6 @@ public interface IProfileService {
     JsonObject searchProfile(String username);
     JsonObject updateLanguage(long id, int state);
     JsonObject updateNickName(long id, String nickname);
+    /*These function user for TEST only. In real situation these actions is prohibited*/
+    JsonObject deleteProfile(long userId);
 }

@@ -72,7 +72,7 @@ public class StarService implements IStarService {
     }
 
     @Override
-    public JsonObject listStarTransactionOfUser(long userId, long page, long recordPerPage) {
+    public JsonObject listStarTransactionOfUserAll(long userId, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
@@ -267,7 +267,6 @@ public class StarService implements IStarService {
                 }
             }
         } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
@@ -293,6 +292,31 @@ public class StarService implements IStarService {
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return false;
+        }
+    }
+
+    /*These function user for TEST only. In real situation these actions is prohibited*/
+    @Override
+    public JsonObject deleteStarWallet(long userId) {
+        String query1 = "DELETE FROM aoe_star WHERE user_id = ?";
+        String query2 = "DELETE FROM aoe_star_transaction WHERE user_id = ?";
+        try (Connection connection = HikariClients.instance().defaulSQLJavaBridge().sqlClient.getConnection();
+             PreparedStatement st1 = connection.prepareStatement(query1);
+             PreparedStatement st2 = connection.prepareStatement(query2)) {
+            connection.setAutoCommit(false);
+            st1.setLong(1, userId);
+            st2.setLong(1, userId);
+            try {
+                st1.executeUpdate();
+                st2.executeUpdate();
+            }catch (Exception e){
+                connection.rollback();
+            }
+            connection.commit();
+            return BaseResponse.createFullMessageResponse(0, "success");
+        }catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 }
