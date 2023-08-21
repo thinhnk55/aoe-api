@@ -3,6 +3,7 @@ package vn.vietdefi.aoe.vertx;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.aoe.vertx.router.auth.AoeAuthAPI;
+import vn.vietdefi.aoe.vertx.router.caster.CasterAPI;
 import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
 import vn.vietdefi.aoe.vertx.router.clan.ClanAPI;
 import vn.vietdefi.aoe.vertx.router.donate.DonateRouter;
@@ -22,8 +23,8 @@ public class AoeAPI {
         StarAPI.configAPI(router);
         ClanAPI.configAPI(router);
         GamerApi.configAPI(router);
+        CasterAPI.configAPI(router);
         adminApi(router);
-        casterAPI(router);
         matchApi(router);
         donateApi(router);
         eventApi(router);
@@ -151,24 +152,5 @@ public class AoeAPI {
                         .instance()
                         .getPath("/match/user/suggest/list"))
                 .handler(MatchRouter::getListMatchSuggested);
-    }
-
-    public static void casterAPI(Router router) {
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/caster/create"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(CasterRouter::createCaster);
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/caster/update"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(CasterRouter::updateCaster);
-        router.get(ApiConfig
-                        .instance()
-                        .getPath("/caster/get"))
-                .handler(CasterRouter::getCasterByUserId);
     }
 }

@@ -80,21 +80,6 @@ public class GamerRouter {
         }
     }
 
-    public static void listGamerOfClan(RoutingContext rc) {
-        try{
-            long id = Long.parseLong(rc.request().getParam("clan_id"));
-            long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.gamerService.listGamerOfClan(id, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
-            rc.response().end(response.toString());
-        }
-        catch (Exception e){
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
-            rc.response().end(response.toString());
-        }
-    }
-
     public static void listMatch(RoutingContext rc) {
         try{
             long id = Long.parseLong(rc.request().getParam("id"));

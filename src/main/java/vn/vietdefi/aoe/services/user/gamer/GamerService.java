@@ -130,14 +130,14 @@ public class GamerService implements IGamerService {
     }
 
     @Override
-    public JsonObject listGamerOfClan(long clanId, long page, long recordPerPage) {
+    public JsonObject listGamerByClanId(long clanId, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject result = new JsonObject();
             long offset = (page - 1) * recordPerPage;
             String query = "SELECT * FROM gamer WHERE clan_id = ? LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, clanId, recordPerPage, offset);
-            result.add("gamer", data);
+            result.add("gamers", data);
             return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

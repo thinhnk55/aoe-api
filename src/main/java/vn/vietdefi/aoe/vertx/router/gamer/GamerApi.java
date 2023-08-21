@@ -24,8 +24,6 @@ public class GamerApi {
 //                .handler(GamerRouter::listGamerByMatchId);
         router.get(ApiConfig.instance().getPath("/gamer/list"))
                 .handler(GamerRouter::listGamer);
-        router.get(ApiConfig.instance().getPath("/gamer/list-of-clan"))
-                .handler(GamerRouter::listGamerOfClan);
     }
 
     public static void supportAuthApi(Router router) {

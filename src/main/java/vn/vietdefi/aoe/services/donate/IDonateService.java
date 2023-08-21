@@ -10,6 +10,5 @@ public interface IDonateService {
     JsonObject listDonateByTargetId(long targetId, long page, long recordPerPage);
     JsonObject listAllTopDonate(long time, long page, long recordPerPage);
     JsonObject listTopDonateByTargetId(long time, long targetId, long page, long recordPerPage);
-
     long getTotalDonateByUserId(long id);
 }

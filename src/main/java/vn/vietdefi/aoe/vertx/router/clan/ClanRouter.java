@@ -23,18 +23,6 @@ public class ClanRouter {
             rc.response().end(response.toString());
         }
     }
-    public static void getInfoClan(RoutingContext rc){
-        try{
-            long clanId = Long.parseLong(rc.request().getParam("clan_id"));
-            JsonObject response = AoeServices.clanService.getClanById(clanId);
-            rc.response().end(response.toString());
-        }catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
-            rc.response().end(response.toString());
-        }
-    }
     public static void getInfoClanByName(RoutingContext rc){
         try{
             String clanName = rc.request().getParam("clan_name");
@@ -65,7 +53,7 @@ public class ClanRouter {
     public static void getListClan(RoutingContext rc) {
         try{
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.clanService.getListClan(page, ClanConstant.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.clanService.listClan(page, ClanConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         }
         catch (Exception e){
@@ -95,6 +83,20 @@ public class ClanRouter {
         try{
             long clanId = Long.parseLong(rc.request().getParam("clan_id"));
             JsonObject response = AoeServices.clanService.getClanById(clanId);
+            rc.response().end(response.toString());
+        }catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void listGamerOfClan(RoutingContext rc) {
+        try{
+            long clanId = Long.parseLong(rc.request().getParam("clan_id"));
+            long page = Long.parseLong(rc.request().getParam("page", "1"));
+            JsonObject response = AoeServices.clanService.listGamerOfClan(clanId, page, ClanConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         }catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
