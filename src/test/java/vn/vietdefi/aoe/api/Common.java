@@ -2,14 +2,26 @@ package vn.vietdefi.aoe.api;
 
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Assertions;
-import vn.vietdefi.aoe.api.auth.AuthTestUtil;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Common {
     public static long system_admin_id = 2;
     public static String system_admin_token = "0os6nq11fovc3cgyoab6x2fbk3zpl6tn";
+
+    public static long support_id = 5;
+    public static String support_token = "jv17348v1vxy8k11p87l1tjupd2a4l03";
+
+    public static long admin_id = 4;
+    public static String admin_token = "0wmv1eiy8yjvp1tc9mjtovj623as7jmu";
+
+    public static long super_admin_id = 1;
+    public static String super_admin_token = "2gbpnlvqtidiifohxnqb1thw1un969uq";
+
     public static JsonObject deleleUser(String baseUrl, String username, String password){
         String loginUrl = new StringBuilder(baseUrl)
                 .append("/auth/login").toString();
@@ -23,13 +35,14 @@ public class Common {
             long id = response.getAsJsonObject("data").get("id").getAsLong();
             payload = new JsonObject();
             payload.addProperty("user_id", id);
-            response = OkHttpUtil.postJson(deleteUrl, payload.toString(), AuthTestUtil.createHeader(system_admin_id, system_admin_token));
+            response = OkHttpUtil.postJson(deleteUrl, payload.toString(), createHeaderSystemAdmin());
             DebugLogger.info("{}", response);
             return response;
         }else{
             return response;
         }
     }
+
     public static JsonObject registerUserSuccess(String baseUrl, String username, String password){
         String registerUrl = new StringBuilder(baseUrl)
                 .append("/auth/register").toString();
@@ -63,7 +76,7 @@ public class Common {
     public static JsonObject getProfileSuccess(String baseUrl, long userId, String token){
         String url = new StringBuilder(baseUrl)
                 .append("/profile/get").toString();
-        JsonObject response = OkHttpUtil.get(url, AuthTestUtil.createHeader(userId, token));
+        JsonObject response = OkHttpUtil.get(url, createHeader(userId, token));
         DebugLogger.info("{}", response);
         Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         return response;
@@ -72,5 +85,30 @@ public class Common {
         long userid = data.get("id").getAsLong();
         String token = data.get("token").getAsString();
         return getProfileSuccess(baseUrl, userid, token);
+    }
+
+    public static Map<String, String> createHeaderSupport(){
+        return createHeader(support_id, support_token);
+    }
+    public static Map<String, String> createHeaderAdmin(){
+        return createHeader(admin_id, admin_token);
+    }
+    public static Map<String, String> createHeaderSupperAdmin(){
+        return createHeader(super_admin_id, super_admin_token);
+    }
+    public static Map<String, String> createHeaderSystemAdmin(){
+        return createHeader(system_admin_id, system_admin_token);
+    }
+
+    public static Map<String, String> createHeader(long userid, String token){
+        Map<String, String> headers = new HashMap<>();
+        headers.put("userid", String.valueOf(userid));
+        headers.put("token", token);
+        return headers;
+    }
+    public static Map<String, String> createHeader(JsonObject data){
+        long userid = data.get("id").getAsLong();
+        String token = data.get("token").getAsString();
+        return createHeader(userid, token);
     }
 }

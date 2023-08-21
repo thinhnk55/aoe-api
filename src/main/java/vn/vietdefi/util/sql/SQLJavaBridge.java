@@ -544,36 +544,6 @@ public class SQLJavaBridge {
             st.setString(index, value.toString());
         }
     }
-
-    public int updatee(String query, Object... params) throws Exception {
-        Connection connection = null;
-        ResultSet rs = null;
-        PreparedStatement st = null;
-        Exception exception = null;
-        try {
-            connection = sqlClient.getConnection();
-            st = buildQueryStatement(connection, query, params);
-            int x = st.executeUpdate();
-            return x;
-        } catch (Exception e) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < params.length; i++) {
-                if (i != params.length - 1) {
-                    sb.append(params[i]).append(",");
-                } else {
-                    sb.append(params[i]);
-                }
-            }
-            DebugLogger.error("update error {} params {}", query, sb.toString());
-            exception = e;
-        } finally {
-            sqlClient.releaseConnection(connection, st, rs);
-            if (exception != null) {
-                throw exception;
-            }
-        }
-        return 0;
-    }
     public Long insertOne(String query, Object... params) throws Exception {
         Connection connection = null;
         ResultSet rs = null;

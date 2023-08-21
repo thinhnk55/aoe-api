@@ -3,7 +3,6 @@ package vn.vietdefi.aoe.vertx;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.aoe.vertx.router.auth.AoeAuthAPI;
-import vn.vietdefi.aoe.vertx.router.auth.AoeAuthRouter;
 import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
 import vn.vietdefi.aoe.vertx.router.clan.ClanRouter;
 import vn.vietdefi.aoe.vertx.router.donate.DonateRouter;
@@ -11,8 +10,8 @@ import vn.vietdefi.aoe.vertx.router.event.EventRouter;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
 import vn.vietdefi.aoe.vertx.router.match.MatchRouter;
 import vn.vietdefi.aoe.vertx.router.profile.ProfileAPI;
-import vn.vietdefi.aoe.vertx.router.profile.ProfileRouter;
-import vn.vietdefi.aoe.vertx.router.wallet.WalletRouter;
+import vn.vietdefi.aoe.vertx.router.star.StarAPI;
+import vn.vietdefi.aoe.vertx.router.star.StarRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
@@ -20,10 +19,10 @@ public class AoeAPI {
     public static void configAPI(Router router) {
         AoeAuthAPI.configAPI(router);
         ProfileAPI.configAPI(router);
+        StarAPI.configAPI(router);
         adminApi(router);
         gamerApi(router);
         casterAPI(router);
-        walletApi(router);
         clanApi(router);
         matchApi(router);
         donateApi(router);
@@ -71,19 +70,6 @@ public class AoeAPI {
         router.get(ApiConfig.instance().getPath("/event/history/participant"))
                 .handler(AuthRouter::authorizeUser)
                 .handler(EventRouter::getListHistoryParticipant);
-    }
-
-    private static void walletApi(Router router) {
-        router.get(ApiConfig.instance().getPath("/wallet/get"))
-                .handler(WalletRouter::getWallet);
-        router.get(ApiConfig.instance().getPath("/wallet/list-by-service"))
-                .handler(WalletRouter::listByService);
-        router.get(ApiConfig.instance().getPath("/wallet/list-transaction"))
-                .handler(WalletRouter::listTransaction);
-        router.get(ApiConfig.instance().getPath("/wallet/transaction"))
-                .handler(WalletRouter::getTransaction);
-        router.get(ApiConfig.instance().getPath("/wallet/get-user"))
-                .handler(WalletRouter::getUserWallet);
     }
     private static void adminApi(Router router) {
 

@@ -39,23 +39,6 @@ public class ProfileAPI {
 
     }
     public static void systemAdminAuthApi(Router router) {
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/auth/delete_user"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeSystemAdmin)
-                .handler(AuthRouter::deleteUser);
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/auth/update_user_id"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeSystemAdmin)
-                .handler(AuthRouter::updateUserId);
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/auth/update_user_name"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeSystemAdmin)
-                .handler(AuthRouter::updateUsername);
+
     }
 }

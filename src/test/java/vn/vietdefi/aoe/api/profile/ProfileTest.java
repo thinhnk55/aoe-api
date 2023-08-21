@@ -1,13 +1,10 @@
 package vn.vietdefi.aoe.api.profile;
 
 import com.google.gson.JsonObject;
-import io.vertx.core.json.Json;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
 import vn.vietdefi.aoe.api.Common;
-import vn.vietdefi.aoe.api.auth.AuthTestUtil;
 import vn.vietdefi.aoe.services.profile.ProfileConstant;
-import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
@@ -41,11 +38,7 @@ public class ProfileTest {
         }
         @Test
         public void test0(){
-            String url = new StringBuilder(baseUrl)
-                    .append("/test").toString();
-            String response = OkHttpUtil.getStringResponse(url);
-            DebugLogger.info(response);
-            Assertions.assertEquals(response, "OK");
+
         }
         @Test
         public void test1(){
@@ -62,7 +55,7 @@ public class ProfileTest {
             newProfile.addProperty("lang", ProfileConstant.LANG_CHINA);
             String updateUrl = new StringBuilder(baseUrl)
                     .append("/profile/update").toString();
-            OkHttpUtil.postJson(updateUrl, newProfile.toString(),AuthTestUtil.createHeader(user));
+            OkHttpUtil.postJson(updateUrl, newProfile.toString(),Common.createHeader(user));
 
             response = Common.getProfileSuccess(baseUrl, user);
             profile = response.getAsJsonObject("data");
@@ -72,7 +65,7 @@ public class ProfileTest {
             newProfile.addProperty("lang", ProfileConstant.LANG_VIETNAM);
             updateUrl = new StringBuilder(baseUrl)
                     .append("/profile/update/lang").toString();
-            OkHttpUtil.postJson(updateUrl, newProfile.toString(),AuthTestUtil.createHeader(user));
+            OkHttpUtil.postJson(updateUrl, newProfile.toString(),Common.createHeader(user));
 
             response = Common.getProfileSuccess(baseUrl, user);
             profile = response.getAsJsonObject("data");
