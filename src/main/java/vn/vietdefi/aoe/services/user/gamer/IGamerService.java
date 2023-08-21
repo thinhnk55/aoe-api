@@ -13,4 +13,5 @@ public interface IGamerService {
     JsonObject listGamerOfClan(long id, long page, long recordPerPage);
 
     JsonObject listMatch(long id, long page, long recordPerPage);
+    JsonObject deleteGamerById(long id);
 }

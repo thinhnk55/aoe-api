@@ -54,9 +54,9 @@ public class GamerApi {
     }
 
     public static void systemAdminAuthApi(Router router) {
-        router.post(ApiConfig.instance().getPath("/clan/create"))
+        router.post(ApiConfig.instance().getPath("/gamer/delete"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSystemAdmin)
-                .handler(ClanRouter::deleteClan);
+                .handler(GamerRouter::deleteGamer);
     }
 }
