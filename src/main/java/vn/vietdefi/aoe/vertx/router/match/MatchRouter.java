@@ -164,7 +164,7 @@ public class MatchRouter {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.matchService.confirmMatch(json);
+            JsonObject response = AoeServices.matchService.createMatch(json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

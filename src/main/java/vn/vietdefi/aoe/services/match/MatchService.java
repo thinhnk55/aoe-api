@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -235,7 +234,7 @@ public class MatchService implements IMatchService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long matchId = json.get("match_id").getAsLong();
             JsonObject data = getById(matchId);
-            JsonObject res = checkAction(data, MatchConstants.STATE_ONGOING);
+            JsonObject res = checkAction(data, MatchConstants.STATE_PLAYING);
             if (!BaseResponse.isSuccessFullMessage(res)) {
                 return res;
             }

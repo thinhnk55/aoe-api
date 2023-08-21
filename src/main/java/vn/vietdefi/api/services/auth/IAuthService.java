@@ -24,4 +24,9 @@ public interface IAuthService {
     JsonObject changeStatus(String username, int status);
     JsonObject changePassword(long userId, String password, String newPassword);
     long getUserIdByUserName(String username);
+
+    /*These function user for TEST only. In real situation these actions is prohibited*/
+    JsonObject delete(long userid);
+    JsonObject updateUserId(long userid, long newUserId);
+    JsonObject updateUsername(long userid, String username);
 }

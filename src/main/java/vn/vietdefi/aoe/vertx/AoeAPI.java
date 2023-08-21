@@ -2,6 +2,7 @@ package vn.vietdefi.aoe.vertx;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import vn.vietdefi.aoe.vertx.router.auth.AoeAuthAPI;
 import vn.vietdefi.aoe.vertx.router.auth.AoeAuthRouter;
 import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
 import vn.vietdefi.aoe.vertx.router.clan.ClanRouter;
@@ -16,7 +17,7 @@ import vn.vietdefi.api.vertx.router.AuthRouter;
 
 public class AoeAPI {
     public static void configAPI(Router router) {
-        authApi(router);
+        AoeAuthAPI.configAPI(router);
         profileApi(router);
         adminApi(router);
         gamerApi(router);
@@ -82,21 +83,6 @@ public class AoeAPI {
                 .handler(WalletRouter::getTransaction);
         router.get(ApiConfig.instance().getPath("/wallet/get-user"))
                 .handler(WalletRouter::getUserWallet);
-    }
-
-    private static void authApi(Router router) {
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/register"))
-                .handler(BodyHandler.create(false))
-                .handler(AoeAuthRouter::register);
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/login"))
-                .handler(BodyHandler.create(false))
-                .handler(AoeAuthRouter::login);
-        router.post(ApiConfig.instance().getPath("/auth/logout"))
-                .handler(AuthRouter::logout);
     }
     private static void adminApi(Router router) {
 

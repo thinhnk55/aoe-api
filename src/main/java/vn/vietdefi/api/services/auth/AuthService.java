@@ -247,7 +247,7 @@ public class AuthService implements IAuthService {
             if(x == 1){
                 return BaseResponse.createFullMessageResponse(0, "success");
             }else{
-                return BaseResponse.createFullMessageResponse(10, "update_role_failure");
+                return BaseResponse.createFullMessageResponse(10, "update_failure");
             }
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -264,7 +264,7 @@ public class AuthService implements IAuthService {
             if(x == 1){
                 return BaseResponse.createFullMessageResponse(0, "success");
             }else{
-                return BaseResponse.createFullMessageResponse(10, "update_role_failure");
+                return BaseResponse.createFullMessageResponse(10, "update_failure");
             }
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -281,7 +281,7 @@ public class AuthService implements IAuthService {
             if(x == 1){
                 return BaseResponse.createFullMessageResponse(0, "success");
             }else{
-                return BaseResponse.createFullMessageResponse(10, "update_role_failure");
+                return BaseResponse.createFullMessageResponse(10, "update_failure");
             }
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -298,7 +298,7 @@ public class AuthService implements IAuthService {
             if(x == 1){
                 return BaseResponse.createFullMessageResponse(0, "success");
             }else{
-                return BaseResponse.createFullMessageResponse(10, "update_role_failure");
+                return BaseResponse.createFullMessageResponse(10, "update_failure");
             }
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -319,6 +319,60 @@ public class AuthService implements IAuthService {
         }catch (Exception e){
             e.printStackTrace();
             return 0;
+        }
+    }
+
+    @Override
+    public JsonObject delete(long userid) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "DELETE FROM user WHERE id = ?";
+            int x = bridge.update(query, userid);
+            if(x == 1){
+                return BaseResponse.createFullMessageResponse(0, "success");
+            }else{
+                return BaseResponse.createFullMessageResponse(10, "delete_failure");
+            }
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject updateUserId(long userid, long newUserId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE user SET id = ? WHERE id = ?";
+            int x = bridge.update(query, newUserId, userid);
+            if(x == 1){
+                return BaseResponse.createFullMessageResponse(0, "success");
+            }else{
+                return BaseResponse.createFullMessageResponse(10, "update_failure");
+            }
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject updateUsername(long userid, String username) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE user SET username = ? WHERE id = ?";
+            int x = bridge.update(query, username, userid);
+            if(x == 1){
+                return BaseResponse.createFullMessageResponse(0, "success");
+            }else{
+                return BaseResponse.createFullMessageResponse(10, "update_failure");
+            }
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 }

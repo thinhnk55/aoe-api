@@ -68,6 +68,35 @@ public class AuthRouter {
             rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
         }
     }
+    public static void authorizeSystemAdmin(RoutingContext rc) {
+        try {
+            int userid = Integer.parseInt(rc.request().getHeader("userid"));
+            String token = rc.request().getHeader("token");
+            JsonObject response = ApiServices.authService.authorize(userid, token);
+            if (BaseResponse.isSuccessFullMessage(response)) {
+                JsonObject user = response.getAsJsonObject("data");
+                int role = user.get("role").getAsInt();
+                if (role >= UserConstant.ROLE_SYSTEM_ADMIN) {
+                    rc.request().headers().add("username", user.get("username").getAsString());
+                    rc.request().headers().add("role", user.get("role").getAsString());
+                    rc.next();
+                } else {
+                    response = BaseResponse.createFullMessageResponse(
+                            2, "unauthorized"
+                    );
+                    rc.response().end(response.toString());
+                }
+            } else {
+                response = BaseResponse.createFullMessageResponse(
+                        2, "unauthorized"
+                );
+                rc.response().end(response.toString());
+            }
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
     public static void authorizeAdmin(RoutingContext rc) {
         try {
             int userid = Integer.parseInt(rc.request().getHeader("userid"));
@@ -147,6 +176,45 @@ public class AuthRouter {
             String username = json.get("username").getAsString();
             String password = json.get("password").getAsString();
             JsonObject response = ApiServices.authService.login(username, password);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
+
+    public static void updateUserId(RoutingContext rc) {
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long userId = Long.parseLong(json.get("user_id").getAsString());
+            long newUserId = Long.parseLong(json.get("user_id").getAsString());
+            JsonObject response = ApiServices.authService.updateUserId(userId, newUserId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
+    public static void updateUsername(RoutingContext rc) {
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long userId = Long.parseLong(json.get("user_id").getAsString());
+            String username = json.get("username").getAsString();
+            JsonObject response = ApiServices.authService.updateUsername(userId, username);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
+    public static void deleteUser(RoutingContext rc) {
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long userId = Long.parseLong(json.get("user_id").getAsString());
+            JsonObject response = ApiServices.authService.delete(userId);
             rc.response().end(response.toString());
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
