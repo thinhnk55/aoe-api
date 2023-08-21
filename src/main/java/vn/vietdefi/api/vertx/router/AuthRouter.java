@@ -18,7 +18,7 @@ public class AuthRouter {
             if (BaseResponse.isSuccessFullMessage(response)) {
                 JsonObject user = response.getAsJsonObject("data");
                 int role = user.get("role").getAsInt();
-                if (role == UserConstant.ROLE_USER) {
+                if (role >= UserConstant.ROLE_USER) {
                     rc.request().headers().add("username", user.get("username").getAsString());
                     rc.request().headers().add("role", user.get("role").getAsString());
                     rc.next();

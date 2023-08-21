@@ -7,8 +7,8 @@ public class UserConstant {
     public static final int STATUS_ACCOUNT_GENERATE = 2;
     public static final int STATUS_ACCOUNT_LINKED = 3;
 
-    public static final int ROLE_USER = 1;
-    public static final int ROLE_BOT = 2;
+    public static final int ROLE_USER = 2;
+    public static final int ROLE_BOT = 1;
     public static final int ROLE_SUPER_ADMIN = 10;
     public static final int ROLE_SYSTEM_ADMIN = 11;
     public static final int ROLE_ADMIN = 9;

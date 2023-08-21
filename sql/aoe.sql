@@ -9,55 +9,46 @@ CREATE TABLE IF NOT EXISTS aoe_profile  (
     lang           INT NOT NULL DEFAULT 0
 );
 
-
 CREATE TABLE IF NOT EXISTS gamer
 (
-    user_id      BIGINT AUTO_INCREMENT       PRIMARY KEY,
-    nick_name    VARCHAR(128)                 NOT NULL,
-    fullname     VARCHAR(128)                 NOT NULL,
-    avatar       VARCHAR(2048)                NOT NULL,
-    detail_info  JSON,
-    clan_id      BIGINT DEFAULT 0             NOT NULL,
-    `rank`       INT    DEFAULT 0             NOT NULL,
-    rank_info    TEXT                         NULL,
-    match_played INT    DEFAULT 0             NOT NULL,
-    match_won    INT    DEFAULT 0             NOT NULL,
-    update_time  BIGINT DEFAULT 0             NOT NULL,
-    status       INT                          NULL,
-    phone        VARCHAR(16)                  NOT NULL,
-    username     VARCHAR(128)                 NULL
+    user_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    phone VARCHAR(32) UNIQUE NOT NULL,
+    nick_name VARCHAR(128) UNIQUE NOT NULL,
+    full_name VARCHAR(256) NOT NULL,
+    avatar VARCHAR(2048) DEFAULT '' NOT NULL,
+    detail TEXT NOT NULL DEFAULT '{}',
+    clan_id BIGINT DEFAULT 0  NULL,
+    rank INT DEFAULT 0 NOT NULL,
+    rank_info VARCHAR(2048)  NULL,
+    match_played INT NOT NULL DEFAULT 0,
+    match_won INT NOT NULL DEFAULT 0,
+    update_time BIGINT NOT NULL DEFAULT 0,
+    state INT NOT NULL DEFAULT 0
 );
-CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nick_name);
-
 
 CREATE TABLE IF NOT EXISTS aoe_caster
 (
-    user_id    BIGINT      PRIMARY KEY                 NOT NULL ,
-    full_name   VARCHAR(256)                 DEFAULT '' NOT NULL,
-    nick_name  VARCHAR(128)                 DEFAULT '' NOT NULL,
-    avatar     TEXT                         DEFAULT '' NOT NULL,
-    detail     JSON,                                            #address, date_of_birth, fanpage_link, fgroup_link, youtube_link, tiktok_link, sport
-    phone      VARCHAR(32)                  DEFAULT '' NOT NULL,
-    image      JSON                         DEFAULT '' NOT NULL,
-    is_deleted INT                          DEFAULT 0  NULL,
-    clan_id    BIGINT                       DEFAULT 0  NULL
+    user_id BIGINT PRIMARY KEY NOT NULL,
+    phone VARCHAR(32) UNIQUE NOT NULL,
+    nick_name VARCHAR(128) UNIQUE NOT NULL,
+    full_name VARCHAR(256) NOT NULL,
+    avatar VARCHAR(2048) DEFAULT '' NOT NULL,
+    detail TEXT NOT NULL DEFAULT '{}',
+    clan_id BIGINT DEFAULT 0  NULL,
+    state INT NOT NULL DEFAULT 0
 );
-
-
-CREATE UNIQUE INDEX caster_nickname_unique_index ON aoe_caster(nick_name);
-
 
 CREATE TABLE IF NOT EXISTS aoe_clan
 (
-    id            BIGINT AUTO_INCREMENT      primary key,
-    clan_name     VARCHAR(128) DEFAULT ''     NULL,
-    avatar        TEXT         DEFAULT ''     NULL,
-    create_day    BIGINT                     NOT NULL,
-    founder       VARCHAR(128) DEFAULT ''     NOT NULL,
-    owner_unit    VARCHAR(128) DEFAULT ''     NOT NULL,
-    sport         VARCHAR(128) DEFAULT ''     NOT NULL,
-    detail_info   TEXT,
-    status        INT           DEFAULT 0      NOT NULL,
-    clan_fullname VARCHAR(128)                 NOT NULL
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    nick_name VARCHAR(128) UNIQUE NOT NULL,
+    full_name VARCHAR(128) NOT NULL,
+    avatar VARCHAR(2048) NOT NULL DEFAULT '',
+    create_day BIGINT NOT NULL,
+    founder VARCHAR(128) NOT NULL,
+    owner_unit VARCHAR(128) NOT NULL,
+    sport VARCHAR(128) NOT NULL,
+    detail TEXT NOT NULL DEFAULT '{}',
+    state INT NOT NULL DEFAULT 0
 );
 
