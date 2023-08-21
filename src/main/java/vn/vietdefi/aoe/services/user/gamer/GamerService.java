@@ -36,6 +36,7 @@ public class GamerService implements IGamerService {
             String password = "password";
             long userid = ApiServices.authService.register(phone, password, UserConstant.ROLE_USER,UserConstant.STATUS_NORMAL).get("data").getAsJsonObject().get("id").getAsLong();
             json.addProperty("user_id", userid);
+            AoeServices.profileService.getUserProfileByUserId(userid);
             bridge.insertObjectToDB("gamer","user_id",json);
 
 //            JsonObject info = new JsonObject();
@@ -64,7 +65,7 @@ public class GamerService implements IGamerService {
     public JsonObject getGamerByUserId(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM gamer WHERE user_id = ? AND status = ?";
+            String query = "SELECT * FROM gamer WHERE user_id = ? AND state = ?";
             JsonObject data = bridge.queryOne(query, id, 0);
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
@@ -205,6 +206,21 @@ public class GamerService implements IGamerService {
                 }
             }
             return BaseResponse.createFullMessageResponse(0, "success", response);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject deleteGamerById(long id) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "DELETE FROM gamer WHERE user_id = ?";
+            int x = bridge.update(query, id);
+            if (x == 1) return BaseResponse.createFullMessageResponse(0, "success");
+            return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);

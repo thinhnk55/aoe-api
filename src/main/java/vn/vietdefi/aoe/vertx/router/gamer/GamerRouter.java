@@ -111,4 +111,20 @@ public class GamerRouter {
             rc.response().end(response.toString());
         }
     }
+
+
+    public static void deleteGamer(RoutingContext rc) {
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long Id = Long.parseLong(json.get("id").getAsString());
+            JsonObject response = AoeServices.gamerService.deleteGamerById(Id);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
+
+
 }
