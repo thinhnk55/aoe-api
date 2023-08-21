@@ -61,11 +61,11 @@ public class StarTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertTrue(response.get("data").getAsJsonArray().size() == 11);
 
-            /*test get transaction by id*/
+            /*test get star transaction by id*/
             long transactionId = 20;
             String getTransactionByIdURL = new StringBuilder(baseUrl).append("/star/transaction")
                     .append("?id=").append(transactionId).toString();
-            response = OkHttpUtil.get(getTransactionByIdURL);
+            response = OkHttpUtil.get(getTransactionByIdURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertNotNull(response.getAsJsonObject("data"));
