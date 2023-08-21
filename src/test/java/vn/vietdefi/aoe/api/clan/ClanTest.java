@@ -46,17 +46,20 @@ public class ClanTest {
         public void test1(){
             //Tao Clan
             JsonObject data = new JsonObject();
-            data.addProperty("nick_name", "SBS12345799666");
+            data.addProperty("nick_name", "SBSSSDss");
             data.addProperty("full_name", "slowbutsure");
             data.addProperty("avatar", "https://chimsedinang.com/wp-content/uploads/2021/10/clan-sbs-450x600-1.png");
             data.addProperty("create_day", "1622400000000");
             data.addProperty("founder", "Nguyễn Đức Bình");
             data.addProperty("owner_unit", "Chim Sẻ Đi Nắng Studio");
             data.addProperty("sport", "Age of Empire");
-            data.addProperty("facebook_link", "https:/");
-            data.addProperty("fanpage_link", "https:/");
-            data.addProperty("tiktok_link", "https:/");
-            data.addProperty("youtube_link", "https:/");
+            JsonObject detail = new JsonObject();
+            detail.addProperty("facebook_link", "https:/");
+            detail.addProperty("fanpage_link", "https:/");
+            detail.addProperty("tiktok_link", "https:/");
+            detail.addProperty("youtube_link", "https:/");
+            data.add("detail", detail);
+
             String createUrl = new StringBuilder(baseUrl)
                     .append("/clan/create").toString();
             JsonObject response = OkHttpUtil.postJson(createUrl, data.toString(),Common.createHeaderAdmin());
@@ -87,23 +90,24 @@ public class ClanTest {
             //update clan
             JsonObject data1 = new JsonObject();
             data1.addProperty("id", clanId);
-            data1.addProperty("nick_name", "SBS1552345677783");
+            data1.addProperty("nick_name", "SBSDDDSSD3");
             data1.addProperty("full_name", "slowbutsssure");
             data1.addProperty("avatar", "https://chimsssedinang.com/wp-content/uploads/2021/10/clan-sbs-450x600-1.png");
             data1.addProperty("create_day", "1622400000000");
             data1.addProperty("founder", "Nguyễn Đaức Bình");
             data1.addProperty("owner_unit", "Chim Sẻ Đi sNắng Studio");
             data1.addProperty("sport", "Age of Empsire");
-            data1.addProperty("facebook_link", "httsps:/");
-            data1.addProperty("fanpage_link", "httsps:/");
-            data1.addProperty("tiktok_link", "httpss:/");
-            data1.addProperty("youtube_link", "hsttps:/");
+            JsonObject detail1 = new JsonObject();
+            detail1.addProperty("facebook_link", "httssps:/");
+            detail1.addProperty("fanpage_link", "httssps:/");
+            detail1.addProperty("tiktok_link", "httpsss:/");
+            detail1.addProperty("youtube_link", "httssps:/");
+            data1.add("detail", detail1);;
             String updateClan = new StringBuilder(baseUrl)
                     .append("/clan/update").toString();
             response = OkHttpUtil.postJson(updateClan, data1.toString(), Common.createHeaderAdmin());
             DebugLogger.info("{}", response);
-            int error = response.get("error").getAsInt();
-            Assertions.assertEquals(error, 0);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             //list clan
             String getList = new StringBuilder(baseUrl)
                     .append("/clan/list").toString();

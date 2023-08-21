@@ -13,36 +13,27 @@ public class ClanService implements IClanService{
     public JsonObject createClan(JsonObject json){
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject insertToDb = new JsonObject();
+            JsonObject data = new JsonObject();
             String clanName = json.get("nick_name").getAsString();
-            insertToDb.addProperty("nick_name",clanName);
-            insertToDb.addProperty("full_name",json.get("full_name").getAsString());
+            data.addProperty("nick_name",clanName);
+            data.addProperty("full_name",json.get("full_name").getAsString());
             String query = "SELECT nick_name FROM aoe_clan WHERE nick_name = ?";
             if(bridge.queryExist(query,clanName)) {
                 return BaseResponse.createFullMessageResponse(12,"clan_name_exist");
             }
-            insertToDb.add("detail",createDetail(json));
-            insertToDb.addProperty("avatar",json.get("avatar").getAsString());
-            insertToDb.addProperty("founder",json.get("founder").getAsString());
-            insertToDb.addProperty("owner_unit",json.get("owner_unit").getAsString());
-            insertToDb.addProperty("sport",json.get("sport").getAsString());
-            insertToDb.addProperty("create_day",json.get("create_day").getAsLong());
-            bridge.insertObjectToDB("aoe_clan",insertToDb);
-            return BaseResponse.createFullMessageResponse(0, "success", insertToDb);
+            data.add("detail",json.get("detail"));
+            data.addProperty("avatar",json.get("avatar").getAsString());
+            data.addProperty("founder",json.get("founder").getAsString());
+            data.addProperty("owner_unit",json.get("owner_unit").getAsString());
+            data.addProperty("sport",json.get("sport").getAsString());
+            data.addProperty("create_day",json.get("create_day").getAsLong());
+            bridge.insertObjectToDB("aoe_clan",data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
            return BaseResponse.createFullMessageResponse(1,"system_error");
         }
-    }
-
-    private JsonObject createDetail(JsonObject json) {
-        JsonObject detail = new JsonObject();
-        detail.add("facebook_link", json.get("facebook_link"));
-        detail.add("tiktok_link", json.get("tiktok_link"));
-        detail.add("youtube_link", json.get("youtube_link"));
-        detail.add("fanpage_link", json.get("fanpage_link"));
-        return detail;
     }
 
     public JsonObject updateClan(JsonObject json) {
@@ -54,20 +45,13 @@ public class ClanService implements IClanService{
             boolean isClanNameExist = bridge.queryExist(query, clanName, clanId);
             if (isClanNameExist)
                 return BaseResponse.createFullMessageResponse(12, "clan_name_exist");
-
             String clanFullName = json.get("full_name").getAsString();
             String avatar = json.get("avatar").getAsString();
             long createDay = json.get("create_day").getAsLong();
             String founder = json.get("founder").getAsString();
             String ownerUnit = json.get("owner_unit").getAsString();
             String sport = json.get("sport").getAsString();
-
-            JsonObject detail = new JsonObject();
-            detail.addProperty("facebook_link", json.get("facebook_link").getAsString());
-            detail.addProperty("tiktok_link", json.get("tiktok_link").getAsString());
-            detail.addProperty("youtube_link", json.get("youtube_link").getAsString());
-            detail.addProperty("fanpage_link", json.get("fanpage_link").getAsString());
-
+            JsonObject detail = json.get("detail").getAsJsonObject();
             query = "UPDATE aoe_clan SET nick_name = ?,avatar = ?,create_day = ?,founder = ?,owner_unit = ?,sport = ?,detail = ?,full_name = ? WHERE id = ?";
             bridge.update(query, clanName, avatar, createDay, founder, ownerUnit, sport, detail, clanFullName, clanId);
 
@@ -84,7 +68,6 @@ public class ClanService implements IClanService{
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject result = new JsonObject();
-            long totalRow = 0;
             //Data return
             String query = "SELECT * from aoe_clan where state = ? LIMIT ? OFFSET ?";
             JsonArray clans = bridge.query(query, 0, recordPerPage, (page - 1) * recordPerPage);
