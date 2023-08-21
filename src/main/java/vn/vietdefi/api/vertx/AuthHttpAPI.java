@@ -21,5 +21,6 @@ public class AuthHttpAPI {
                         .getPath("/login"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::login);
+
     }
 }

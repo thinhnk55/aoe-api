@@ -26,10 +26,8 @@ public class GamerRouter {
     }
     public static void updateInfo(RoutingContext rc){
         try{
-            long userid = Long.parseLong(rc.request().getParam("id"));
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            json.addProperty("userid",userid);
             JsonObject response = AoeServices.gamerService.update(json);
             rc.response().end(response.toString());
         }
@@ -84,7 +82,7 @@ public class GamerRouter {
 
     public static void listGamerOfClan(RoutingContext rc) {
         try{
-            long id = Long.parseLong(rc.request().getParam("id"));
+            long id = Long.parseLong(rc.request().getParam("clan_id"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
             JsonObject response = AoeServices.gamerService.listGamerOfClan(id, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
@@ -117,7 +115,7 @@ public class GamerRouter {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            long Id = Long.parseLong(json.get("id").getAsString());
+            long Id = Long.parseLong(json.get("user_id").getAsString());
             JsonObject response = AoeServices.gamerService.deleteGamerById(Id);
             rc.response().end(response.toString());
         } catch (Exception e) {

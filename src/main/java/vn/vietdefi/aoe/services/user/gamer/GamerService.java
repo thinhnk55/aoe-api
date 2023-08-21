@@ -71,11 +71,26 @@ public class GamerService implements IGamerService {
         }
     }
 
+    public static JsonObject getGamerById(long id){
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM gamer WHERE user_id = ?";
+            JsonObject data = bridge.queryOne(query, id);
+            if (data == null) {
+                return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
     public JsonObject update(JsonObject data) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long user_id = data.get("user_id").getAsLong();
-            JsonObject response = getGamerByUserId(user_id);
+            JsonObject response = getGamerById(user_id);
             if(!BaseResponse.isSuccessFullMessage(response)){
                 return response;
             }
