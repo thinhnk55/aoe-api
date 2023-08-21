@@ -29,7 +29,7 @@ public interface IBankService {
     JsonObject listWaitingTransaction();
     void updateBankTransactionState(long id,
                                     int state);
-
-    void completeBankTransaction(BankTransaction transaction,
-                                 long starTransactionId);
+    void updateStarTransactionId(long id,long star_transaction_id);
+    void doneBankTransactionState(long id,
+                                 int service, long targetId);
 }

@@ -27,8 +27,7 @@ public class CasterRouter {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            long casterId = json.get("caster_id").getAsLong();
-            JsonObject response = AoeServices.casterService.updateCaster(casterId,json);
+            JsonObject response = AoeServices.casterService.updateCaster(json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -50,6 +49,19 @@ public class CasterRouter {
             JsonObject response = BaseResponse.createFullMessageResponse(
                     1, "system_error");
             routingContext.response().end(response.toString());
+        }
+    }
+    public static void getCasterByUserId(RoutingContext rc){
+        try{
+            long id = Long.parseLong(rc.request().getParam("caster_id"));
+            JsonObject response = AoeServices.casterService.getCasterByUserId(id);
+            rc.response().end(response.toString());
+        }
+        catch (Exception e){
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
+            rc.response().end(response.toString());
         }
     }
 }

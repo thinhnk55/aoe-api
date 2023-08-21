@@ -34,7 +34,9 @@ CREATE TABLE IF NOT EXISTS bank_transaction
     sender_name           VARCHAR(256) DEFAULT ''  NOT NULL,
     create_time           BIGINT       DEFAULT 0   NOT NULL,
     state                INT          DEFAULT 0   NOT NULL,
-    star_transaction_id   BIGINT       DEFAULT -1  NOT NULL
+    star_transaction_id   BIGINT       DEFAULT 0  NOT NULL,
+    service   INT       DEFAULT 0  NOT NULL,
+    target_id   INT       DEFAULT 0  NOT NULL
 );
 CREATE INDEX bank_transaction_create_time_index ON bank_transaction (create_time);
 

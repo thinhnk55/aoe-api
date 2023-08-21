@@ -36,6 +36,8 @@ public class BankTransaction {
     public long create_time;
     public int state;
     public long star_transaction_id;
+    public int service;
+    public long target_id;
 
     public BankTransaction(JsonObject data) {
         id = data.get("id").getAsLong();
@@ -51,5 +53,7 @@ public class BankTransaction {
         create_time = data.get("create_time").getAsLong();
         state = data.get("state").getAsInt();
         star_transaction_id = data.get("star_transaction_id").getAsLong();
+        service = data.get("service").getAsInt();
+        target_id = data.get("target_id").getAsLong();
     }
 }

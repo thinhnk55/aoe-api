@@ -1,40 +1,63 @@
+#DROP TABLE aoe_profile;
 CREATE TABLE IF NOT EXISTS aoe_profile  (
-    user_id      BIGINT PRIMARY KEY NOT NULL,
-    user_name    VARCHAR(128) UNIQUE NOT NULL,
-    nick_name    VARCHAR(2048) UNIQUE NOT NULL,
-    level        INT NOT NULL DEFAULT 0,
-    avatar       VARCHAR(2048) NOT NULL
+    user_id        BIGINT PRIMARY KEY NOT NULL,
+    username       VARCHAR(128) UNIQUE NOT NULL,
+    nick_name      VARCHAR(128) NOT NULL,
+    exp            INT NOT NULL DEFAULT 0,
+    rank            INT NOT NULL DEFAULT 0,
+    avatar         VARCHAR(2048) NOT NULL DEFAULT '',
+    lang           INT NOT NULL DEFAULT 0
 );
 
-CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nickname);
 
-CREATE TABLE IF NOT EXISTS gamer  (
-    user_id      BIGINT PRIMARY KEY NOT NULL,
-    nickname     VARCHAR(2048) UNIQUE NOT NULL,
-    main_name    VARCHAR(2048) NOT NULL,
-    avatar       VARCHAR(2048) NOT NULL ,
-    detail_info  JSON,									#{"day_of_birth":"07-09-2002", "address":"NB","sport":"aoe","fb_link":"...","tiktok_link":"...","image":"img.jpg"..}
-    clan_id      BIGINT NOT NULL DEFAULT 0,
-    rank         INT NOT NULL DEFAULT 0 ,				#1:chuyên nghiệp, 2:bán chuyên, 3 : phong trào
-    rank_info    TEXT  ,							    #{"team":"Top 1", "solo_ramdom":"Top 1"}
-    match_played INT NOT NULL DEFAULT 0,
-    match_won    INT NOT NULL DEFAULT 0,
-    update_time  BIGINT NOT NULL DEFAULT 0,
-    status       INT,                                   #0 : gamer hoạt động; 1 gamer bị vô hiệu hóa
-    phone_number VARCHAR(2048) NOT NULL
+CREATE TABLE IF NOT EXISTS gamer
+(
+    user_id      BIGINT AUTO_INCREMENT       PRIMARY KEY,
+    nick_name    VARCHAR(128)                 NOT NULL,
+    fullname     VARCHAR(128)                 NOT NULL,
+    avatar       VARCHAR(2048)                NOT NULL,
+    detail_info  JSON,
+    clan_id      BIGINT DEFAULT 0             NOT NULL,
+    `rank`       INT    DEFAULT 0             NOT NULL,
+    rank_info    TEXT                         NULL,
+    match_played INT    DEFAULT 0             NOT NULL,
+    match_won    INT    DEFAULT 0             NOT NULL,
+    update_time  BIGINT DEFAULT 0             NOT NULL,
+    status       INT                          NULL,
+    phone        VARCHAR(16)                  NOT NULL,
+    username     VARCHAR(128)                 NULL
 );
-CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nickname);
+CREATE UNIQUE INDEX gamer_nickname_unique_index ON gamer (nick_name);
 
 
-CREATE TABLE IF NOT EXISTS caster (
-    id INT(11) PRIMARY KEY NOT NULL,
-    fullname VARCHAR(2048) NOT NULL DEFAULT '',
-    nickname VARCHAR(2048) UNIQUE NOT NULL DEFAULT '',
-    avatar VARCHAR(2048) NOT NULL DEFAULT '',
-    detail JSON ,
-    phone_number VARCHAR(2048) NOT NULL DEFAULT '',
-    image JSON NOT NULL DEFAULT '' ,
-    is_deleted INT(11)  NULL DEFAULT 0,
-    clan_id BIGINT(20) NULL DEFAULT 0
+CREATE TABLE IF NOT EXISTS aoe_caster
+(
+    user_id    BIGINT      PRIMARY KEY                 NOT NULL ,
+    full_name   VARCHAR(256)                 DEFAULT '' NOT NULL,
+    nick_name  VARCHAR(128)                 DEFAULT '' NOT NULL,
+    avatar     TEXT                         DEFAULT '' NOT NULL,
+    detail     JSON,                                            #address, date_of_birth, fanpage_link, fgroup_link, youtube_link, tiktok_link, sport
+    phone      VARCHAR(32)                  DEFAULT '' NOT NULL,
+    image      JSON                         DEFAULT '' NOT NULL,
+    is_deleted INT                          DEFAULT 0  NULL,
+    clan_id    BIGINT                       DEFAULT 0  NULL
 );
-CREATE UNIQUE INDEX caster_nickname_unique_index ON caster (nickname);
+
+
+CREATE UNIQUE INDEX caster_nickname_unique_index ON aoe_caster(nick_name);
+
+
+CREATE TABLE IF NOT EXISTS aoe_clan
+(
+    id            BIGINT AUTO_INCREMENT      primary key,
+    clan_name     VARCHAR(128) DEFAULT ''     NULL,
+    avatar        TEXT         DEFAULT ''     NULL,
+    create_day    BIGINT                     NOT NULL,
+    founder       VARCHAR(128) DEFAULT ''     NOT NULL,
+    owner_unit    VARCHAR(128) DEFAULT ''     NOT NULL,
+    sport         VARCHAR(128) DEFAULT ''     NOT NULL,
+    detail_info   TEXT,
+    status        INT           DEFAULT 0      NOT NULL,
+    clan_fullname VARCHAR(128)                 NOT NULL
+);
+

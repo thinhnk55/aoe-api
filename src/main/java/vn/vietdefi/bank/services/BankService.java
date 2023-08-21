@@ -221,7 +221,7 @@ public class BankService implements IBankService {
     public JsonObject getBalanceTransactionById(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM balance_transaction WHERE id = ?";
+            String query = "SELECT * FROM bank_transaction WHERE id = ?";
             JsonObject data = bridge.queryOne(query, id);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -257,12 +257,24 @@ public class BankService implements IBankService {
     }
 
     @Override
-    public void completeBankTransaction(BankTransaction transaction,
-                                 long starTransactionId){
+    public void updateStarTransactionId(long id,
+                                        long star_transaction_id){
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE bank_transaction SET state = ?, star_transaction_id = ? WHERE id = ?";
-            bridge.update(query, BankTransactionState.DONE, starTransactionId, transaction.id);
+            String query = "UPDATE bank_transaction SET star_transaction_id = ? WHERE id = ?";
+            bridge.update(query, star_transaction_id, id);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+        }
+    }
+    @Override
+    public void doneBankTransactionState(long id, int service,
+                                        long target_id){
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE bank_transaction SET state =?, service = ?, target_id = ? WHERE id = ?";
+            bridge.update(query, BankTransactionState.DONE, service, target_id, id);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
