@@ -30,7 +30,7 @@ public class GamerRouter {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
             json.addProperty("userid",userid);
-            JsonObject response = AoeServices.gamerService.updateInfo(json);
+            JsonObject response = AoeServices.gamerService.update(json);
             rc.response().end(response.toString());
         }
         catch (Exception e){

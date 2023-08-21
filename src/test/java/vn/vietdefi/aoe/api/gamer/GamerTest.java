@@ -43,7 +43,7 @@ public class GamerTest {
             long id = 105;
             JsonObject response = Common.deleleUser(baseUrl, "0915434544", "password");
             DebugLogger.info("{}", response);
-            String deleteGamer = new StringBuilder(baseUrl).append("/gamer/delete").append(id).toString();
+            String deleteGamer = new StringBuilder(baseUrl).append("/gamer/delete").toString();
             JsonObject data = new JsonObject();
             data.addProperty("id",id);
             response = OkHttpUtil.postJson(deleteGamer,data.toString(), Common.createHeaderSystemAdmin());
