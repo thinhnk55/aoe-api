@@ -1,6 +1,7 @@
 package vn.vietdefi.aoe.vertx.router.star;
 
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
@@ -17,16 +18,16 @@ public class StarAPI {
         router.get(ApiConfig.instance().getPath("/star/get"))
                 .handler(AuthRouter::authorizeUser)
                 .handler(StarRouter::getStarWallet);
-        router.get(ApiConfig.instance().getPath("/star/list-by-service"))
+
+        router.get(ApiConfig.instance().getPath("/star/transaction/service"))
                 .handler(AuthRouter::authorizeUser)
                 .handler(StarRouter::listByService);
-        router.get(ApiConfig.instance().getPath("/star/list-transaction"))
-                .handler(AuthRouter::authorizeUser)
-                .handler(StarRouter::listTransaction);
-        router.get(ApiConfig.instance().getPath("/star/transaction"))
+
+        router.get(ApiConfig.instance().getPath("/star/transaction/get"))
                 .handler(AuthRouter::authorizeUser)
                 .handler(StarRouter::getTransaction);
-        router.get(ApiConfig.instance().getPath("/star/transaction-by-time"))
+
+        router.get(ApiConfig.instance().getPath("/star/transaction/time"))
                 .handler(AuthRouter::authorizeUser)
                 .handler(StarRouter::listByTime);
     }
@@ -42,6 +43,9 @@ public class StarAPI {
 
     }
     public static void systemAdminAuthApi(Router router) {
-
+        router.post(ApiConfig.instance().getPath("/star/admin/exchange"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeSystemAdmin)
+                .handler(StarRouter::systemAdminExchangeStar);
     }
 }

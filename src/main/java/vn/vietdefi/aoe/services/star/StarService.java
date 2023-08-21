@@ -61,7 +61,7 @@ public class StarService implements IStarService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT * FROM aoe_star_transaction WHERE user_id = ? AND service = ? LIMIT ? OFFSET ?";
+            String query = "SELECT * FROM aoe_star_transaction WHERE user_id = ? AND service = ? ORDER BY id DESC LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, userId, service, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -76,7 +76,7 @@ public class StarService implements IStarService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT * FROM aoe_star_transaction WHERE user_id = ? LIMIT ? OFFSET ?";
+            String query = "SELECT * FROM aoe_star_transaction WHERE user_id = ? ORDER BY id DESC LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, userId, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {

@@ -54,6 +54,19 @@ public class GamerRouter {
         }
     }
 
+    public static void listGamerByMatchId(RoutingContext rc) {
+        try{
+            long matchId = Long.parseLong(rc.request().getParam("id"));
+            JsonObject response = AoeServices.gamerService.getGamerByUserId(matchId);
+            rc.response().end(response.toString());
+        }
+        catch (Exception e){
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
+            rc.response().end(response.toString());
+        }
+    }
 
     public static void listGamer(RoutingContext rc) {
         try{
@@ -83,6 +96,22 @@ public class GamerRouter {
             rc.response().end(response.toString());
         }
     }
+
+    public static void listMatch(RoutingContext rc) {
+        try{
+            long id = Long.parseLong(rc.request().getParam("id"));
+            long page = Long.parseLong(rc.request().getParam("page", "1"));
+            JsonObject response = AoeServices.gamerService.getGamerByUserId(id);
+            rc.response().end(response.toString());
+        }
+        catch (Exception e){
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
 
     public static void deleteGamer(RoutingContext rc) {
         try {
