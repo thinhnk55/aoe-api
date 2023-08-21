@@ -63,6 +63,6 @@ public class AoeAuthAPI {
                         .getPath("/auth/login/gamer"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSystemAdmin)
-                .handler(AuthRouter::loginGamer);
+                .handler(AoeAuthRouter::loginGamer);
     }
 }
