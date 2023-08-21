@@ -49,16 +49,17 @@ public class StarTest {
             Assertions.assertEquals(user.get("star").getAsJsonObject(), response.getAsJsonObject("data"));
 
             /*test get by time*/
-
-            long from = 1692361327406L;
-            long to = 1692396616953L;
+            long userId = 1;
+            String token = "2gbpnlvqtidiifohxnqb1thw1un969uq";
+            long from = 1692373548373L;
+            long to = 1692373925745L;
             int page = 1;
             String getTransactionByTimeURL = new StringBuilder(baseUrl).append("/star/transaction-by-time")
                     .append("?from=").append(from).append("&to=").append(to).append("&page=").append(page).toString();
-            response = OkHttpUtil.get(getTransactionByTimeURL, Common.createHeader(user));
+            response = OkHttpUtil.get(getTransactionByTimeURL, Common.createHeader(userId, token));
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-            Assertions.assertTrue(response.get("data").getAsJsonArray().size() == 0);
+            Assertions.assertTrue(response.get("data").getAsJsonArray().size() == 11);
 
             /*test get transaction by id*/
             long transactionId = 20;
@@ -69,6 +70,16 @@ public class StarTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertNotNull(response.getAsJsonObject("data"));
             Assertions.assertTrue(response.getAsJsonObject("data").get("id").getAsLong() == transactionId);
+
+            /*test admin get star wallet by userId*/
+            long starWalletId = 13;
+            String adminGetStarURL = new StringBuilder(baseUrl).append("/star/admin/get")
+                    .append("?id=").append(starWalletId).toString();
+            response = OkHttpUtil.get(adminGetStarURL, Common.createHeader(Common.support_id, Common.support_token));
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            Assertions.assertEquals(response.getAsJsonObject("data").get("user_id").getAsLong(), starWalletId);
+
         }
         @Test
         public void test0(){
