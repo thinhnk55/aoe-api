@@ -70,7 +70,6 @@ public class ClanTest {
             getClan = response.getAsJsonObject("data");
             Assertions.assertEquals(clan.toString(), getClan.toString());
 
-
             //Xoa luon clan vua tao
             String deleteUrl = new StringBuilder(baseUrl)
                     .append("/clan/delete").toString();
