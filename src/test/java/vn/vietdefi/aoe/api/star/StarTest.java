@@ -48,7 +48,7 @@ public class StarTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertEquals(user.get("star").getAsJsonObject(), response.getAsJsonObject("data"));
 
-            /*test get by time*/
+            /*test get transaction by time*/
             long userId = 1;
             String token = "2gbpnlvqtidiifohxnqb1thw1un969uq";
             long from = 1692373548373L;

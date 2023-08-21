@@ -124,6 +124,8 @@ public class StarService implements IStarService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM aoe_star_transaction WHERE id = ?";
             JsonObject data = bridge.queryOne(query, id);
+            if (data == null)
+                return BaseResponse.createFullMessageResponse(10, "star_transaction_not_exit");
             addReferToTransaction(data);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
