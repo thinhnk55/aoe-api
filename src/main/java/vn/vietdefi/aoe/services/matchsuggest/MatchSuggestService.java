@@ -123,11 +123,6 @@ public class MatchSuggestService implements IMatchSuggestService{
         }
     }
 
-    @Override
-    public JsonObject confirmMatchSuggest(long id) {
-        return null;
-    }
-
     public JsonObject confirmMatchSuggest(JsonObject info) {
         try {
             long id = info.get("match_suggest_id").getAsLong();
