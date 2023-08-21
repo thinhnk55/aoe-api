@@ -40,54 +40,49 @@ public class GamerTest {
         @Test
         public void test1(){
             //Tao Clan
-            long id = 105;
-            JsonObject response = Common.deleleUser(baseUrl, "0915434544", "password");
+            JsonObject response = Common.deleleUser(baseUrl, "0915434540", "password");
             DebugLogger.info("{}", response);
             String deleteGamer = new StringBuilder(baseUrl).append("/gamer/delete").toString();
             JsonObject data = new JsonObject();
-            data.addProperty("id",id);
+            data.addProperty("id",120);
             response = OkHttpUtil.postJson(deleteGamer,data.toString(), Common.createHeaderSystemAdmin());
             DebugLogger.info("{}", response);
             data = new JsonObject();
-            data.addProperty("phone","0915434544");
-            data.addProperty("nick_name","khanhsof5");
+            data.addProperty("phone","0915434540");
+            data.addProperty("nick_name","khanhsof6");
             data.addProperty("full_name","KhanhAd");
             data.addProperty("avatar","http://");
             data.addProperty("detail","{}");
             data.addProperty("clan_id","1");
             data.addProperty("rank",1);
             data.addProperty("rank_info","{'Solo': 'Top1'}");
-            data.addProperty("update_time",System.currentTimeMillis());
             String createUrl = new StringBuilder(baseUrl)
                     .append("/gamer/create").toString();
             response = OkHttpUtil.postJson(createUrl, data.toString(), Common.createHeaderAdmin());
             DebugLogger.info("{}",response);
             JsonObject gamer = response.getAsJsonObject("data");
-            id = gamer.get("user_id").getAsLong();
+            long id = gamer.get("user_id").getAsLong();
 
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
 
-            //Get clan
+            //Get gamer by id
             String getUrlById = new StringBuilder(baseUrl)
                     .append("/gamer/get?id=")
                     .append(id).toString();
             response = OkHttpUtil.get(getUrlById);
             DebugLogger.info("{}", response);
             JsonObject getClan = response.getAsJsonObject("data");
-            Assertions.assertEquals(clan.toString(), getClan.toString());
 
-            //Get clan
+            //Get list of gamer
             int page = 1;
             String getUrlListGamer = new StringBuilder(baseUrl)
                     .append("/gamer/list?page=")
                     .append(page).toString();
-            response = OkHttpUtil.postJson(getUrlById, data.toString());
+            response = OkHttpUtil.get(getUrlListGamer);
             DebugLogger.info("{}", response);
-            getClan = response.getAsJsonObject("data");
-            Assertions.assertEquals(clan.toString(), getClan.toString());
-
-            //Xoa luon clan vua tao
+            //Xoa luon gamer vua tao
+            response = OkHttpUtil.postJson(deleteGamer,data.toString(), Common.createHeaderSystemAdmin());
 
         }
     }

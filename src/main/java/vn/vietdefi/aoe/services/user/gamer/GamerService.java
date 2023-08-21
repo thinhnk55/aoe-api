@@ -27,6 +27,9 @@ public class GamerService implements IGamerService {
                     return response;
                 }
             }
+            else {
+                return BaseResponse.createFullMessageResponse(12, "phone_used");
+            }
             JsonObject user = response.getAsJsonObject("data");
             data.addProperty("user_id", user.get("id").getAsLong());
             long createTime = System.currentTimeMillis();
@@ -136,7 +139,7 @@ public class GamerService implements IGamerService {
             String query = "DELETE FROM gamer WHERE user_id = ?";
             int x = bridge.update(query, id);
             if (x == 1) return BaseResponse.createFullMessageResponse(0, "success");
-            return BaseResponse.createFullMessageResponse(0, "success");
+            return BaseResponse.createFullMessageResponse(10, "not_found_gamer");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
