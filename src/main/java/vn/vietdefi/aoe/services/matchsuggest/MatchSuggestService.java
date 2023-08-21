@@ -15,7 +15,7 @@ public class MatchSuggestService implements IMatchSuggestService{
     public JsonObject createMatchSuggest(long suggester, JsonObject data) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-=            long star = data.get("amount").getAsLong();
+            long star = data.get("amount").getAsLong();
             if(star < MatchSuggestConstant.STAR_REQUIRE_TO_SUGGEST_A_MATCH){
                 return BaseResponse.createFullMessageResponse(10, "star_reject");
             }
@@ -122,7 +122,12 @@ public class MatchSuggestService implements IMatchSuggestService{
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
     @Override
+    public JsonObject confirmMatchSuggest(long id) {
+        return null;
+    }
+
     public JsonObject confirmMatchSuggest(JsonObject info) {
         try {
             long id = info.get("match_suggest_id").getAsLong();
@@ -136,7 +141,7 @@ public class MatchSuggestService implements IMatchSuggestService{
             }
             long suggester = suggest.get("suggester_id").getAsLong();
             long star = suggest.get("amount").getAsLong();
-            if (!AoeServices.starService.checkStar(amount, suggester)) {
+            if (!AoeServices.starService.checkStar(star, suggester)) {
                 return BaseResponse.createFullMessageResponse(12, "balance_not_enough");
             }
             JsonObject match = new JsonObject();
@@ -157,7 +162,7 @@ public class MatchSuggestService implements IMatchSuggestService{
                     StarConstant.SERVICE_REFUND_SUGGEST
                     ,star, id);
             if (!BaseResponse.isSuccessFullMessage(response)) {
-                return transaction;
+                return response;
             }
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE aoe_match_suggest SET state = ? WHERE id = ?";

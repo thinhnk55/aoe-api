@@ -343,4 +343,9 @@ public class MatchService implements IMatchService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    @Override
+    public JsonObject confirmMatch(JsonObject json) {
+        return null;
+    }
 }

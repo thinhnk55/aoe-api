@@ -68,11 +68,11 @@ public class DonateRouter {
         }
     }
 
-    public static void listFanDonate(RoutingContext rc) {
+    public static void listDonate(RoutingContext rc) {
         try {
             long targetId = Long.parseLong(rc.request().getParam("id"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.donateService.listFanDonate(targetId, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.donateService.listDonateByTargetId(targetId, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -82,12 +82,12 @@ public class DonateRouter {
             rc.response().end(response.toString());
         }
     }
-
     public static void listTopDonate(RoutingContext rc) {
         try {
             long targetId = Long.parseLong(rc.request().getParam("id"));
+            long time = Long.parseLong(rc.request().getParam("time", "0"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.donateService.listTopDonateByTime(targetId, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.donateService.listTopDonateByTargetId(time, targetId, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -98,27 +98,11 @@ public class DonateRouter {
         }
     }
 
-    public static void listTopDonateByTime(RoutingContext rc) {
+    public static void listAllTopDonate(RoutingContext rc) {
         try {
-            long targetId = Long.parseLong(rc.request().getParam("id"));
-            long time = Long.parseLong(rc.request().getParam("time"));
+            long time = Long.parseLong(rc.request().getParam("time","0"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.donateService.listTopDonateByTime(time, targetId, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
-            rc.response().end(response.toString());
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(
-                    1, "system_error");
-            rc.response().end(response.toString());
-        }
-    }
-
-    public static void listTopByTime(RoutingContext rc) {
-        try {
-            long time = Long.parseLong(rc.request().getParam("time"));
-            long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.donateService.listTopDonateByTime(time, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.donateService.listAllTopDonate(time, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

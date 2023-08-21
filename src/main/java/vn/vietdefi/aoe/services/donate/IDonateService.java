@@ -7,9 +7,9 @@ public interface IDonateService {
     void updateDonateUsed(long id, long add_star_transaction_id);
     public JsonObject createDonate(JsonObject data);
     public JsonObject getDonateById(long id);
-    JsonObject listFanDonate(long targetId, long page, long recordPerPage);
-    JsonObject listTopDonateByTime(long time, long page, long recordPerPage);
-    JsonObject listTopDonateByTime(long time, long targetId, long page, long recordPerPage);
+    JsonObject listDonateByTargetId(long targetId, long page, long recordPerPage);
+    JsonObject listAllTopDonate(long time, long page, long recordPerPage);
+    JsonObject listTopDonateByTargetId(long time, long targetId, long page, long recordPerPage);
 
     long getTotalDonateByUserId(long id);
 }

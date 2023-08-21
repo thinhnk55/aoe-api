@@ -19,4 +19,6 @@ public interface IMatchService {
     JsonObject addStarCurrentMatch(long matchId, long amount);
     long totalMatch(long userId);
     JsonObject checkAcceptDonate(long targetId);
+
+    JsonObject confirmMatch(JsonObject json);
 }
