@@ -84,6 +84,23 @@ public class StarService implements IStarService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    @Override
+    public JsonObject listStarTransactionOfUserByTime(long userId, long from, long to, long page, long recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long offset = (page - 1) * recordPerPage;
+            String query = new StringBuilder("SELECT * FROM aoe_star_transaction WHERE user_id = ? ")
+                    .append("AND create_time >= ? AND create_time < ? ORDER BY id DESC LIMIT ? OFFSET ?")
+                    .toString();
+            JsonArray data = bridge.query(query, userId, from, to, recordPerPage, offset);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
     @Override
     public JsonObject listStarTransactionOfUserByTime(long time, long userId, long page, long recordPerPage) {
         try {

@@ -22,6 +22,8 @@ public class StarAPI {
                 .handler(StarRouter::listTransaction);
         router.get(ApiConfig.instance().getPath("/star/transaction"))
                 .handler(StarRouter::getTransaction);
+        router.get(ApiConfig.instance().getPath("/star/transaction-by-time"))
+                .handler(StarRouter::listByTime);
     }
     public static void supportAuthApi(Router router) {
         router.get(ApiConfig.instance().getPath("/star/admin/get"))

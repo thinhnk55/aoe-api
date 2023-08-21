@@ -186,8 +186,4 @@ public class DonateService implements IDonateService {
         }
     }
 
-    @Override
-    public JsonObject lookupHistoryDonate(int service, String phoneNumber, long timeStamp) {
-        return null;
-    }
 }
