@@ -46,7 +46,6 @@ public class AuthApiTest {
         }
         @Test
         public void test1(){
-            //test case
             //prepare environment
             String loginUrl = new StringBuilder(baseUrl)
                     .append("/auth/login").toString();
@@ -76,10 +75,16 @@ public class AuthApiTest {
             Assertions.assertNotNull(token);
             long id = response.getAsJsonObject("data").get("id").getAsLong();
             Assertions.assertNotNull(id);
-        }
-        @Test
-        public void test2(){
-
+            //Danh ky lai de kiem tra flow trung tk cu
+            payload = new JsonObject();
+            payload.addProperty("username", username);
+            payload.addProperty("password", password);
+            response = OkHttpUtil.postJson(registerUrl, payload.toString());
+            Assertions.assertTrue(response.get("error").getAsInt() == 10);
+            payload = new JsonObject();
+            payload.addProperty("user_id", id);
+            response = OkHttpUtil.postJson(deleteUrl, payload.toString(), AuthTestUtil.createHeader(system_admin_id, system_admin_token));
+            DebugLogger.info("{}", response);
         }
     }
 
