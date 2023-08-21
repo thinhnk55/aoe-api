@@ -20,48 +20,39 @@ public class GamerService implements IGamerService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
 
             String nickname = json.get("nick_name").getAsString();
+            String phone = json.get("phone").getAsString();
 
             String query = "SELECT user_id FROM gamer WHERE nick_name = ?";
             Long existingUserid = bridge.queryLong(query, nickname);
             if (existingUserid != null) {
                 return BaseResponse.createFullMessageResponse(10, "nick_name_exist");
             }
-
-            String mainName = json.get("fullname").getAsString();
-            String avatar = json.get("avatar").getAsString();
-            int matchPlayed = json.get("match_played").getAsInt();
-            long clanId = json.get("clan_id").getAsLong();
-            int rank = json.get("rank").getAsInt();
-            JsonObject rankInfo = json.get("rank_info").getAsJsonObject();
-            int matchWon = json.get("match_won").getAsInt();
-            String phoneNumber = json.get("phone").getAsString();
-            String username = json.get("username").getAsString();
-
-            JsonObject info = new JsonObject();
-
-            info.addProperty("date_of_birth", json.get("date_of_birth").getAsLong());
-            info.addProperty("address", json.get("address").getAsString());
-            info.addProperty("sport", json.get("sport").getAsString());
-            info.addProperty("nationality", json.get("nationality").getAsString());
-            info.addProperty("facebook_link", json.get("facebook_link").getAsString());
-            info.addProperty("tiktok_link", json.get("tiktok_link").getAsString());
-            info.addProperty("youtube_link", json.get("youtube_link").getAsString());
-            info.addProperty("fanpage_link", json.get("fanpage_link").getAsString());
-            info.addProperty("telegram_link", json.get("telegram_link").getAsString());
-            info.add("image", json.get("image").getAsJsonArray());
-
             long createTime = System.currentTimeMillis();
-
-
+            json.addProperty("update_time", createTime);
             query = "SELECT id FROM user WHERE username = ?";
-            if (bridge.queryExist(query, username))
-                return BaseResponse.createFullMessageResponse(11, "username_exist");
-            String password = StringUtil.generateRandomStringNumberCharacter(12);
+            if (bridge.queryExist(query,phone ))
+                return BaseResponse.createFullMessageResponse(11, "nickname_exist");
+//            String password = StringUtil.generateRandomStringNumberCharacter(12);
+            String password = "password";
+            long userid = ApiServices.authService.register(phone, password, UserConstant.ROLE_USER,UserConstant.STATUS_NORMAL).get("data").getAsJsonObject().get("id").getAsLong();
+            json.addProperty("user_id", userid);
+            bridge.insertObjectToDB("gamer","user_id",json);
 
-            long userid = ApiServices.authService.register(username, password, UserConstant.ROLE_USER,UserConstant.STATUS_NORMAL).get("data").getAsJsonObject().get("id").getAsLong();
-            query = "INSERT INTO gamer (user_id, nick_name,fullname,avatar,detail_info,clan_id, rank,rank_info,match_played,match_won,update_time,status,phone,username) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-            bridge.update(query, userid, nickname, mainName, avatar, info, clanId, rank, rankInfo, matchPlayed, matchWon, createTime, 0, phoneNumber,username);
-            return BaseResponse.createFullMessageResponse(0, "success");
+//            JsonObject info = new JsonObject();
+
+//            info.addProperty("date_of_birth", json.get("date_of_birth").getAsLong());
+//            info.addProperty("address", json.get("address").getAsString());
+//            info.addProperty("sport", json.get("sport").getAsString());
+//            info.addProperty("nationality", json.get("nationality").getAsString());
+//            info.addProperty("facebook_link", json.get("facebook_link").getAsString());
+//            info.addProperty("tiktok_link", json.get("tiktok_link").getAsString());
+//            info.addProperty("youtube_link", json.get("youtube_link").getAsString());
+//            info.addProperty("fanpage_link", json.get("fanpage_link").getAsString());
+//            info.addProperty("telegram_link", json.get("telegram_link").getAsString());
+//            info.add("image", json.get("image").getAsJsonArray());
+
+
+            return BaseResponse.createFullMessageResponse(0, "success",json);
         } catch (Exception e) {
             String stackTrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stackTrace);

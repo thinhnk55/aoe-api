@@ -7,6 +7,7 @@ import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
 import vn.vietdefi.aoe.vertx.router.clan.ClanAPI;
 import vn.vietdefi.aoe.vertx.router.donate.DonateRouter;
 import vn.vietdefi.aoe.vertx.router.event.EventRouter;
+import vn.vietdefi.aoe.vertx.router.gamer.GamerApi;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
 import vn.vietdefi.aoe.vertx.router.match.MatchRouter;
 import vn.vietdefi.aoe.vertx.router.profile.ProfileAPI;
@@ -20,13 +21,14 @@ public class AoeAPI {
         ProfileAPI.configAPI(router);
         StarAPI.configAPI(router);
         ClanAPI.configAPI(router);
+        GamerApi.configAPI(router);
         adminApi(router);
-        gamerApi(router);
         casterAPI(router);
         matchApi(router);
         donateApi(router);
         eventApi(router);
     }
+
     private static void donateApi(Router router) {
         router.post(ApiConfig.instance().getPath("/donate/gamer"))
                 .handler(BodyHandler.create(false))
@@ -44,10 +46,11 @@ public class AoeAPI {
         router.get(ApiConfig.instance().getPath("/donate/list-all-top-donate"))
                 .handler(DonateRouter::listAllTopDonate);
     }
+
     private static void eventApi(Router router) {
         router.post(ApiConfig.instance().getPath("/event/create"))
-                        .handler(BodyHandler.create())
-                                .handler(EventRouter::createEvent);
+                .handler(BodyHandler.create())
+                .handler(EventRouter::createEvent);
         router.post(ApiConfig.instance().getPath("/event/lock"))
                 .handler(BodyHandler.create())
 //                .handler(AuthRouter::authorizeAdmin)
@@ -70,6 +73,7 @@ public class AoeAPI {
                 .handler(AuthRouter::authorizeUser)
                 .handler(EventRouter::getListHistoryParticipant);
     }
+
     private static void adminApi(Router router) {
 
     }
@@ -147,32 +151,6 @@ public class AoeAPI {
                         .instance()
                         .getPath("/match/user/suggest/list"))
                 .handler(MatchRouter::getListMatchSuggested);
-    }
-    public static void gamerApi(Router router){
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/gamer/create"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(GamerRouter::create);
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/gamer/update"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(GamerRouter::updateInfo);
-        router.get(ApiConfig
-                        .instance()
-                        .getPath("/gamer/get"))
-                .handler(GamerRouter::getGamerByUserId);
-        router.get(ApiConfig.instance().getPath("/gamer/list-of-match"))
-                .handler(GamerRouter::listGamerByMatchId);
-        router.get(ApiConfig.instance().getPath("/gamer/list"))
-                .handler(GamerRouter::listGamer);
-        router.get(ApiConfig.instance().getPath("/gamer/list-of-clan"))
-                .handler(GamerRouter::listGamerOfClan);
-        router.get(ApiConfig.instance().getPath("/gamer/match"))
-                .handler(GamerRouter::listMatch);
     }
 
     public static void casterAPI(Router router) {
