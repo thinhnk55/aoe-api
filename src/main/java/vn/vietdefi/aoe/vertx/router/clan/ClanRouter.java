@@ -90,4 +90,17 @@ public class ClanRouter {
             rc.response().end(response.toString());
         }
     }
+
+    public static void getInfoClanById(RoutingContext rc) {
+        try{
+            long clanId = Long.parseLong(rc.request().getParam("clan_id"));
+            JsonObject response = AoeServices.clanService.getClanById(clanId);
+            rc.response().end(response.toString());
+        }catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
+            rc.response().end(response.toString());
+        }
+    }
 }

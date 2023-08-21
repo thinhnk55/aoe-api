@@ -20,6 +20,8 @@ public class ClanAPI {
                 .handler(ClanRouter::getInfoClan);
         router.get(ApiConfig.instance().getPath("/clan/get-by-name"))
                 .handler(ClanRouter::getInfoClanByName);
+        router.get(ApiConfig.instance().getPath("/clan/get"))
+                .handler(ClanRouter::getInfoClanById);
         router.get(ApiConfig.instance().getPath("/clan/list"))
                 .handler(ClanRouter::getListClan);
     }
@@ -40,7 +42,7 @@ public class ClanAPI {
 
     }
     public static void systemAdminAuthApi(Router router) {
-        router.post(ApiConfig.instance().getPath("/clan/create"))
+        router.post(ApiConfig.instance().getPath("/clan/delete"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSystemAdmin)
                 .handler(ClanRouter::deleteClan);
