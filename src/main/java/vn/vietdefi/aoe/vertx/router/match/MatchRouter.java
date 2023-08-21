@@ -177,8 +177,8 @@ public class MatchRouter {
     public static void cancelMatchSuggest(RoutingContext rc){
         try {
             long id = Long.parseLong(rc.request().getParam("id"));
-            JsonObject response = AoeServices.suggestService.cancelMatchSuggest(id);
-            rc.response().end(response.toString());
+//            JsonObject response = AoeServices.suggestService.confirmMatchSuggest(id);
+//            rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
