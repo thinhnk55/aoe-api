@@ -16,7 +16,11 @@ public class GamerService implements IGamerService {
     public JsonObject create(JsonObject data) {
         try {
             String phone = data.get("phone").getAsString();
-            JsonObject response =
+            String nickname = data.get("nick_name").getAsString();
+            JsonObject response = getGamerByNickName(nickname);
+            if (BaseResponse.isSuccessFullMessage(response)){
+                return BaseResponse.createFullMessageResponse(13, "nick_name_exists");
+            }
                     ApiServices.authService.get(phone);
             if(!BaseResponse.isSuccessFullMessage(response)){
                 String password = StringUtil.generateRandomStringNumberCharacter(8);
@@ -40,6 +44,23 @@ public class GamerService implements IGamerService {
         } catch (Exception e) {
             String stackTrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stackTrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+
+    private JsonObject getGamerByNickName( String nickname) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT user_id FROM gamer WHERE nick_name = ?";
+            JsonObject user = bridge.queryOne(query, nickname);
+            if (user == null) {
+                return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", user);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
@@ -90,10 +111,17 @@ public class GamerService implements IGamerService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long user_id = data.get("user_id").getAsLong();
-            JsonObject response = getGamerById(user_id);
+            JsonObject response = getGamerByNickName(data.get("nick_name").getAsString());
+            if(BaseResponse.isSuccessFullMessage(response)
+                    &&  response.getAsJsonObject("data").get("user_id").getAsLong() != user_id){
+                return BaseResponse.createFullMessageResponse(13, "nick_name_exists");
+            }
+            response = getGamerById(user_id);
             if(!BaseResponse.isSuccessFullMessage(response)){
                 return response;
             }
+
+
             JsonObject oldData = response.getAsJsonObject("data");
             oldData.add("nick_name", data.get("nick_name"));
             oldData.add("full_name", data.get("full_name"));

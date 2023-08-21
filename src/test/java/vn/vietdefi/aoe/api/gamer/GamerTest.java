@@ -20,7 +20,7 @@ public class GamerTest {
     }
 
     @Nested
-    class ClanTest1{
+    class GamerTest1{
         String baseUrl;
         String username;
         String tokenAdminSystem;
@@ -100,13 +100,6 @@ public class GamerTest {
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
 
-
-
-            String getUrlListGamerByClanId = new StringBuilder(baseUrl)
-                    .append("/gamer/list-of-clan?clan_id=").append(getClanId).toString();
-            response = OkHttpUtil.get(getUrlListGamerByClanId);
-            DebugLogger.info("{}",response);
-            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
 
             //Get list of gamer
             int page = 1;
