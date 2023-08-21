@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS aoe_match_gamer (
      result INT NOT NULL,
      gamer_id INT NOT NULL,
      gamer_nick_name VARCHAR(128),
-     avatar VARCHAR(2048)
+     avatar VARCHAR(2048),
+     state INT
 );
 
