@@ -4,14 +4,13 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.aoe.vertx.router.auth.AoeAuthAPI;
 import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
-import vn.vietdefi.aoe.vertx.router.clan.ClanRouter;
+import vn.vietdefi.aoe.vertx.router.clan.ClanAPI;
 import vn.vietdefi.aoe.vertx.router.donate.DonateRouter;
 import vn.vietdefi.aoe.vertx.router.event.EventRouter;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
 import vn.vietdefi.aoe.vertx.router.match.MatchRouter;
 import vn.vietdefi.aoe.vertx.router.profile.ProfileAPI;
 import vn.vietdefi.aoe.vertx.router.star.StarAPI;
-import vn.vietdefi.aoe.vertx.router.star.StarRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
@@ -20,10 +19,10 @@ public class AoeAPI {
         AoeAuthAPI.configAPI(router);
         ProfileAPI.configAPI(router);
         StarAPI.configAPI(router);
+        ClanAPI.configAPI(router);
         adminApi(router);
         gamerApi(router);
         casterAPI(router);
-        clanApi(router);
         matchApi(router);
         donateApi(router);
         eventApi(router);
@@ -193,19 +192,5 @@ public class AoeAPI {
                         .instance()
                         .getPath("/caster/get"))
                 .handler(CasterRouter::getCasterByUserId);
-    }
-    public static void clanApi(Router router){
-        router.get(ApiConfig.instance().getPath("/clan/get"))
-                .handler(ClanRouter::getInfoClan);
-        router.post(ApiConfig.instance().getPath("/clan/create"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(ClanRouter::createClan);
-        router.post(ApiConfig.instance().getPath("/clan/update"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(ClanRouter::updateClan);
-        router.get(ApiConfig.instance().getPath("/clan/list"))
-                .handler(ClanRouter::getListClan);
     }
 }

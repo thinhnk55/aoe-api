@@ -53,7 +53,7 @@ public class AoeAuthService implements IAoeAuthService{
         }
     }
 
-
+    /*These function user for TEST only. In real situation these actions is prohibited*/
     @Override
     public JsonObject deleteUser(long userId) {
         try{

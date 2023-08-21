@@ -107,7 +107,7 @@ public class ClanService implements IClanService{
     public JsonObject getClanById(long clanId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT  * FROM aoe_clan WHERE id = ? AND status = 0";
+            String query = "SELECT  * FROM aoe_clan WHERE id = ?";
             JsonObject data = bridge.queryOne(query, clanId);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -115,7 +115,33 @@ public class ClanService implements IClanService{
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
-
     }
 
+    @Override
+    public JsonObject getClanByNickName(String nickName) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT  * FROM aoe_clan WHERE nick_name = ?";
+            JsonObject data = bridge.queryOne(query, nickName);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    /*These function user for TEST only. In real situation these actions is prohibited*/
+    public JsonObject deleteClan(long clanId){
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "DELETE FROM aoe_clan WHERE id = ?";
+            bridge.update(query, clanId);
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 }
