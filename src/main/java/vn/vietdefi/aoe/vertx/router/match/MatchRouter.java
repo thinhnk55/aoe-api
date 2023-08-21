@@ -196,7 +196,7 @@ public class MatchRouter {
             long userid = Long.parseLong(rc.request().getHeader("userid"));
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.suggestService.createMatchSuggest(json,userid);
+            JsonObject response = AoeServices.suggestService.createMatchSuggest(userid, json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

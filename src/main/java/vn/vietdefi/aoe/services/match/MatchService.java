@@ -244,7 +244,7 @@ public class MatchService implements IMatchService {
             updateIntoDb.addProperty("id",matchId);
             updateIntoDb.add("detail",data.get("detail"));
             updateIntoDb.get("detail").getAsJsonObject().addProperty("link_livestream", json.get("link_livestream").getAsString());
-            updateIntoDb.addProperty("state", MatchConstants.STATE_STOP_VOTING);
+            updateIntoDb.addProperty("state", MatchConstants.STATE_ONGOING);
             updateIntoDb.addProperty("time_expired", System.currentTimeMillis());
             bridge.updateObjectToDb("aoe_match", "id", updateIntoDb);
             return BaseResponse.createFullMessageResponse(0, "success");
@@ -342,5 +342,10 @@ public class MatchService implements IMatchService {
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
+    }
+
+    @Override
+    public JsonObject confirmMatch(JsonObject json) {
+        return null;
     }
 }

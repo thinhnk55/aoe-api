@@ -37,14 +37,12 @@ public class AoeAPI {
         router.post(ApiConfig.instance().getPath("/donate/match"))
                 .handler(BodyHandler.create(false))
                 .handler(DonateRouter::donateMatch);
-        router.get(ApiConfig.instance().getPath("/donate/list-fan-donate"))
-                .handler(DonateRouter::listFanDonate);
+        router.get(ApiConfig.instance().getPath("/donate/list-donate"))
+                .handler(DonateRouter::listDonate);
         router.get(ApiConfig.instance().getPath("/donate/list-top-donate"))
                 .handler(DonateRouter::listTopDonate);
-        router.get(ApiConfig.instance().getPath("/donate/list-top-donate-time"))
-                .handler(DonateRouter::listTopDonateByTime);
-        router.get(ApiConfig.instance().getPath("/match/user/donate"))
-                .handler(DonateRouter::listTopByTime);
+        router.get(ApiConfig.instance().getPath("/donate/list-all-top-donate"))
+                .handler(DonateRouter::listAllTopDonate);
     }
     private static void eventApi(Router router) {
         router.post(ApiConfig.instance().getPath("/event/create"))
@@ -246,12 +244,12 @@ public class AoeAPI {
                 .handler(AuthRouter::authorizeSupport)
                 .handler(ProfileRouter::searchProfile);
         router.post(ApiConfig.instance().getPath("/profile/update"))
-                .handler(AuthRouter::authorizeUser)
                 .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeUser)
                 .handler(ProfileRouter::updateProfile);
         router.post(ApiConfig.instance().getPath("/profile/update/lang"))
-                .handler(AuthRouter::authorizeUser)
                 .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeUser)
                 .handler(ProfileRouter::updateLanguage);
     }
 }
