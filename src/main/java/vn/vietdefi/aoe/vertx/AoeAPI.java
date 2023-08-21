@@ -10,6 +10,7 @@ import vn.vietdefi.aoe.vertx.router.donate.DonateRouter;
 import vn.vietdefi.aoe.vertx.router.event.EventRouter;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
 import vn.vietdefi.aoe.vertx.router.match.MatchRouter;
+import vn.vietdefi.aoe.vertx.router.profile.ProfileAPI;
 import vn.vietdefi.aoe.vertx.router.profile.ProfileRouter;
 import vn.vietdefi.aoe.vertx.router.wallet.WalletRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
@@ -18,7 +19,7 @@ import vn.vietdefi.api.vertx.router.AuthRouter;
 public class AoeAPI {
     public static void configAPI(Router router) {
         AoeAuthAPI.configAPI(router);
-        profileApi(router);
+        ProfileAPI.configAPI(router);
         adminApi(router);
         gamerApi(router);
         casterAPI(router);
@@ -220,22 +221,5 @@ public class AoeAPI {
                 .handler(ClanRouter::updateClan);
         router.get(ApiConfig.instance().getPath("/clan/list"))
                 .handler(ClanRouter::getListClan);
-    }
-
-    public static void profileApi(Router router) {
-        router.get(ApiConfig.instance().getPath("/profile/get"))
-                .handler(AuthRouter::authorizeUser)
-                .handler(ProfileRouter::getProfile);
-        router.get(ApiConfig.instance().getPath("/profile/search"))
-                .handler(AuthRouter::authorizeSupport)
-                .handler(ProfileRouter::searchProfile);
-        router.post(ApiConfig.instance().getPath("/profile/update"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeUser)
-                .handler(ProfileRouter::updateProfile);
-        router.post(ApiConfig.instance().getPath("/profile/update/lang"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeUser)
-                .handler(ProfileRouter::updateLanguage);
     }
 }

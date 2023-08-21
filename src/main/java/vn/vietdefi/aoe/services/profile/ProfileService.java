@@ -116,4 +116,21 @@ public class ProfileService implements IProfileService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    /*These function user for TEST only. In real situation these actions is prohibited*/
+    @Override
+    public JsonObject deleteProfile(long userId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "DELETE FROM aoe_profile WHERE user_id = ?";
+            int row = bridge.update(query, userId);
+            if(row == 0){
+                return BaseResponse.createFullMessageResponse(10, "delete_profile_failed");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 }

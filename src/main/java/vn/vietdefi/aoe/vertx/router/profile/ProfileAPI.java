@@ -1,11 +1,11 @@
-package vn.vietdefi.aoe.vertx.router.auth;
+package vn.vietdefi.aoe.vertx.router.profile;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
-public class AoeAuthAPI {
+public class ProfileAPI {
     public static void configAPI(Router router){
         userAuthApi(router);
         supportAuthApi(router);
@@ -15,22 +15,22 @@ public class AoeAuthAPI {
     }
 
     public static void userAuthApi(Router router) {
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/auth/register"))
-                .handler(BodyHandler.create(false))
-                .handler(AoeAuthRouter::register);
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/auth/login"))
-                .handler(BodyHandler.create(false))
-                .handler(AoeAuthRouter::login);
-        router.post(ApiConfig.instance().getPath("/auth/logout"))
+        router.get(ApiConfig.instance().getPath("/profile/get"))
                 .handler(AuthRouter::authorizeUser)
-                .handler(AuthRouter::logout);
+                .handler(ProfileRouter::getProfile);
+        router.post(ApiConfig.instance().getPath("/profile/update"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeUser)
+                .handler(ProfileRouter::updateProfile);
+        router.post(ApiConfig.instance().getPath("/profile/update/lang"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeUser)
+                .handler(ProfileRouter::updateLanguage);
     }
     public static void supportAuthApi(Router router) {
-
+        router.get(ApiConfig.instance().getPath("/profile/search"))
+                .handler(AuthRouter::authorizeSupport)
+                .handler(ProfileRouter::searchProfile);
     }
     public static void adminAuthApi(Router router) {
 
@@ -44,7 +44,7 @@ public class AoeAuthAPI {
                         .getPath("/auth/delete_user"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSystemAdmin)
-                .handler(AoeAuthRouter::deleteUser);
+                .handler(AuthRouter::deleteUser);
         router.post(ApiConfig
                         .instance()
                         .getPath("/auth/update_user_id"))

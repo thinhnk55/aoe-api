@@ -12,4 +12,7 @@ public interface IStarService {
     JsonObject exchangeStar(long userId, int service, long amount, long referId);
     void updateReferId(long id, long referId);
     boolean checkStar(long amount, long userid);
+
+    /*These function user for TEST only. In real situation these actions is prohibited*/
+    JsonObject deleteStarWallet(long userId);
 }

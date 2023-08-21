@@ -52,4 +52,26 @@ public class AoeAuthService implements IAoeAuthService{
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+
+    @Override
+    public JsonObject deleteUser(long userId) {
+        try{
+            JsonObject response = ApiServices.authService.delete(userId);
+            if(BaseResponse.isSuccessFullMessage(response)) {
+                response = AoeServices.profileService.deleteProfile(userId);
+                if(!BaseResponse.isSuccessFullMessage(response)){
+                    return response;
+                }
+                response = AoeServices.starService.deleteStarWallet(userId);
+                if(!BaseResponse.isSuccessFullMessage(response)){
+                    return response;
+                }
+            }
+            return BaseResponse.createFullMessageResponse(0, "success");
+        }catch (Exception e){
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 }
