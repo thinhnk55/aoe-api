@@ -21,7 +21,7 @@ public class GamerService implements IGamerService {
             if (BaseResponse.isSuccessFullMessage(response)){
                 return BaseResponse.createFullMessageResponse(13, "nick_name_exists");
             }
-                    ApiServices.authService.get(phone);
+            response = ApiServices.authService.get(phone);
             if(!BaseResponse.isSuccessFullMessage(response)){
                 String password = StringUtil.generateRandomStringNumberCharacter(8);
                 response = AoeServices.aoeAuthService
