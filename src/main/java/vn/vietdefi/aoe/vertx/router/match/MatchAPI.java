@@ -29,25 +29,7 @@ public class MatchAPI {
         router.get(ApiConfig
                         .instance()
                         .getPath("/match/outstanding"))
-                .handler(AuthRouter::authorizeUser)
                 .handler(MatchRouter::getOutstandingMatch);
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/match/user/suggest"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeUser)
-                .handler(MatchRouter::createMatchSuggest);
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/match/user/suggest/update"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeUser)
-                .handler(MatchRouter::updateMatchSuggest);
-        router.get(ApiConfig
-                        .instance()
-                        .getPath("/match/user/suggest/list"))
-                .handler(AuthRouter::authorizeUser)
-                .handler(MatchRouter::getListMatchSuggested);
     }
     public static void supportAuthApi(Router router) {
 
@@ -95,17 +77,6 @@ public class MatchAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(MatchRouter::cancelMatch);
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/match/confirm"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(MatchRouter::confirmMatch);
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/match/suggest/cancel"))
-                .handler(BodyHandler.create(false))
-                .handler(MatchRouter::cancelMatchSuggest);
     }
     public static void superAdminAuthApi(Router router) {
 
