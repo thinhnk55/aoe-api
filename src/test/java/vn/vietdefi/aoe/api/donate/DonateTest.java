@@ -80,7 +80,7 @@ public class DonateTest {
             payload = new JsonObject();
             payload.addProperty("targetId", 154);
             payload.addProperty("star", amount);
-            payload.addProperty("message", "Donate gamer");
+            payload.addProperty("message", "Donate caster");
             String donateCasterURL = new StringBuilder(baseUrl).append("/donate/caster").toString();
             response = OkHttpUtil.postJson(donateCasterURL, payload.toString(), Common.createHeader(user));
             DebugLogger.info("{}", response);
@@ -117,7 +117,7 @@ public class DonateTest {
             long matchId = response.getAsJsonObject("data").get("id").getAsLong();
             payload.addProperty("targetId", matchId);
             payload.addProperty("star", amount);
-            payload.addProperty("message", "Donate gamer");
+            payload.addProperty("message", "Donate match");
             String donateMatchURL = new StringBuilder(baseUrl).append("/donate/match").toString();
             response = OkHttpUtil.postJson(donateMatchURL, payload.toString(), Common.createHeader(user));
             DebugLogger.info("{}", response);
@@ -132,9 +132,10 @@ public class DonateTest {
             int page = 1;
             String listDonateURL = new StringBuilder(baseUrl).append("/donate/list")
                     .append("?target_id=").append(matchId).append("&page=").append(page).toString();
-            response = OkHttpUtil.get(listDonateURL);
+            response = OkHttpUtil.get(listDonateURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
-            Assertions.assertTrue(!response.getAsJsonArray("data").isEmpty());
+            Assertions.assertFalse(response.getAsJsonArray("data").isEmpty());
+            Assertions.assertEquals(1, response.getAsJsonArray("data").size());
 
             /*test list top donate by target*/
             long from = 0L;
@@ -142,9 +143,20 @@ public class DonateTest {
             String listTopDonateURL = new StringBuilder(baseUrl).append("/donate/list-top")
                     .append("?target_id=").append(matchId).append("&from=").append(from)
                     .append("&to=").append(to).append("&page=").append(page).toString();
-            response = OkHttpUtil.get(listTopDonateURL);
+            response = OkHttpUtil.get(listTopDonateURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
-            Assertions.assertTrue(!response.getAsJsonArray("data").isEmpty());
+            Assertions.assertFalse(response.getAsJsonArray("data").isEmpty());
+            Assertions.assertEquals(1, response.getAsJsonArray("data").size());
+
+            /*test list top all donate*/
+            String listTopAllDonateURL = new StringBuilder(baseUrl).append("/donate/list-top-all")
+                    .append("?from=").append(from)
+                    .append("&to=").append(to).append("&page=").append(page).toString();
+            response = OkHttpUtil.get(listTopAllDonateURL, Common.createHeader(user));
+            DebugLogger.info("{}", response);
+            Assertions.assertFalse(response.getAsJsonArray("data").isEmpty());
+            Assertions.assertEquals(20, response.getAsJsonArray("data").size());
+
         }
         @Test
         public void test1(){
