@@ -8,7 +8,7 @@ public interface IDonateService {
     public JsonObject createDonate(JsonObject data);
     public JsonObject getDonateById(long id);
     JsonObject listDonateByTargetId(long targetId, long page, long recordPerPage);
-    JsonObject listAllTopDonate(long time, long page, long recordPerPage);
-    JsonObject listTopDonateByTargetId(long time, long targetId, long page, long recordPerPage);
+    JsonObject listAllTopDonate(long from, long to, long page, long recordPerPage);
+    JsonObject listTopDonateByTargetId(long targetId, long from, long to, long page, long recordPerPage);
     long getTotalDonateByUserId(long id);
 }

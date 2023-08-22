@@ -28,11 +28,11 @@ public class DonateAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::donateMatch);
-        router.get(ApiConfig.instance().getPath("/donate/list-donate"))
+        router.get(ApiConfig.instance().getPath("/donate/list"))
                 .handler(DonateRouter::listDonate);
-        router.get(ApiConfig.instance().getPath("/donate/list-top-donate"))
+        router.get(ApiConfig.instance().getPath("/donate/list-top"))
                 .handler(DonateRouter::listTopDonate);
-        router.get(ApiConfig.instance().getPath("/donate/list-all-top-donate"))
+        router.get(ApiConfig.instance().getPath("/donate/list-top-all"))
                 .handler(DonateRouter::listAllTopDonate);
     }
     public static void supportAuthApi(Router router) {

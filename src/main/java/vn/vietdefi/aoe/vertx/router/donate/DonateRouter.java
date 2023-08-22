@@ -70,7 +70,7 @@ public class  DonateRouter {
 
     public static void listDonate(RoutingContext rc) {
         try {
-            long targetId = Long.parseLong(rc.request().getParam("id"));
+            long targetId = Long.parseLong(rc.request().getParam("target_id"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
             JsonObject response = AoeServices.donateService.listDonateByTargetId(targetId, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
@@ -84,10 +84,11 @@ public class  DonateRouter {
     }
     public static void listTopDonate(RoutingContext rc) {
         try {
-            long targetId = Long.parseLong(rc.request().getParam("id"));
-            long time = Long.parseLong(rc.request().getParam("time", "0"));
+            long targetId = Long.parseLong(rc.request().getParam("target_id"));
+            long from = Long.parseLong(rc.request().getParam("from", "0"));
+            long to = Long.parseLong(rc.request().getParam("to", "0"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.donateService.listTopDonateByTargetId(time, targetId, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.donateService.listTopDonateByTargetId(targetId, from, to, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -100,9 +101,10 @@ public class  DonateRouter {
 
     public static void listAllTopDonate(RoutingContext rc) {
         try {
-            long time = Long.parseLong(rc.request().getParam("time","0"));
+            long from = Long.parseLong(rc.request().getParam("from","0"));
+            long to = Long.parseLong(rc.request().getParam("to","0"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.donateService.listAllTopDonate(time, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.donateService.listAllTopDonate(from, to, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -107,7 +107,7 @@ public class DonateService implements IDonateService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT * FROM aoe_donate WHERE target_id = ? ORDER BY create_time DESC LIMIT ? OFFSET ?";
+            String query = "SELECT * FROM aoe_donate WHERE target_id = ? ORDER BY id DESC LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, targetId, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -117,15 +117,12 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject listAllTopDonate(long time, long page, long recordPerPage) {
+    public JsonObject listAllTopDonate(long from, long to, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            long currentTime = System.currentTimeMillis();
-            long totalMilliseconds = time * DonateConstants.MILLISECONDS_PER_DAY;
-            currentTime = currentTime - totalMilliseconds;
-            String query = "SELECT user_id, username, SUM(amount) as total_star, phone, nick_name FROM aoe_donate WHERE create_time > ? GROUP BY user_id ORDER BY total_star DESC LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, currentTime, recordPerPage, offset);
+            String query = "SELECT user_id, username, SUM(amount) as total_star, phone, nick_name FROM aoe_donate WHERE create_time >= ? AND create_time < ? GROUP BY user_id ORDER BY total_star DESC LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, from, to, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -134,15 +131,12 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject listTopDonateByTargetId(long time, long targetId, long page, long recordPerPage) {
+    public JsonObject listTopDonateByTargetId(long targetId, long from, long to, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            long currentTime = System.currentTimeMillis();
-            long totalMilliseconds = time * DonateConstants.MILLISECONDS_PER_DAY;
-            currentTime = currentTime - totalMilliseconds;
-            String query = "SELECT user_id, username, SUM(amount) as total_star, phone, nick_name FROM aoe_donate WHERE target_id = ? AND create_time > ? GROUP BY user_id ORDER BY total_star DESC LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, targetId,currentTime, recordPerPage, offset);
+            String query = "SELECT user_id, username, SUM(amount) as total_star, phone, nick_name FROM aoe_donate WHERE target_id = ? AND create_time >= ? AND create_time < ? GROUP BY user_id ORDER BY total_star DESC LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, targetId, from, to, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));

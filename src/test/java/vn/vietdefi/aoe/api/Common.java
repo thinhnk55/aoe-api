@@ -111,4 +111,11 @@ public class Common {
         String token = data.get("token").getAsString();
         return createHeader(userid, token);
     }
+
+    public static JsonObject getStartWallet(String baseUrl, JsonObject data) {
+        String getStartURL = new StringBuilder(baseUrl).append("/star/get").toString();
+        JsonObject response = OkHttpUtil.get(getStartURL, Common.createHeader(data));
+        Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+        return response;
+    }
 }
