@@ -30,7 +30,16 @@ public class AoeAuthAPI {
                 .handler(AuthRouter::logout);
     }
     public static void supportAuthApi(Router router) {
-
+        router.post(ApiConfig
+                        .instance()
+                        .getPath("/auth/admin/get_user_by_name"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::adminGetUserByUserName);
+        router.post(ApiConfig
+                        .instance()
+                        .getPath("/auth/admin/user/get_user_by_id"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::adminGetUserByUserId);
     }
     public static void adminAuthApi(Router router) {
 
@@ -41,28 +50,21 @@ public class AoeAuthAPI {
     public static void systemAdminAuthApi(Router router) {
         router.post(ApiConfig
                         .instance()
-                        .getPath("/auth/delete_user"))
+                        .getPath("/auth/admin/delete_user"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSystemAdmin)
                 .handler(AoeAuthRouter::deleteUser);
         router.post(ApiConfig
                         .instance()
-                        .getPath("/auth/update_user_id"))
+                        .getPath("/auth/admin/update_user_id"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSystemAdmin)
                 .handler(AuthRouter::updateUserId);
         router.post(ApiConfig
                         .instance()
-                        .getPath("/auth/update_user_name"))
+                        .getPath("/auth/admin/update_user_name"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSystemAdmin)
                 .handler(AuthRouter::updateUsername);
-        // only login for gamer test
-        router.post(ApiConfig
-                        .instance()
-                        .getPath("/auth/login/gamer"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeSystemAdmin)
-                .handler(AoeAuthRouter::loginGamer);
     }
 }

@@ -47,7 +47,7 @@ public class CasterTest {
             JsonObject data = new JsonObject();
             data.addProperty("phone", phone);
             data.addProperty("nick_name", "BLV HO VAN HON");
-            data.addProperty("full_name", "Nguyễn Đức Bình");
+            data.addProperty("full_name", "Nguyen Duc Binh");
             data.addProperty("avatar", "https://chimsedinang.com/wp-content/uploads/2021/10/clan-sbs-450x600-1.png");
             data.addProperty("clan_id", 1);
             JsonObject detail = new JsonObject();
@@ -76,7 +76,7 @@ public class CasterTest {
             data1.addProperty("user_id", userId);
             data1.addProperty("phone", phone);
             data1.addProperty("nick_name", "BLV KHANH DUY");
-            data1.addProperty("full_name", "Nguyễn Đức Bình H");
+            data1.addProperty("full_name", "Nguyen Duc Binh H");
             data1.addProperty("avatar", "https://chimsedinang.com/wp-content/uploads/2021/10/clan-sbs-450x600-1.png");
             data1.addProperty("clan_id", 1);
             JsonObject detail1 = new JsonObject();

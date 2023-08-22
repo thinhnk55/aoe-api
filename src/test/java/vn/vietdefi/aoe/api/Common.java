@@ -42,6 +42,24 @@ public class Common {
             return response;
         }
     }
+    public static JsonObject adminGetUserByName(String baseUrl, String username){
+        String registerUrl = new StringBuilder(baseUrl)
+                .append("/auth/admin/get_user_by_name").toString();
+        JsonObject payload = new JsonObject();
+        payload.addProperty("username", username);
+        JsonObject response = OkHttpUtil.postJson(registerUrl, payload.toString());
+        Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+        return response;
+    }
+    public static JsonObject adminGetUserById(String baseUrl, long userId){
+        String registerUrl = new StringBuilder(baseUrl)
+                .append("/auth/admin/get_user_by_id").toString();
+        JsonObject payload = new JsonObject();
+        payload.addProperty("user_id", userId);
+        JsonObject response = OkHttpUtil.postJson(registerUrl, payload.toString());
+        Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+        return response;
+    }
 
     public static JsonObject registerUserSuccess(String baseUrl, String username, String password){
         String registerUrl = new StringBuilder(baseUrl)

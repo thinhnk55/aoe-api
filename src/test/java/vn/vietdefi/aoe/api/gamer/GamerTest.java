@@ -1,5 +1,6 @@
 package vn.vietdefi.aoe.api.gamer;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
@@ -21,71 +22,121 @@ public class GamerTest {
     @Nested
     class GamerTest1{
         String baseUrl;
+        long userId;
         String username;
-        String password;
+        String nickname;
+
 
         @BeforeEach
         void init(){
-            baseUrl = "https://api.godoo.asia/aoe";
-//            baseUrl = "http://127.0.0.1:8000/aoe";
-            username = "0988666888";
-            password = "123456";
+//            baseUrl = "https://api.godoo.asia/aoe";
+            baseUrl = "http://127.0.0.1:8000/aoe";
+            username = "0988666555";
+            nickname = "gamer_nick_name";
         }
         @RepeatedTest(1)
         void repeatTest1(){
 
         }
+
         @Test
         public void test0(){
-
+            deleteGamer();
+            JsonObject data = createGamerSuccess();
+            createGamerError();
+            updateGamer(data);
+            getGamer(data);
+            getListGamer();
+            deleteGamer();
         }
-        @Test
-        public void test1(){
-            //Tao Clan
-            JsonObject response = Common.deleleUser(baseUrl, username, password);
-            DebugLogger.info("{}", response);
-            String deleteGamer = new StringBuilder(baseUrl).append("/gamer/delete").toString();
+        public void getListGamer(){
+            String url = new StringBuilder(baseUrl)
+                    .append("/gamer/list?page=").append(1).toString();
+            DebugLogger.info("{}", url);
+            JsonObject response = OkHttpUtil.get(url);
+            DebugLogger.info("{}",response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            JsonObject data = response.getAsJsonObject("data");
+            Assertions.assertTrue(data.getAsJsonArray("gamer").size() > 0);
+        }
+        public void getGamer(JsonObject data){
+            long userId = data.get("user_id").getAsLong();
+            data.addProperty("phone",username);
+            data.addProperty("nick_name",nickname);
+            String url = new StringBuilder(baseUrl)
+                    .append("/gamer/get?id=").append(userId).toString();
+            DebugLogger.info("{}", url);
+            JsonObject response = OkHttpUtil.get(url);
+            DebugLogger.info("{}",response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            JsonObject gamer = response.getAsJsonObject("data");
+            Assertions.assertEquals(data.get("clan_id").getAsLong(), gamer.get("clan_id").getAsLong());
+        }
+        public void createGamerError(){
             JsonObject data = new JsonObject();
-            data.addProperty("id",120);
-            response = OkHttpUtil.postJson(deleteGamer,data.toString(), Common.createHeaderSystemAdmin());
-            DebugLogger.info("{}", response);
-            data = new JsonObject();
-            data.addProperty("phone","0915434540");
-            data.addProperty("nick_name","khanhsof6");
-            data.addProperty("full_name","KhanhAd");
-            data.addProperty("avatar","http://");
-            data.addProperty("detail","{}");
-            data.addProperty("clan_id","1");
-            data.addProperty("rank",1);
-            data.addProperty("rank_info","{'Solo': 'Top1'}");
+            data.addProperty("phone",username);
+            data.addProperty("nick_name",nickname);
             String createUrl = new StringBuilder(baseUrl)
                     .append("/gamer/create").toString();
-            response = OkHttpUtil.postJson(createUrl, data.toString(), Common.createHeaderAdmin());
+            JsonObject response = OkHttpUtil.postJson(createUrl, data.toString(), Common.createHeaderAdmin());
             DebugLogger.info("{}",response);
-            JsonObject gamer = response.getAsJsonObject("data");
-            long id = gamer.get("user_id").getAsLong();
-
+            Assertions.assertTrue(response.get("error").getAsInt() == 13);
+        }
+        public JsonObject createGamerSuccess(){
+            //create body
+            JsonObject data = new JsonObject();
+            data.addProperty("phone",username);
+            data.addProperty("nick_name",nickname);
+            data.addProperty("full_name","KhanhAd");
+            data.addProperty("avatar","http://");
+            JsonObject detail = new JsonObject();
+            detail.addProperty("sport"," Age of Empires");
+            detail.addProperty("address","NQ-NB");
+            detail.addProperty("date_of_birth","07/09/2002");
+            detail.add("image",new JsonArray());
+            detail.addProperty("nationality","China");
+            detail.addProperty("facebook_link",
+                    "https://docs.google.com/document/d/1td7LtgMVFoL5xrtJ6m0zErOIYDJgBUX2Dlk-vsMpFHU/edit#heading=h.mcb4gmk6o7pq");
+            detail.addProperty("telegram_link",
+                    "https://docs.google.com/document/d/1td7LtgMVFoL5xrtJ6m0zErOIYDJgBUX2Dlk-vsMpFHU/edit#heading=h.mcb4gmk6o7pq");
+            detail.addProperty("tiktok_link",
+                    "https://docs.google.com/document/d/1td7LtgMVFoL5xrtJ6m0zErOIYDJgBUX2Dlk-vsMpFHU/edit#heading=h.mcb4gmk6o7pq");
+            detail.addProperty("youtube_link",
+                    "https://docs.google.com/document/d/1td7LtgMVFoL5xrtJ6m0zErOIYDJgBUX2Dlk-vsMpFHU/edit#heading=h.mcb4gmk6o7pq");
+            data.add("detail",detail);
+            data.add("rank_info",new JsonObject());
+            data.addProperty("clan_id","1");
+            data.addProperty("rank",1);
+            String createUrl = new StringBuilder(baseUrl)
+                    .append("/gamer/create").toString();
+            JsonObject response = OkHttpUtil.postJson(createUrl, data.toString(), Common.createHeaderAdmin());
+            DebugLogger.info("{}",response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            return response.getAsJsonObject("data");
+        }
+        public void deleteGamer(){
+            String deleteGamer = new StringBuilder(baseUrl).append("/gamer/delete").toString();
+            JsonObject payload = new JsonObject();
+            payload.addProperty("username", username);
+            JsonObject response =
+                    OkHttpUtil.postJson(deleteGamer, payload.toString(), Common.createHeaderSystemAdmin());
+            DebugLogger.info("{}", response);
+        }
+        public void updateGamer(JsonObject data){
+            String updateGamer = new StringBuilder(baseUrl)
+                    .append("/gamer/update").toString();
+            data.addProperty("nick_name", nickname);
+            data.addProperty("full_name", "1");
+            data.addProperty("avatar", "1");
+            data.add("detail", new JsonObject());
+            data.addProperty("clan_id", "2");
+            data.addProperty("rank", "1");
+            data.add("rank_info",new JsonObject());
+            data.addProperty("state", "0");
+            String url = new StringBuilder(baseUrl).append("/gamer/update").toString();
+            JsonObject response = OkHttpUtil.postJson(url, data.toString(), Common.createHeaderAdmin());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-
-            //Get gamer by id
-            String getUrlById = new StringBuilder(baseUrl)
-                    .append("/gamer/get?id=")
-                    .append(id).toString();
-            response = OkHttpUtil.get(getUrlById);
-            DebugLogger.info("{}", response);
-            JsonObject getClan = response.getAsJsonObject("data");
-
-            //Get list of gamer
-            int page = 1;
-            String getUrlListGamer = new StringBuilder(baseUrl)
-                    .append("/gamer/list?page=")
-                    .append(page).toString();
-            response = OkHttpUtil.get(getUrlListGamer);
-            DebugLogger.info("{}", response);
-            //Xoa luon gamer vua tao
-            response = OkHttpUtil.postJson(deleteGamer,data.toString(), Common.createHeaderSystemAdmin());
-
         }
     }
 

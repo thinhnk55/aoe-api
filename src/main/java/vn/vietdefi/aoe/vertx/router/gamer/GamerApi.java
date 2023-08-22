@@ -20,17 +20,12 @@ public class GamerApi {
                         .instance()
                         .getPath("/gamer/get"))
                 .handler(GamerRouter::getGamerByUserId);
-//        router.get(ApiConfig.instance().getPath("/gamer/list-of-match"))
-//                .handler(GamerRouter::listGamerByMatchId);
+
         router.get(ApiConfig.instance().getPath("/gamer/list"))
                 .handler(GamerRouter::listGamer);
     }
 
     public static void supportAuthApi(Router router) {
-
-    }
-
-    public static void adminAuthApi(Router router) {
         router.post(ApiConfig
                         .instance()
                         .getPath("/gamer/create"))
@@ -43,6 +38,11 @@ public class GamerApi {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(GamerRouter::updateInfo);
+
+    }
+
+    public static void adminAuthApi(Router router) {
+
     }
 
     public static void superAdminAuthApi(Router router) {
