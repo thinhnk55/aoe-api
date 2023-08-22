@@ -102,11 +102,6 @@ public class DonateTest {
             payload.addProperty("state", MatchConstants.STATE_VOTING);
             payload.addProperty("create_time", System.currentTimeMillis());
             payload.add("team_player", new JsonArray());
-            payload.addProperty("description", "Description");
-            payload.addProperty("percent_for_gamer", "100%");
-            payload.addProperty("percent_for_viewer", "50%");
-            payload.addProperty("percent_for_organizers", "30%");
-            payload.addProperty("link_livestream", "");
 
             String startMatchURL = new StringBuilder(baseUrl).append("/admin/match/create").toString();
             response = OkHttpUtil.postJson(startMatchURL, payload.toString(), Common.createHeaderAdmin());
