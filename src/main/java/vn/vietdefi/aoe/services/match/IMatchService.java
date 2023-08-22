@@ -21,4 +21,7 @@ public interface IMatchService {
     JsonObject checkAcceptDonate(long targetId);
 
     JsonObject confirmMatch(JsonObject json);
+
+    /*These function user for TEST only. In real situation these actions is prohibited*/
+    JsonObject deleteMatch(long matchId);
 }

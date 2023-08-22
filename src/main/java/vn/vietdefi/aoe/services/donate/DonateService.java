@@ -184,6 +184,7 @@ public class DonateService implements IDonateService {
         }
     }
 
+    /*These function user for TEST only. In real situation these actions is prohibited*/
     @Override
     public JsonObject deleteDonate(long userId) {
         try {

@@ -118,4 +118,12 @@ public class Common {
         Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         return response;
     }
+
+    public static JsonObject getMatchById(String baseUrl, JsonObject data, long matchId) {
+        String getMatchByIdURL = new StringBuilder(baseUrl).append("/match/info")
+                .append("?matchId=").append(matchId).toString();
+        JsonObject response = OkHttpUtil.get(getMatchByIdURL, Common.createHeader(data));
+        Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+        return response;
+    }
 }

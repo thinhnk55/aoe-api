@@ -18,7 +18,7 @@ public class MatchAPI {
     public static void userAuthApi(Router router) {
         router.get(ApiConfig
                         .instance()
-                        .getPath("/match/get/byId"))
+                        .getPath("/match/info"))
                 .handler(AuthRouter::authorizeUser)
                 .handler(MatchRouter::getById);
         router.get(ApiConfig
@@ -29,6 +29,7 @@ public class MatchAPI {
         router.get(ApiConfig
                         .instance()
                         .getPath("/match/outstanding"))
+                .handler(AuthRouter::authorizeUser)
                 .handler(MatchRouter::getOutstandingMatch);
     }
     public static void supportAuthApi(Router router) {
@@ -82,6 +83,11 @@ public class MatchAPI {
 
     }
     public static void systemAdminAuthApi(Router router) {
-
+        router.post(ApiConfig
+                        .instance()
+                        .getPath("/admin/match/delete"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeSystemAdmin)
+                .handler(MatchRouter::deleteMatch);
     }
 }

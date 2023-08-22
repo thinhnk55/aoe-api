@@ -161,4 +161,20 @@ public class MatchRouter {
         }
     }
 
+    public static void deleteMatch(RoutingContext rc){
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long matchId = json.get("match_id").getAsLong();
+            JsonObject response = AoeServices.matchService.deleteMatch(matchId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
 }
