@@ -48,8 +48,9 @@ public class ClanService implements IClanService{
     public JsonObject listClan(long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * from aoe_clan WHERE state = ? LIMIT ? OFFSET ?";
-            JsonArray clans = bridge.query(query, 0, recordPerPage, (page - 1) * recordPerPage);
+            String query = "SELECT * from aoe_clan LIMIT ? OFFSET ?";
+            JsonArray clans = bridge.query(query,
+                    recordPerPage, (page - 1) * recordPerPage);
             JsonObject result = new JsonObject();
             result.add("clans", clans);
             return BaseResponse.createFullMessageResponse(0, "success", result);
@@ -94,38 +95,15 @@ public class ClanService implements IClanService{
     }
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
-    public JsonObject deleteClan(long clanId){
+    public JsonObject deleteClan(String clan){
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "DELETE FROM aoe_clan WHERE id = ?";
-            int row = bridge.update(query, clanId);
+            String query = "DELETE FROM aoe_clan WHERE nick_name = ?";
+            int row = bridge.update(query, clan);
             if(row == 0){
                 return BaseResponse.createFullMessageResponse(10, "delete_failure");
             }
             return BaseResponse.createFullMessageResponse(0, "success");
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
-    @Override
-    public JsonObject listGamerOfClan(long clanId, long page, int recordPerPage) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT id from aoe_clan WHERE id = ?";
-            if(!bridge.queryExist(query, clanId)){
-                return BaseResponse.createFullMessageResponse(10, "clan_not_found");
-            }
-            JsonObject response = AoeServices.gamerService.listGamerByClanId(clanId, page, recordPerPage);
-            if(!BaseResponse.isSuccessFullMessage(response)){
-                return response;
-            }
-            JsonArray gamers = response.getAsJsonObject("data").getAsJsonArray("gamers");
-            JsonObject result = new JsonObject();
-            result.add("gamers", gamers);
-            return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
