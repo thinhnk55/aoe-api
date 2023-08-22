@@ -46,7 +46,7 @@ public class MatchSuggestRouter {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.matchService.createMatch(json);
+            JsonObject response = AoeServices.suggestService.confirmMatchSuggest(json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
