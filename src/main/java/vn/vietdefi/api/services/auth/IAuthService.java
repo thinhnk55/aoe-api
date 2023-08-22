@@ -29,4 +29,5 @@ public interface IAuthService {
     JsonObject delete(long userid);
     JsonObject updateUserId(long userid, long newUserId);
     JsonObject updateUsername(long userid, String username);
+    JsonObject updatePassword(long userid, String password);
 }

@@ -21,7 +21,7 @@ public class GamerService implements IGamerService {
             if (BaseResponse.isSuccessFullMessage(response)){
                 return BaseResponse.createFullMessageResponse(13, "nick_name_exists");
             }
-                    ApiServices.authService.get(phone);
+            response = ApiServices.authService.get(phone);
             if(!BaseResponse.isSuccessFullMessage(response)){
                 String password = StringUtil.generateRandomStringNumberCharacter(8);
                 response = AoeServices.aoeAuthService
@@ -30,9 +30,10 @@ public class GamerService implements IGamerService {
                 if(!BaseResponse.isSuccessFullMessage(response)){
                     return response;
                 }
-            }
-            else {
-                return BaseResponse.createFullMessageResponse(12, "phone_used");
+            }else {
+                long userId = response.getAsJsonObject("data").get("id").getAsLong();
+                String password = StringUtil.generateRandomStringNumberCharacter(8);
+                ApiServices.authService.updatePassword(userId, password);
             }
             JsonObject user = response.getAsJsonObject("data");
             data.addProperty("user_id", user.get("id").getAsLong());
@@ -82,8 +83,6 @@ public class GamerService implements IGamerService {
                     data.add("clan", clan);
                 }
             }
-            Long userDonateCount = AoeServices.donateService.getTotalDonateByUserId(userId);
-            data.addProperty("", userDonateCount);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -120,8 +119,6 @@ public class GamerService implements IGamerService {
             if(!BaseResponse.isSuccessFullMessage(response)){
                 return response;
             }
-
-
             JsonObject oldData = response.getAsJsonObject("data");
             oldData.add("nick_name", data.get("nick_name"));
             oldData.add("full_name", data.get("full_name"));
@@ -176,7 +173,7 @@ public class GamerService implements IGamerService {
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
     @Override
-    public JsonObject deleteGamerById(long id) {
+    public JsonObject deleteGamerByUserId(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "DELETE FROM gamer WHERE user_id = ?";

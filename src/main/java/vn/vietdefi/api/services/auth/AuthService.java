@@ -375,4 +375,23 @@ public class AuthService implements IAuthService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+    @Override
+    public JsonObject updatePassword(long userid, String password) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String hashedPassword = StringUtil.sha256(password);
+            String token = StringUtil.generateRandomStringNumberCharacter(32);
+            String query = "UPDATE user SET password = ?, token = ? WHERE id = ?";
+            int x = bridge.update(query, hashedPassword, token, userid);
+            if(x == 1){
+                return BaseResponse.createFullMessageResponse(0, "success");
+            }else{
+                return BaseResponse.createFullMessageResponse(10, "update_failure");
+            }
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 }

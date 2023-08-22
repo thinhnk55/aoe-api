@@ -31,7 +31,7 @@ public class ClanTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.1.38:8000/aoe";
+            baseUrl = "http://127.0.0.1:8000/aoe";
             clan = "SBS";
         }
         @RepeatedTest(1)
@@ -50,8 +50,8 @@ public class ClanTest {
             data.addProperty("full_name", "slowbutsure");
             data.addProperty("avatar", "https://chimsedinang.com/wp-content/uploads/2021/10/clan-sbs-450x600-1.png");
             data.addProperty("create_day", "1622400000000");
-            data.addProperty("founder", "Nguyễn Đức Bình");
-            data.addProperty("owner_unit", "Chim Sẻ Đi Nắng Studio");
+            data.addProperty("founder", "Nguyen Duc Binh");
+            data.addProperty("owner_unit", "Chim Se Di Nang Studio");
             data.addProperty("sport", "Age of Empire");
             JsonObject detail = new JsonObject();
             detail.addProperty("facebook_link", "https:/");
@@ -94,8 +94,8 @@ public class ClanTest {
             data1.addProperty("full_name", "slowbutsssure");
             data1.addProperty("avatar", "https://chimsssedinang.com/wp-content/uploads/2021/10/clan-sbs-450x600-1.png");
             data1.addProperty("create_day", "1622400000000");
-            data1.addProperty("founder", "Nguyễn Đaức Bình");
-            data1.addProperty("owner_unit", "Chim Sẻ Đi sNắng Studio");
+            data1.addProperty("founder", "Nguyen Duc Binh");
+            data1.addProperty("owner_unit", "Chim Se Di Nang Studio");
             data1.addProperty("sport", "Age of Empsire");
             JsonObject detail1 = new JsonObject();
             detail1.addProperty("facebook_link", "httssps:/");

@@ -221,6 +221,30 @@ public class AuthRouter {
             rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
         }
     }
+    public static void adminGetUserByUserName(RoutingContext rc) {
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            String username = json.get("username").getAsString();
+            JsonObject response = ApiServices.authService.get(username);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
+    public static void adminGetUserByUserId(RoutingContext rc) {
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            String userId = json.get("user_id").getAsString();
+            JsonObject response = ApiServices.authService.get(userId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
 
     public static void logout(RoutingContext rc) {
         try {
@@ -232,4 +256,6 @@ public class AuthRouter {
             rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
         }
     }
+
+
 }
