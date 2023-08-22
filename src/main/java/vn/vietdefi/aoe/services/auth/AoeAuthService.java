@@ -77,6 +77,10 @@ public class AoeAuthService implements IAoeAuthService{
                 if(!BaseResponse.isSuccessFullMessage(response)){
                     return response;
                 }
+                response = AoeServices.donateService.deleteDonate(userId);
+                if (!BaseResponse.isSuccessFullMessage(response)) {
+                    return response;
+                }
             }
             return BaseResponse.createFullMessageResponse(0, "success");
         }catch (Exception e){

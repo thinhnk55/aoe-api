@@ -184,4 +184,16 @@ public class DonateService implements IDonateService {
         }
     }
 
+    @Override
+    public JsonObject deleteDonate(long userId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "DELETE FROM aoe_donate WHERE user_id = ?";
+            bridge.update(query, userId);
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 }
