@@ -20,15 +20,16 @@ public class StarTest {
     }
 
     @Nested
-    class AoeAuthTest1{
+    class StarTest1{
         String baseUrl;
         String username;
         String password;
 
         @BeforeEach
         void init(){
-//            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.1.23:8000/aoe";
+            baseUrl = "https://api.godoo.asia/aoe";
+//            baseUrl = "http://192.168.1.18:8000/aoe";
+//            baseUrl = "http://192.168.1.99:8000/aoe";
             username = "086888555";
             password = "12344321";
         }

@@ -82,8 +82,6 @@ public class GamerService implements IGamerService {
                     data.add("clan", clan);
                 }
             }
-            Long userDonateCount = AoeServices.donateService.getTotalDonateByUserId(userId);
-            data.addProperty("", userDonateCount);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
