@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS gamer
     rank_info VARCHAR(2048)  NULL,
     match_played INT NOT NULL DEFAULT 0,
     match_won INT NOT NULL DEFAULT 0,
-    update_time BIGINT NOT NULL DEFAULT 0,
+    total_user_support INT NOT NULL DEFAULT 0,
+    create_time BIGINT NOT NULL DEFAULT 0,
     state INT NOT NULL DEFAULT 0
 );
 

@@ -29,11 +29,16 @@ public class StarTest {
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
             baseUrl = "http://192.168.1.18:8000/aoe";
-            username = "086888444";
+            baseUrl = "http://192.168.1.99:8000/aoe";
+            username = "086888555";
             password = "12344321";
         }
         @RepeatedTest(1)
         void repeatTest1(){
+
+        }
+        @Test
+        public void test0(){
             JsonObject response = Common.deleleUser(baseUrl, username, password);
             DebugLogger.info("{}", response);
             response = Common.registerUserSuccess(baseUrl, username, password);
@@ -48,22 +53,53 @@ public class StarTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertEquals(user.get("star").getAsJsonObject(), response.getAsJsonObject("data"));
 
-            /*test get transaction by time*/
-            long userId = 1;
-            String token = "2gbpnlvqtidiifohxnqb1thw1un969uq";
-            long from = 1692373548373L;
-            long to = 1692373925745L;
+            JsonObject payload = new JsonObject();
+            payload.addProperty("user_id", user.get("id").getAsLong());
+            int service = StarConstant.SERVICE_DONATE_GAMER;
+            payload.addProperty("service", service);
+            payload.addProperty("amount", 1000);
+            payload.addProperty("referId", 0);
+            String adminExchangeStar = new StringBuilder(baseUrl).append("/star/admin/exchange").toString();
+            response = OkHttpUtil.postJson(adminExchangeStar, payload.toString(), Common.createHeaderSystemAdmin());
+            JsonObject transaction = response.getAsJsonObject("data");
+            DebugLogger.info("{}", transaction);
+            OkHttpUtil.postJson(adminExchangeStar, payload.toString(), Common.createHeaderSystemAdmin());
+            OkHttpUtil.postJson(adminExchangeStar, payload.toString(), Common.createHeaderSystemAdmin());
+            OkHttpUtil.postJson(adminExchangeStar, payload.toString(), Common.createHeaderSystemAdmin());
+            OkHttpUtil.postJson(adminExchangeStar, payload.toString(), Common.createHeaderSystemAdmin());
+            OkHttpUtil.postJson(adminExchangeStar, payload.toString(), Common.createHeaderSystemAdmin());
+            DebugLogger.info("{}", response);
+
+            long from = 1592373925745L;
+            long to = 1792373925745L;
             int page = 1;
-            String getTransactionByTimeURL = new StringBuilder(baseUrl).append("/star/transaction-by-time")
+            String getTransactionByTimeURL = new StringBuilder(baseUrl).append("/star/transaction/time")
                     .append("?from=").append(from).append("&to=").append(to).append("&page=").append(page).toString();
-            response = OkHttpUtil.get(getTransactionByTimeURL, Common.createHeader(userId, token));
+            response = OkHttpUtil.get(getTransactionByTimeURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-            Assertions.assertTrue(response.get("data").getAsJsonArray().size() == 11);
+            Assertions.assertTrue(response.get("data").getAsJsonArray().size() == 6);
 
-            /*test get star transaction by id*/
-            long transactionId = 20;
-            String getTransactionByIdURL = new StringBuilder(baseUrl).append("/star/transaction")
+            from = 0;
+            to = 1792373925745L;
+            page = 1;
+            getTransactionByTimeURL = new StringBuilder(baseUrl).append("/star/transaction/time")
+                    .append("?from=").append(from).append("&to=").append(to).append("&page=").append(page).toString();
+            response = OkHttpUtil.get(getTransactionByTimeURL, Common.createHeader(user));
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            Assertions.assertTrue(response.get("data").getAsJsonArray().size() == 6);
+
+            String getTransactionByServiceURL = new StringBuilder(baseUrl).append("/star/transaction/service")
+                    .append("?service=").append(StarConstant.SERVICE_DONATE_GAMER).toString();
+            response = OkHttpUtil.get(getTransactionByServiceURL, Common.createHeader(user));
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            Assertions.assertTrue(response.get("data").getAsJsonArray().size() == 6);
+
+
+            long transactionId = transaction.get("id").getAsLong();
+            String getTransactionByIdURL = new StringBuilder(baseUrl).append("/star/transaction/get")
                     .append("?id=").append(transactionId).toString();
             response = OkHttpUtil.get(getTransactionByIdURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
@@ -72,18 +108,14 @@ public class StarTest {
             Assertions.assertTrue(response.getAsJsonObject("data").get("id").getAsLong() == transactionId);
 
             /*test admin get star wallet by userId*/
-            long starWalletId = 13;
+            long starWalletId = user.get("id").getAsLong();
             String adminGetStarURL = new StringBuilder(baseUrl).append("/star/admin/get")
-                    .append("?id=").append(starWalletId).toString();
-            response = OkHttpUtil.get(adminGetStarURL, Common.createHeader(Common.support_id, Common.support_token));
+                    .append("?user_id=").append(starWalletId).toString();
+            response = OkHttpUtil.get(adminGetStarURL, Common.createHeaderSupport());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-            Assertions.assertEquals(response.getAsJsonObject("data").get("user_id").getAsLong(), starWalletId);
-
-        }
-        @Test
-        public void test0(){
-
+            Assertions.assertEquals(response.getAsJsonObject("data").get("user_id").getAsLong(),
+                    starWalletId);DebugLogger.info("{}", response);
         }
         @Test
         public void test1(){

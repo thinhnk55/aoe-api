@@ -20,14 +20,10 @@ public class GamerApi {
                         .instance()
                         .getPath("/gamer/get"))
                 .handler(GamerRouter::getGamerByUserId);
-        router.get(ApiConfig.instance().getPath("/gamer/list-of-match"))
-                .handler(GamerRouter::listGamerByMatchId);
+//        router.get(ApiConfig.instance().getPath("/gamer/list-of-match"))
+//                .handler(GamerRouter::listGamerByMatchId);
         router.get(ApiConfig.instance().getPath("/gamer/list"))
                 .handler(GamerRouter::listGamer);
-        router.get(ApiConfig.instance().getPath("/gamer/list-of-clan"))
-                .handler(GamerRouter::listGamerOfClan);
-        router.get(ApiConfig.instance().getPath("/gamer/match"))
-                .handler(GamerRouter::listMatch);
     }
 
     public static void supportAuthApi(Router router) {

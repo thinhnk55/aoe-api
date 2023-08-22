@@ -57,5 +57,12 @@ public class AoeAuthAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSystemAdmin)
                 .handler(AuthRouter::updateUsername);
+        // only login for gamer test
+        router.post(ApiConfig
+                        .instance()
+                        .getPath("/auth/login/gamer"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeSystemAdmin)
+                .handler(AoeAuthRouter::loginGamer);
     }
 }

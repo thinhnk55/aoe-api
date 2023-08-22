@@ -10,12 +10,10 @@ import vn.vietdefi.util.log.DebugLogger;
 
 public class AoeAuthService implements IAoeAuthService{
     @Override
-    public JsonObject register(JsonObject data) {
+    public JsonObject register(String username, String password, int role, int status) {
         try{
-            String username = data.get("username").getAsString();
-            String password = data.get("password").getAsString();
             JsonObject response = ApiServices.authService.register(username,
-                    password, UserConstant.ROLE_USER, UserConstant.STATUS_NORMAL);
+                    password, role, status);
             if(BaseResponse.isSuccessFullMessage(response)){
                 JsonObject user = response.getAsJsonObject("data");
                 long userId = user.get("id").getAsLong();
@@ -33,7 +31,19 @@ public class AoeAuthService implements IAoeAuthService{
             }else{
                 return response;
             }
+        }catch (Exception e){
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 
+    @Override
+    public JsonObject register(JsonObject data) {
+        try{
+            String username = data.get("username").getAsString();
+            String password = data.get("password").getAsString();
+            return register(username,
+                    password, UserConstant.ROLE_USER, UserConstant.STATUS_NORMAL);
         }catch (Exception e){
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");

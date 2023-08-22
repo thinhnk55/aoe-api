@@ -9,7 +9,8 @@ public interface IClanService {
     JsonObject updateClan(JsonObject data);
     JsonObject getClanById(long clanId);
     JsonObject getClanByNickName(String nickName);
-    JsonObject getListClan(long page, long recordPerPage);
+    JsonObject listClan(long page, long recordPerPage);
     /*These function user for TEST only. In real situation these actions is prohibited*/
     JsonObject deleteClan(long clanId);
+    JsonObject listGamerOfClan(long clanId, long page, int recordPerPage);
 }

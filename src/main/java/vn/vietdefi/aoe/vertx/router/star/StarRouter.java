@@ -23,8 +23,8 @@ public class StarRouter {
     }
     public static void adminGetStarWallet(RoutingContext rc){
         try {
-            long id = Long.parseLong(rc.request().getParam("id"));
-            JsonObject response = AoeServices.starService.getStarWalletByUserId(id);
+            long userId = Long.parseLong(rc.request().getParam("user_id"));
+            JsonObject response = AoeServices.starService.getStarWalletByUserId(userId);
             rc.response().end(response.toString());
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -54,24 +54,17 @@ public class StarRouter {
             long from = Long.parseLong(rc.request().getParam("from"));
             long to = Long.parseLong(rc.request().getParam("to"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.starService
-                    .listStarTransactionOfUserByTime(userId, from, to,
-                            page, StarConstant.DEFAULT_RECORD_PER_PAGE);
-            rc.response().end(response.toString());
-        } catch (Exception e) {
-            DebugLogger.error(ExceptionUtils.getStackTrace(e));
-            rc.response().end(BaseResponse.createFullMessageResponse(
-                    1, "system_error").toString());
-        }
-    }
-
-    public static void listTransaction(RoutingContext rc) {
-        try {
-            long userId = Long.parseLong(rc.request().getHeader("userId"));
-            long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.starService
-                    .listStarTransactionOfUserAll(userId, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
-            rc.response().end(response.toString());
+            if(from != 0) {
+                JsonObject response = AoeServices.starService
+                        .listStarTransactionOfUserByTime(userId, from, to,
+                                page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+                rc.response().end(response.toString());
+            }else{
+                JsonObject response = AoeServices.starService
+                        .listStarTransactionOfUserAll(userId,
+                                page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+                rc.response().end(response.toString());
+            }
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             rc.response().end(BaseResponse.createFullMessageResponse(

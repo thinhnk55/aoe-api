@@ -1,5 +1,6 @@
 package vn.vietdefi.aoe.api.gamer;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
@@ -19,15 +20,17 @@ public class GamerTest {
     }
 
     @Nested
-    class ClanTest1{
+    class GamerTest1{
         String baseUrl;
-        String clan;
+        String username;
+        String tokenAdminSystem;
 
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
             baseUrl = "http://127.0.0.1:8000/aoe";
-            clan = "SBS";
+            username = "0915434541";
+            tokenAdminSystem = "zlmnyk66fi0lhgkr7ol4sqld27xsg1ip";
         }
         @RepeatedTest(1)
         void repeatTest1(){
@@ -39,55 +42,78 @@ public class GamerTest {
         }
         @Test
         public void test1(){
-            //Tao Clan
-            long id = 105;
-            JsonObject response = Common.deleleUser(baseUrl, "0915434544", "password");
+            JsonObject response = GamerDataTest.deleteGamer(baseUrl, username);
             DebugLogger.info("{}", response);
-            String deleteGamer = new StringBuilder(baseUrl).append("/gamer/delete").append(id).toString();
             JsonObject data = new JsonObject();
-            data.addProperty("id",id);
-            response = OkHttpUtil.postJson(deleteGamer,data.toString(), Common.createHeaderSystemAdmin());
-            DebugLogger.info("{}", response);
-            data = new JsonObject();
-            data.addProperty("phone","0915434544");
-            data.addProperty("nick_name","khanhsof5");
+            //Tao gamer
+            //create body
+            data.addProperty("phone","0915434541");
+            data.addProperty("nick_name","Sbuu");
             data.addProperty("full_name","KhanhAd");
             data.addProperty("avatar","http://");
-            data.addProperty("detail","{}");
+            JsonObject detail = new JsonObject();
+            detail.addProperty("sport"," Age of Empires");
+            detail.addProperty("address","NQ-NB");
+            detail.addProperty("date_of_birth","07/09/2002");
+            detail.add("image",new JsonArray());
+            detail.addProperty("nationality","China");
+            detail.addProperty("facebook_link","https://docs.google.com/document/d/1td7LtgMVFoL5xrtJ6m0zErOIYDJgBUX2Dlk-vsMpFHU/edit#heading=h.mcb4gmk6o7pq");
+            detail.addProperty("telegram_link","https://docs.google.com/document/d/1td7LtgMVFoL5xrtJ6m0zErOIYDJgBUX2Dlk-vsMpFHU/edit#heading=h.mcb4gmk6o7pq");
+            detail.addProperty("tiktok_link","https://docs.google.com/document/d/1td7LtgMVFoL5xrtJ6m0zErOIYDJgBUX2Dlk-vsMpFHU/edit#heading=h.mcb4gmk6o7pq");
+            detail.addProperty("youtube_link","https://docs.google.com/document/d/1td7LtgMVFoL5xrtJ6m0zErOIYDJgBUX2Dlk-vsMpFHU/edit#heading=h.mcb4gmk6o7pq");
+            data.add("detail",detail);
+            data.add("rank_info",new JsonObject());
             data.addProperty("clan_id","1");
             data.addProperty("rank",1);
-            data.addProperty("rank_info","{'Solo': 'Top1'}");
-            data.addProperty("update_time",System.currentTimeMillis());
             String createUrl = new StringBuilder(baseUrl)
                     .append("/gamer/create").toString();
             response = OkHttpUtil.postJson(createUrl, data.toString(), Common.createHeaderAdmin());
             DebugLogger.info("{}",response);
-            JsonObject gamer = response.getAsJsonObject("data");
-            id = gamer.get("user_id").getAsLong();
-
-            DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
 
-            //Get clan
+            JsonObject gamer = response.getAsJsonObject("data");
+            long id = gamer.get("user_id").getAsLong();
+            long getClanId = response.getAsJsonObject("data").get("clan_id").getAsLong();
+            //Get gamer by id
             String getUrlById = new StringBuilder(baseUrl)
                     .append("/gamer/get?id=")
                     .append(id).toString();
             response = OkHttpUtil.get(getUrlById);
             DebugLogger.info("{}", response);
-            JsonObject getClan = response.getAsJsonObject("data");
-            Assertions.assertEquals(clan.toString(), getClan.toString());
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
 
-            //Get clan
+            String updateGamer = new StringBuilder(baseUrl)
+                    .append("/gamer/update").toString();
+            data =new JsonObject();
+            data.addProperty("user_id",id);
+            data.addProperty("nick_name", "1");
+            data.addProperty("full_name", "1");
+            data.addProperty("avatar", "1");
+            data.add("detail", new JsonObject());
+            data.addProperty("clan_id", "2");
+            data.addProperty("rank", "1");
+            data.add("rank_info",new JsonObject());
+            data.addProperty("state", "0");
+
+
+            response = OkHttpUtil.postJson(updateGamer,data.toString(),Common.createHeaderSystemAdmin());
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+
+
+            //Get list of gamer
             int page = 1;
             String getUrlListGamer = new StringBuilder(baseUrl)
                     .append("/gamer/list?page=")
                     .append(page).toString();
-            response = OkHttpUtil.postJson(getUrlById, data.toString());
+            response = OkHttpUtil.get(getUrlListGamer);
             DebugLogger.info("{}", response);
-            getClan = response.getAsJsonObject("data");
-            Assertions.assertEquals(clan.toString(), getClan.toString());
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
 
-            //Xoa luon clan vua tao
+
+            //Xoa luon gamer vua tao
+            response = GamerDataTest.deleteGamer(baseUrl, username);
+            DebugLogger.info("{}",response);
 
         }
     }

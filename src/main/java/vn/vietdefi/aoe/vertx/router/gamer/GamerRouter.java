@@ -26,11 +26,9 @@ public class GamerRouter {
     }
     public static void updateInfo(RoutingContext rc){
         try{
-            long userid = Long.parseLong(rc.request().getParam("id"));
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            json.addProperty("userid",userid);
-            JsonObject response = AoeServices.gamerService.updateInfo(json);
+            JsonObject response = AoeServices.gamerService.update(json);
             rc.response().end(response.toString());
         }
         catch (Exception e){
@@ -57,7 +55,7 @@ public class GamerRouter {
     public static void listGamerByMatchId(RoutingContext rc) {
         try{
             long matchId = Long.parseLong(rc.request().getParam("id"));
-            JsonObject response = AoeServices.gamerService.listGamerByMatchId(matchId);
+            JsonObject response = AoeServices.gamerService.getGamerByUserId(matchId);
             rc.response().end(response.toString());
         }
         catch (Exception e){
@@ -82,26 +80,11 @@ public class GamerRouter {
         }
     }
 
-    public static void listGamerOfClan(RoutingContext rc) {
-        try{
-            long id = Long.parseLong(rc.request().getParam("id"));
-            long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.gamerService.listGamerOfClan(id, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
-            rc.response().end(response.toString());
-        }
-        catch (Exception e){
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
-            rc.response().end(response.toString());
-        }
-    }
-
     public static void listMatch(RoutingContext rc) {
         try{
             long id = Long.parseLong(rc.request().getParam("id"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.gamerService.listMatch(id, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.gamerService.getGamerByUserId(id);
             rc.response().end(response.toString());
         }
         catch (Exception e){
@@ -117,7 +100,7 @@ public class GamerRouter {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            long Id = Long.parseLong(json.get("id").getAsString());
+            long Id = Long.parseLong(json.get("user_id").getAsString());
             JsonObject response = AoeServices.gamerService.deleteGamerById(Id);
             rc.response().end(response.toString());
         } catch (Exception e) {

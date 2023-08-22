@@ -155,7 +155,11 @@ public class DonateService implements IDonateService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT count(*) FROM aoe_donate_gamer WHERE gamer_id = ? GROUP BY gamer_id";
-            return bridge.queryLong(query, id);
+            Long value = bridge.queryLong(query, id);
+            if(value == null){
+                return 0;
+            }
+            return value;
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return 0;
