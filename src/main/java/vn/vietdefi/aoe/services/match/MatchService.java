@@ -287,7 +287,7 @@ public class MatchService implements IMatchService {
             }
             int state = data.get("data").getAsJsonObject().get("state").getAsInt();
             if (state != MatchConstants.STATE_VOTING) {
-                return BaseResponse.createFullMessageResponse(10,
+                return BaseResponse.createFullMessageResponse(11,
                         "cancel_reject", data);
             }
             String query = "UPDATE aoe_match SET state = ? ,time_expired = ? WHERE id = ?";
