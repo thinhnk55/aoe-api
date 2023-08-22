@@ -502,12 +502,14 @@ public class SQLJavaBridge {
             if (!key.equals(primaryField)) {
                 sb.append(key).append(" = ? ");
             }
-            if (i != size - 1 && !key.equals(primaryField)) {
+            if (!key.equals(primaryField)) {
                 sb.append(", ");
             }
         }
+        sb.delete(sb.length()-2, sb.length());
         sb.append("WHERE ").append(primaryField).append("= ?");
         String query = sb.toString();
+        DebugLogger.debug(query);
         PreparedStatement st = connection.prepareStatement(query);
         int count = 1;
         JsonElement idValue = null;
@@ -527,7 +529,7 @@ public class SQLJavaBridge {
         return st;
     }
 
-    public static void addParamsByField(PreparedStatement st, int index, JsonElement value) throws IllegalAccessException, SQLException {
+    public static void addParamsByField(PreparedStatement st, int index, JsonElement value) throws SQLException {
         if (value.isJsonNull()) {
             st.setObject(index, null);
         } else if (value.isJsonPrimitive()) {

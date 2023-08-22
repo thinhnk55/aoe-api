@@ -21,7 +21,7 @@
     </appender>
 
     <logger name="debug">
-        <level value="INFO" />
+        <level value="DEBUG" />
         <appender-ref ref="console"/>
         <appender-ref ref="debug" />
     </logger>

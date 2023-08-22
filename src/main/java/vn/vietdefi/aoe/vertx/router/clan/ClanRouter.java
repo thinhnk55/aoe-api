@@ -68,8 +68,8 @@ public class ClanRouter {
         try{
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            long clanId = Long.parseLong(json.get("id").getAsString());
-            JsonObject response = AoeServices.clanService.deleteClan(clanId);
+            String clan = json.get("clan").getAsString();
+            JsonObject response = AoeServices.clanService.deleteClan(clan);
             rc.response().end(response.toString());
         }catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -83,20 +83,6 @@ public class ClanRouter {
         try{
             long clanId = Long.parseLong(rc.request().getParam("clan_id"));
             JsonObject response = AoeServices.clanService.getClanById(clanId);
-            rc.response().end(response.toString());
-        }catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
-            rc.response().end(response.toString());
-        }
-    }
-
-    public static void listGamerOfClan(RoutingContext rc) {
-        try{
-            long clanId = Long.parseLong(rc.request().getParam("clan_id"));
-            long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.clanService.listGamerOfClan(clanId, page, ClanConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         }catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

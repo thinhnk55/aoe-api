@@ -22,8 +22,6 @@ public class ClanAPI {
                 .handler(ClanRouter::getInfoClanById);
         router.get(ApiConfig.instance().getPath("/clan/list"))
                 .handler(ClanRouter::getListClan);
-        router.get(ApiConfig.instance().getPath("/clan/list-gamer-of-clan"))
-                .handler(ClanRouter::listGamerOfClan);
     }
     public static void supportAuthApi(Router router) {
 
