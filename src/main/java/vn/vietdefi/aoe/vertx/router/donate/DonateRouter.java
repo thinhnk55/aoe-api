@@ -9,7 +9,7 @@ import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 
-public class DonateRouter {
+public class  DonateRouter {
 
     public static void donateGamer(RoutingContext rc) {
         try {

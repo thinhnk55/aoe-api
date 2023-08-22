@@ -5,6 +5,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.aoe.vertx.router.auth.AoeAuthAPI;
 import vn.vietdefi.aoe.vertx.router.caster.CasterRouter;
 import vn.vietdefi.aoe.vertx.router.clan.ClanAPI;
+import vn.vietdefi.aoe.vertx.router.donate.DonateAPI;
 import vn.vietdefi.aoe.vertx.router.donate.DonateRouter;
 import vn.vietdefi.aoe.vertx.router.event.EventRouter;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerApi;
@@ -22,29 +23,11 @@ public class AoeAPI {
         StarAPI.configAPI(router);
         ClanAPI.configAPI(router);
         GamerApi.configAPI(router);
+        DonateAPI.configAPI(router);
         adminApi(router);
         casterAPI(router);
         matchApi(router);
-        donateApi(router);
         eventApi(router);
-    }
-
-    private static void donateApi(Router router) {
-        router.post(ApiConfig.instance().getPath("/donate/gamer"))
-                .handler(BodyHandler.create(false))
-                .handler(DonateRouter::donateGamer);
-        router.post(ApiConfig.instance().getPath("/donate/caster"))
-                .handler(BodyHandler.create(false))
-                .handler(DonateRouter::donateCaster);
-        router.post(ApiConfig.instance().getPath("/donate/match"))
-                .handler(BodyHandler.create(false))
-                .handler(DonateRouter::donateMatch);
-        router.get(ApiConfig.instance().getPath("/donate/list-donate"))
-                .handler(DonateRouter::listDonate);
-        router.get(ApiConfig.instance().getPath("/donate/list-top-donate"))
-                .handler(DonateRouter::listTopDonate);
-        router.get(ApiConfig.instance().getPath("/donate/list-all-top-donate"))
-                .handler(DonateRouter::listAllTopDonate);
     }
 
     private static void eventApi(Router router) {
