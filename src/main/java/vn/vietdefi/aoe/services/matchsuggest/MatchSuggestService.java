@@ -170,4 +170,17 @@ public class MatchSuggestService implements IMatchSuggestService{
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    @Override
+    public JsonObject getMatchSuggestInfo(long matchId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM aoe_match_suggest WHERE id = ?";
+            JsonObject data = bridge.queryOne(query, matchId);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 }

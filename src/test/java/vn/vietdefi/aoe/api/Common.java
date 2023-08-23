@@ -2,6 +2,7 @@ package vn.vietdefi.aoe.api;
 
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Assertions;
+import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
@@ -130,6 +131,19 @@ public class Common {
         return createHeader(userid, token);
     }
 
+    public static JsonObject addStarToWallet(String baseUrl, long userId, int star) {
+        JsonObject payload = new JsonObject();
+        payload.addProperty("user_id", userId);
+        int service = StarConstant.SERVICE_STAR_RECHARGE;
+        payload.addProperty("service", service);
+        payload.addProperty("amount", star);
+        payload.addProperty("referId", 0);
+        String adminExchangeStar = new StringBuilder(baseUrl).append("/star/admin/exchange").toString();
+        JsonObject response = OkHttpUtil.postJson(adminExchangeStar, payload.toString(), Common.createHeaderSystemAdmin());
+        Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+        return response;
+    }
+
     public static JsonObject getStartWallet(String baseUrl, JsonObject data) {
         String getStartURL = new StringBuilder(baseUrl).append("/star/get").toString();
         JsonObject response = OkHttpUtil.get(getStartURL, Common.createHeader(data));
@@ -140,7 +154,7 @@ public class Common {
     public static JsonObject getMatchById(String baseUrl, JsonObject data, long matchId) {
         String getMatchByIdURL = new StringBuilder(baseUrl).append("/match/info")
                 .append("?matchId=").append(matchId).toString();
-        JsonObject response = OkHttpUtil.get(getMatchByIdURL, Common.createHeader(data));
+        JsonObject response = OkHttpUtil.get(getMatchByIdURL);
         Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         return response;
     }

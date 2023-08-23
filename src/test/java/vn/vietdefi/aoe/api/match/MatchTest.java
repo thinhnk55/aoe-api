@@ -150,7 +150,7 @@ public class MatchTest {
             int page = 1;
             String getListMatchURL = new StringBuilder(baseUrl).append("/match/getlist/state")
                     .append("?state=").append(state).append("&page=").append(page).toString();
-            response = OkHttpUtil.get(getListMatchURL, Common.createHeader(user));
+            response = OkHttpUtil.get(getListMatchURL);
             DebugLogger.info("List by state {}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertFalse(response.getAsJsonObject("data").getAsJsonArray("match").isEmpty());
@@ -158,7 +158,7 @@ public class MatchTest {
             /*Test get outstanding match*/
             String getOutstandingMatchURL = new StringBuilder(baseUrl).append("/match/outstanding")
                     .append("?state=").append(state).append("&page=").append(page).toString();
-            response = OkHttpUtil.get(getOutstandingMatchURL, Common.createHeader(user));
+            response = OkHttpUtil.get(getOutstandingMatchURL);
             DebugLogger.info("Outstanding match {}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
 

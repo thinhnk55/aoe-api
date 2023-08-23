@@ -84,4 +84,17 @@ public class MatchSuggestRouter {
             rc.response().end(response.toString());
         }
     }
+    public static void getMatchSuggestInfo(RoutingContext rc) {
+        try {
+            long matchId = Long.parseLong(rc.request().getParam("match_id"));
+            JsonObject response = AoeServices.suggestService.getMatchSuggestInfo(matchId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
 }

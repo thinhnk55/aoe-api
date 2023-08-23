@@ -9,4 +9,5 @@ public interface IMatchSuggestService {
     JsonObject getListMatchSuggested(long userId,long page, long recordPerPage);
 
     JsonObject confirmMatchSuggest(JsonObject info);
+    JsonObject getMatchSuggestInfo(long matchId);
 }

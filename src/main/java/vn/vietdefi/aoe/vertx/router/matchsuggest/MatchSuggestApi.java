@@ -33,6 +33,11 @@ public class MatchSuggestApi {
                         .getPath("/match/user/suggest/list"))
                 .handler(AuthRouter::authorizeUser)
                 .handler(MatchSuggestRouter::getListMatchSuggested);
+        router.get(ApiConfig
+                        .instance()
+                        .getPath("/match/user/suggest/info"))
+                .handler(AuthRouter::authorizeUser)
+                .handler(MatchSuggestRouter::getMatchSuggestInfo);
     }
     public static void supportAuthApi(Router router) {
 
