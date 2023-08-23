@@ -48,6 +48,7 @@ public class StarTest {
 
             /*test get star wallet*/
             String getStartURL = new StringBuilder(baseUrl).append("/star/get").toString();
+            DebugLogger.info("{}", getStartURL);
             response = OkHttpUtil.get(getStartURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
@@ -60,6 +61,7 @@ public class StarTest {
             payload.addProperty("amount", 1000);
             payload.addProperty("referId", 0);
             String adminExchangeStar = new StringBuilder(baseUrl).append("/star/admin/exchange").toString();
+            DebugLogger.info("{}", adminExchangeStar);
             response = OkHttpUtil.postJson(adminExchangeStar, payload.toString(), Common.createHeaderSystemAdmin());
             JsonObject transaction = response.getAsJsonObject("data");
             DebugLogger.info("{}", transaction);
@@ -75,6 +77,7 @@ public class StarTest {
             int page = 1;
             String getTransactionByTimeURL = new StringBuilder(baseUrl).append("/star/transaction/time")
                     .append("?from=").append(from).append("&to=").append(to).append("&page=").append(page).toString();
+            DebugLogger.info("{}", getTransactionByTimeURL);
             response = OkHttpUtil.get(getTransactionByTimeURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
@@ -85,6 +88,7 @@ public class StarTest {
             page = 1;
             getTransactionByTimeURL = new StringBuilder(baseUrl).append("/star/transaction/time")
                     .append("?from=").append(from).append("&to=").append(to).append("&page=").append(page).toString();
+            DebugLogger.info("{}", getTransactionByTimeURL);
             response = OkHttpUtil.get(getTransactionByTimeURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
@@ -92,6 +96,7 @@ public class StarTest {
 
             String getTransactionByServiceURL = new StringBuilder(baseUrl).append("/star/transaction/service")
                     .append("?service=").append(StarConstant.SERVICE_DONATE_GAMER).toString();
+            DebugLogger.info("{}", getTransactionByServiceURL);
             response = OkHttpUtil.get(getTransactionByServiceURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
@@ -101,6 +106,7 @@ public class StarTest {
             long transactionId = transaction.get("id").getAsLong();
             String getTransactionByIdURL = new StringBuilder(baseUrl).append("/star/transaction/get")
                     .append("?id=").append(transactionId).toString();
+            DebugLogger.info("{}", getTransactionByIdURL);
             response = OkHttpUtil.get(getTransactionByIdURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
@@ -111,6 +117,7 @@ public class StarTest {
             long starWalletId = user.get("id").getAsLong();
             String adminGetStarURL = new StringBuilder(baseUrl).append("/star/admin/get")
                     .append("?user_id=").append(starWalletId).toString();
+            DebugLogger.info("{}", adminGetStarURL);
             response = OkHttpUtil.get(adminGetStarURL, Common.createHeaderSupport());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));

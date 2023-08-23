@@ -32,7 +32,7 @@ public class MatchSuggestTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.250.1:8000/aoe";
+            baseUrl = "http://192.168.1.19:8000/aoe";
             username = "0352555556";
             password = "12344321";
             star = 100000;
@@ -114,15 +114,13 @@ public class MatchSuggestTest {
         }
 
         public void testConfirmMatch(JsonObject user, long matchId) {
+            JsonObject oldStarWallet = Common.getStartWallet(baseUrl, user);
             JsonObject payload = new JsonObject();
             payload.addProperty("match_suggest_id", matchId);
-            payload.addProperty("time_expired", System.currentTimeMillis() + 6220800000L);
+            payload.addProperty("format", 1);
+            payload.addProperty("type", 1);
             payload.addProperty("star_default", 1000);
-            payload.addProperty("star_current", 1000);
-            payload.addProperty("description", "Description match");//
-            payload.addProperty("percent_for_gamer", "50%");
-            payload.addProperty("percent_for_viewer", "30%");
-            payload.addProperty("percent_for_organizers", "20%");
+            payload.addProperty("time_expired", System.currentTimeMillis() + 6220800000L);
             String confirmMatchURL = new StringBuilder(baseUrl).append("/match/confirm").toString();
             DebugLogger.info("{}", confirmMatchURL);
             JsonObject response = OkHttpUtil.postJson(confirmMatchURL, payload.toString(), Common.createHeaderAdmin());
@@ -130,6 +128,9 @@ public class MatchSuggestTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             JsonObject match = testGetSuggestMatchInfo(user, matchId);
             Assertions.assertEquals(MatchSuggestConstant.MATCH_SUGGEST_CONFIRM, match.getAsJsonObject("data").get("state").getAsInt());
+            JsonObject newStarWallet = Common.getStartWallet(baseUrl, user);
+            Assertions.assertEquals(oldStarWallet.getAsJsonObject("data").get("balance").getAsInt(),
+                    newStarWallet.getAsJsonObject("data").get("balance").getAsInt());
         }
 
         public void testCancelSuggestMatch(JsonObject user, long matchId) {
