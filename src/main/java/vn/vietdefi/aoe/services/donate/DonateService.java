@@ -26,7 +26,7 @@ public class DonateService implements IDonateService {
                 return BaseResponse.createFullMessageResponse(11, "donate_reject");
             }
             //Tru sao trong tai khoan message.sender
-            response = AoeServices.starService.exchangeStar(username, StarConstant.SERVICE_DONATE_MATCH, -star,
+            response = AoeServices.starService.exchangeStar(username, service, -star,
                     0);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(12, "exchange_star_failed");

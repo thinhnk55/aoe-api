@@ -144,9 +144,9 @@ public class Common {
         return response;
     }
 
-    public static JsonObject getStartWallet(String baseUrl, JsonObject data) {
+    public static JsonObject getStartWallet(String baseUrl, JsonObject user) {
         String getStartURL = new StringBuilder(baseUrl).append("/star/get").toString();
-        JsonObject response = OkHttpUtil.get(getStartURL, Common.createHeader(data));
+        JsonObject response = OkHttpUtil.get(getStartURL, Common.createHeader(user));
         Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         return response;
     }

@@ -59,9 +59,11 @@ public class MatchSuggestRouter {
     }
     public static void cancelMatchSuggest(RoutingContext rc){
         try {
-            long id = Long.parseLong(rc.request().getParam("id"));
-//            JsonObject response = AoeServices.suggestService.confirmMatchSuggest(id);
-//            rc.response().end(response.toString());
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long matchId = json.get("match_id").getAsLong();
+            JsonObject response = AoeServices.suggestService.cancelMatchSuggest(matchId);
+            rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
@@ -87,7 +89,24 @@ public class MatchSuggestRouter {
     public static void getMatchSuggestInfo(RoutingContext rc) {
         try {
             long matchId = Long.parseLong(rc.request().getParam("match_id"));
-            JsonObject response = AoeServices.suggestService.getMatchSuggestInfo(matchId);
+            JsonObject response = AoeServices.suggestService.getMatchSuggest(matchId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    /*For test*/
+    public static void deleteMatchSuggest(RoutingContext rc){
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long matchId = json.get("match_id").getAsLong();
+            JsonObject response = AoeServices.suggestService.deleteMatchSuggest(matchId);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

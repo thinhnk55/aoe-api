@@ -60,6 +60,11 @@ public class MatchSuggestApi {
 
     }
     public static void systemAdminAuthApi(Router router) {
-
+        router.post(ApiConfig
+                        .instance()
+                        .getPath("/match/suggest/delete"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeSystemAdmin)
+                .handler(MatchSuggestRouter::deleteMatchSuggest);
     }
 }
