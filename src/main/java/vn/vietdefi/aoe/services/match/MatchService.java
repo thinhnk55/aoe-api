@@ -15,16 +15,27 @@ public class MatchService implements IMatchService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject data = new JsonObject();
+
             data.addProperty("format", json.get("format").getAsInt());
             data.addProperty("type", json.get("type").getAsInt());
             data.addProperty("star_default", json.get("star_default").getAsLong());
-            data.add("detail", json.get("detail").getAsJsonObject());
+            data.add("detail", json.get("detail"));
             data.addProperty("time_expired", json.get("time_expired").getAsLong());
             data.addProperty("suggester_id", json.get("userid").getAsLong());
             data.addProperty("state", MatchConstants.STATE_VOTING);
             data.addProperty("create_time", System.currentTimeMillis());
             data.add("team_player", json.get("team_player").getAsJsonArray());
             bridge.insertObjectToDB("aoe_match", data);
+            JsonObject response =  MatchGamer.createTeamPlayer(data.get("team_player").getAsJsonArray(),
+                    data.get("id").getAsLong());
+            if (!BaseResponse.isSuccessFullMessage(response)){
+                response = updateState(data.get("id").getAsLong(),MatchConstants.STATE_ERROR_CREATE_TEAM);
+                if (!BaseResponse.isSuccessFullMessage(response)){
+                    return response;
+                }else {
+                    return BaseResponse.createFullMessageResponse(11, "create_team_error");
+                }
+            }
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -343,6 +354,7 @@ public class MatchService implements IMatchService {
     public JsonObject confirmMatch(JsonObject json) {
         return null;
     }
+
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
     @Override

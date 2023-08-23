@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
 import vn.vietdefi.aoe.api.Common;
+import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.donate.DonateConstants;
 import vn.vietdefi.aoe.services.match.MatchConstants;
 import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
@@ -30,7 +32,7 @@ public class DonateTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.1.23:8000/aoe";
+            baseUrl = "http://127.0.0.1:8000/aoe";
             username = "0384556555";
             password = "12344321";
         }
@@ -149,10 +151,14 @@ public class DonateTest {
             DebugLogger.info("{}", response);
             Assertions.assertFalse(response.getAsJsonArray("data").isEmpty());
 
+
         }
         @Test
         public void test1(){
-
+            long gamerId = 135;
+            int service = StarConstant.SERVICE_DONATE_GAMER;
+            JsonObject response = AoeServices.gamerService.gamerUpdateSupporter(gamerId);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         }
     }
 

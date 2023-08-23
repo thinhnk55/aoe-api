@@ -14,4 +14,6 @@ public interface IDonateService {
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
     JsonObject deleteDonateBySenderId(long userId);
+
+    JsonObject totalInfoDonate(long id, int serviceDonate);
 }

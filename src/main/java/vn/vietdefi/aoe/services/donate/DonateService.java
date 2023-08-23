@@ -205,4 +205,20 @@ public class DonateService implements IDonateService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    @Override
+    public JsonObject totalInfoDonate(long targetId, int serviceDonate) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query =  "SELECT COUNT(DISTINCT user_id) AS total_supporter ,SUM(amount) AS total_star_donate FROM aoe_donate WHERE target_id = ? AND service = ?";
+            JsonObject data = bridge.queryOne(query, targetId, serviceDonate);
+            if (data == null) {
+                return  BaseResponse.createFullMessageResponse(10, "not_found_transaction");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success",data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 }
