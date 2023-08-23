@@ -115,6 +115,7 @@ public class MatchSuggestTest {
 
         public void testConfirmMatch(JsonObject user, long matchId) {
             JsonObject oldStarWallet = Common.getStartWallet(baseUrl, user);
+            DebugLogger.info("{}", oldStarWallet);
             JsonObject payload = new JsonObject();
             payload.addProperty("match_suggest_id", matchId);
             payload.addProperty("format", 1);
@@ -129,6 +130,7 @@ public class MatchSuggestTest {
             JsonObject match = testGetSuggestMatchInfo(user, matchId);
             Assertions.assertEquals(MatchSuggestConstant.MATCH_SUGGEST_CONFIRM, match.getAsJsonObject("data").get("state").getAsInt());
             JsonObject newStarWallet = Common.getStartWallet(baseUrl, user);
+            DebugLogger.info("{}", newStarWallet);
             Assertions.assertEquals(oldStarWallet.getAsJsonObject("data").get("balance").getAsInt(),
                     newStarWallet.getAsJsonObject("data").get("balance").getAsInt());
         }

@@ -163,8 +163,8 @@ public class MatchSuggestService implements IMatchSuggestService{
             }
             long match_id = response.get("data").getAsJsonObject().get("id").getAsInt();
             response = AoeServices.starService.exchangeStar(suggester,
-                    StarConstant.SERVICE_SUGGEST_MATCH
-                    ,star, match_id);
+                    StarConstant.SERVICE_DONATE_MATCH
+                    ,-star, match_id);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             }
