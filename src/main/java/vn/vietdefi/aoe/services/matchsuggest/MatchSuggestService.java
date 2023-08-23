@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.match.MatchConstants;
 import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
@@ -28,7 +29,7 @@ public class MatchSuggestService implements IMatchSuggestService{
             data.addProperty("create_time", System.currentTimeMillis());
             data.addProperty("state", MatchSuggestConstant.MATCH_SUGGEST_PENDING);
             bridge.insertObjectToDB("aoe_match_suggest", "id", data);
-            return BaseResponse.createFullMessageResponse(0, "success");
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
@@ -96,10 +97,10 @@ public class MatchSuggestService implements IMatchSuggestService{
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
-    public JsonObject cancelMatchSuggest(long id) {
+    public JsonObject cancelMatchSuggest(long matchId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject response = getMatchSuggest(id);
+            JsonObject response = getMatchSuggest(matchId);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             }
@@ -109,13 +110,13 @@ public class MatchSuggestService implements IMatchSuggestService{
                 return BaseResponse.createFullMessageResponse(11, "cancel_reject", data);
             }
             String query = "UPDATE aoe_match_suggest SET state = ? WHERE id = ?";
-            bridge.update(query, MatchSuggestConstant.MATCH_SUGGEST_CANCELLED, id);
+            bridge.update(query, MatchSuggestConstant.MATCH_SUGGEST_CANCELLED, matchId);
             long suggester = data.get("suggester_id").getAsLong();
             long star = data.get("amount").getAsLong();
             response = AoeServices.starService.exchangeStar(suggester, StarConstant.SERVICE_REFUND_SUGGEST
-                    ,star,id);
+                    ,star,matchId);
             if(!BaseResponse.isSuccessFullMessage(response)){
-                DebugLogger.error("star_refund_error: {} {} {} {}", suggester, star, id, response);
+                DebugLogger.error("star_refund_error: {} {} {} {}", suggester, star, matchId, response);
             }
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
@@ -141,14 +142,15 @@ public class MatchSuggestService implements IMatchSuggestService{
                 return BaseResponse.createFullMessageResponse(12, "balance_not_enough");
             }
             JsonObject match = new JsonObject();
-            match.addProperty("userid", suggester);
-            match.addProperty("time_expired", info.get("time_expired").getAsLong());
+            match.addProperty("format", info.get("format").getAsInt());
+            match.addProperty("type", info.get("type").getAsInt());
             match.addProperty("star_default", info.get("star_default").getAsLong());
-            match.addProperty("star_current", info.get("star_current").getAsLong());
-            match.addProperty("description", info.get("description").getAsString());//
-            match.addProperty("percent_for_gamer", info.get("percent_for_gamer").getAsString());
-            match.addProperty("percent_for_viewer", info.get("percent_for_viewer").getAsString());
-            match.addProperty("percent_for_organizers", info.get("percent_for_organizers").getAsString());
+            match.add("detail", suggest.get("detail").getAsJsonObject());
+            match.addProperty("time_expired", info.get("time_expired").getAsLong());
+            match.addProperty("suggester_id", suggester);
+            match.addProperty("state", MatchConstants.STATE_VOTING);
+            match.addProperty("create_time", System.currentTimeMillis());
+            match.add("team_player", suggest.get("team_player").getAsJsonArray());
             response = AoeServices.matchService.createMatch(suggest);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
@@ -170,4 +172,20 @@ public class MatchSuggestService implements IMatchSuggestService{
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    /*For test*/
+    @Override
+    public JsonObject deleteMatchSuggest(long matchId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "DELETE FROM aoe_match_suggest WHERE id = ? ";
+            bridge.queryOne(query, matchId);
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
 }

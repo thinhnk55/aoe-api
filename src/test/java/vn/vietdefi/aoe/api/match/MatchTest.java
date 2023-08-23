@@ -30,9 +30,9 @@ public class MatchTest {
 
         @BeforeEach
         void init(){
-            baseUrl = "https://api.godoo.asia/aoe";
-//            baseUrl = "http://192.168.1.23:8000/aoe";
-            username = "086888444";
+//            baseUrl = "https://api.godoo.asia/aoe";
+            baseUrl = "http://192.168.250.1:8000/aoe";
+            username = "0352555556";
             password = "12344321";
         }
         @RepeatedTest(1)
@@ -150,16 +150,16 @@ public class MatchTest {
             int page = 1;
             String getListMatchURL = new StringBuilder(baseUrl).append("/match/getlist/state")
                     .append("?state=").append(state).append("&page=").append(page).toString();
-            response = OkHttpUtil.get(getListMatchURL, Common.createHeader(user));
-            DebugLogger.info("{}", response);
+            response = OkHttpUtil.get(getListMatchURL);
+            DebugLogger.info("List by state {}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertFalse(response.getAsJsonObject("data").getAsJsonArray("match").isEmpty());
 
             /*Test get outstanding match*/
             String getOutstandingMatchURL = new StringBuilder(baseUrl).append("/match/outstanding")
                     .append("?state=").append(state).append("&page=").append(page).toString();
-            response = OkHttpUtil.get(getOutstandingMatchURL, Common.createHeader(user));
-            DebugLogger.info("{}", response);
+            response = OkHttpUtil.get(getOutstandingMatchURL);
+            DebugLogger.info("Outstanding match {}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
 
             /*Delete match after test*/
