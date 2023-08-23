@@ -25,7 +25,8 @@ public class GamerTest {
         long userId;
         String username;
         String nickname;
-
+        long clanId;
+        long clanIdUpdate;
 
         @BeforeEach
         void init(){
@@ -33,6 +34,8 @@ public class GamerTest {
             baseUrl = "http://127.0.0.1:8000/aoe";
             username = "0988666555";
             nickname = "gamer_nick_name";
+            clanId = 1;
+            clanIdUpdate = 3;
         }
         @RepeatedTest(1)
         void repeatTest1(){
@@ -47,6 +50,7 @@ public class GamerTest {
             updateGamer(data);
             getGamer(data);
             getListGamer();
+            getListGamerOfClan();
             deleteGamer();
         }
         public void getListGamer(){
@@ -105,7 +109,7 @@ public class GamerTest {
                     "https://docs.google.com/document/d/1td7LtgMVFoL5xrtJ6m0zErOIYDJgBUX2Dlk-vsMpFHU/edit#heading=h.mcb4gmk6o7pq");
             data.add("detail",detail);
             data.add("rank_info",new JsonObject());
-            data.addProperty("clan_id","1");
+            data.addProperty("clan_id",clanId);
             data.addProperty("rank",1);
             String createUrl = new StringBuilder(baseUrl)
                     .append("/gamer/create").toString();
@@ -129,7 +133,7 @@ public class GamerTest {
             data.addProperty("full_name", "1");
             data.addProperty("avatar", "1");
             data.add("detail", new JsonObject());
-            data.addProperty("clan_id", "2");
+            data.addProperty("clan_id", clanIdUpdate);
             data.addProperty("rank", "1");
             data.add("rank_info",new JsonObject());
             data.addProperty("state", "0");
@@ -138,7 +142,17 @@ public class GamerTest {
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         }
+        public void getListGamerOfClan() {
+            String listGamerUrl = new StringBuilder(baseUrl)
+                    .append("/gamer/list-of-clan?clan_id=").append(clanIdUpdate).toString();
+            JsonObject response = OkHttpUtil.get(listGamerUrl);
+            DebugLogger.info("{}", response);
+            JsonArray gamers = response.getAsJsonObject("data").getAsJsonArray("gamers");
+            Assertions.assertTrue(gamers.size() > 0);
+        }
     }
+
+
 
     @BeforeAll
     static void done(){
