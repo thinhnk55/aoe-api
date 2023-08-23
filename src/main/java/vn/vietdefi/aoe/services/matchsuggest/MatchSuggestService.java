@@ -24,6 +24,7 @@ public class MatchSuggestService implements IMatchSuggestService{
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(10, "star_reject");
             }
+            data.addProperty("suggester_id",suggester);
             data.addProperty("create_time", System.currentTimeMillis());
             data.addProperty("state", MatchSuggestConstant.MATCH_SUGGEST_PENDING);
             bridge.insertObjectToDB("aoe_match_suggest", "id", data);

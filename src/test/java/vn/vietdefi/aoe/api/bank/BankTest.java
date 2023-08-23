@@ -96,7 +96,6 @@ public class BankTest {
                 response = OkHttpUtil.postJson(url, Selected.toString(), Common.createHeaderSystemAdmin());
                 DebugLogger.info("Response select {}", response);
                 Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-                bankService.updateBankAccountState(Selected.get("id").getAsInt(), 2);
             } else {
                 DebugLogger.info("Not Selected Bank {}");
             }
