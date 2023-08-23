@@ -6,11 +6,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.bank.logic.BankAccountState;
 import vn.vietdefi.bank.logic.BankCode;
-import vn.vietdefi.bank.logic.BankTransaction;
-import vn.vietdefi.bank.logic.BankTransactionState;
-import vn.vietdefi.bank.logic.timo.TimoApi;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
+import vn.vietdefi.util.random.RandomUtil;
 import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
 
@@ -18,7 +16,7 @@ public class BankService implements IBankService {
     @Override
     public JsonObject createBankAccount(int bankCode, String accountOwner, String accountNumber, long bankDetailId) {
         try {
-            JsonObject response = getBankAccount(bankCode, accountNumber);
+            JsonObject response = getBankAccountByBankCodeAndAccountNumber(bankCode, accountNumber);
             if (BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             }
@@ -28,7 +26,7 @@ public class BankService implements IBankService {
             data.addProperty("account_number", accountNumber);
             data.addProperty("account_owner", accountOwner);
             data.addProperty("bank_detail_id", bankDetailId);
-            data.addProperty("state", BankAccountState.ACTIVE);
+            data.addProperty("state", BankAccountState.WAIT_TO_WORK);
             bridge.insertObjectToDB("bank_account", data);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -38,7 +36,7 @@ public class BankService implements IBankService {
         }
     }
 
-    public JsonObject getBankAccount(int bankCode, String accountNumber) {
+    public JsonObject getBankAccountByBankCodeAndAccountNumber(int bankCode, String accountNumber) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM bank_account WHERE bank_code = ? AND account_number = ?";
@@ -61,65 +59,39 @@ public class BankService implements IBankService {
             JsonArray data = bridge.query(query, BankAccountState.WORKING);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
     @Override
-    public void updateBankAccountState(long id, int state) {
+    public JsonObject getOneWorkingBankAccount() {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM bank_account WHERE state = ?";
+            JsonArray array = bridge.query(query, BankAccountState.WORKING);
+            int random = RandomUtil.nextInt(array.size());
+            JsonObject data = array.get(random).getAsJsonObject();
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject updateBankAccountState(long id, int state) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE bank_account SET state = ? WHERE id = ?";
             bridge.update(query, state, id);
+            return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-        }
-    }
-
-    @Override
-    public JsonObject createBalanceTransaction(JsonObject data) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            bridge.insertObjectToDB("bank_transaction", data);
-            return BaseResponse.createFullMessageResponse(0, "success", data);
-        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
-    @Override
-    public JsonObject createBankAccountFromTimoAccount(JsonObject data) {
-        try {
-            long bank_account_id = data.get("bank_account_id").getAsLong();
-            if (bank_account_id == 0) {
-                String token = data.get("token").getAsString();
-                JsonObject response = TimoApi.getBankInfo(token);
-                if (BaseResponse.isSuccessFullMessage(response)) {
-                    JsonObject bankInfo = response.getAsJsonObject("data");
-                    String accountNumber = bankInfo.get("accountNumber").getAsString();
-                    String accountOwner = bankInfo.get("fullName").getAsString();
-                    long id = data.get("id").getAsLong();
-                    response = createBankAccount(BankCode.TIMO,
-                            accountOwner, accountNumber, id);
-                    if (BaseResponse.isSuccessFullMessage(response)) {
-                        bank_account_id = response.getAsJsonObject("data").get("id").getAsLong();
-                        BankServices.timoService.updateBankAccountId(id, bank_account_id);
-                    }
-                    return response;
-                } else {
-                    return BaseResponse.createFullMessageResponse(10, "api_failure");
-                }
-            } else {
-                updateBankAccountState(bank_account_id, BankAccountState.ACTIVE);
-                return getAccountById(bank_account_id);
-            }
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
 
     @Override
     public JsonObject getAccountById(long id) {
@@ -132,154 +104,158 @@ public class BankService implements IBankService {
             }
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
     @Override
-    public JsonObject listBankAccount(long page, long recordPerPage) {
+    public JsonObject listBankAccountByState(int state, long page, long recordPerPage) {
         try {
             long offset = (page - 1) * recordPerPage;
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM bank_account LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, recordPerPage, offset);
+            String query = "SELECT * FROM bank_account WHERE state = ? LIMIT ? OFFSET ?";
+            JsonArray array = bridge.query(query, state, recordPerPage, offset);
+            JsonObject data = new JsonObject();
+            data.add("banks", array);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
     @Override
-    public JsonObject addBankAccount(JsonObject data) {
+    public JsonObject login(int bankCode, String username, String password) {
         try {
-            int bankCode = data.get("bankCode").getAsInt();
-            String username = data.get("username").getAsString();
-            String password = data.get("password").getAsString();
             switch (bankCode) {
                 case BankCode.TIMO:
-                    JsonObject response = BankServices.timoService.getAccountByUsername(username);
-                    if(BaseResponse.isSuccessFullMessage(response)){
-                        JsonObject timo = response.getAsJsonObject("data");
-                        long bank_account_id = timo.get("bank_account_id").getAsLong();
-                        if(bank_account_id == 0){
-                            createBankAccountFromTimoAccount(timo);
-                        }
-                    }
-                    if(BankServices.timoService.isExistedByUsername(username)){
-                        return BaseResponse.createFullMessageResponse(12, "account_existed");
-                    }else {
-                        return BankServices.timoService.loginTimo(username, password);
-                    }
+                    return loginTimo(username, password);
+
             }
             return BaseResponse.createFullMessageResponse(10, "bank_un_support");
         } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
+    private JsonObject loginTimo(String username, String password) {
+        JsonObject response = BankServices.timoService.loginTimo(username, password);
+        if(BaseResponse.isSuccessFullMessage(response)){
+            JsonObject timo = response.getAsJsonObject("data");
+            response = getBankAccountFromTimo(timo);
+            if(BaseResponse.isSuccessFullMessage(response)){
+                JsonObject bank = response.getAsJsonObject("data");
+                if(bank.get("state").getAsInt() == BankAccountState.DISABLE){
+                    waitToWork(bank.get("id").getAsInt());
+                }
+                return response;
+            }else{
+                return BaseResponse.createFullMessageResponse(11, "failure");
+            }
+        }else{
+            if(response.get("error").getAsInt() == 10) {
+                JsonObject timo = response.getAsJsonObject("data");
+                long timoId = timo.get("id").getAsLong();
+                JsonObject data = new JsonObject();
+                data.addProperty("bank_code", BankCode.TIMO);
+                data.addProperty("id", timoId);
+                return BaseResponse.createFullMessageResponse(12, "require_otp", data);
+            }else{
+                return BaseResponse.createFullMessageResponse(11, "failure");
+            }
+        }
+    }
+
     @Override
-    public JsonObject updateBankAccount(JsonObject data) {
+    public JsonObject commitOTP(int bankCode, long id, String otp) {
         try {
-            int bankCode = data.get("bankCode").getAsInt();
-            String username = data.get("username").getAsString();
-            String password = data.get("password").getAsString();
             switch (bankCode) {
                 case BankCode.TIMO:
-                    if(BankServices.timoService.isExistedByUsername(username)){
-                        return BankServices.timoService.loginTimo(username, password);
-                    }else {
-                        return BaseResponse.createFullMessageResponse(12, "account_not_found");
-                    }
+                    return commitTimo(id, otp);
             }
             return BaseResponse.createFullMessageResponse(10, "bank_un_support");
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
+        }catch (Exception e){
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
-    @Override
-    public JsonObject setBankWorking(long id) {
+    private JsonObject commitTimo(long id, String otp) {
+        JsonObject response = BankServices.timoService.commitTimo(id, otp);
+        if(BaseResponse.isSuccessFullMessage(response)){
+            JsonObject timo = response.getAsJsonObject("data");
+            response = getBankAccountFromTimo(timo);
+            if(BaseResponse.isSuccessFullMessage(response)){
+                JsonObject bank = response.getAsJsonObject("data");
+                if(bank.get("state").getAsInt() == BankAccountState.DISABLE){
+                    waitToWork(bank.get("id").getAsInt());
+                }
+                return response;
+            }else{
+                return BaseResponse.createFullMessageResponse(11, "failure");
+            }
+        }else{
+            return BaseResponse.createFullMessageResponse(11, "failure");
+        }
+    }
+
+    private JsonObject getBankAccountFromTimo(JsonObject timo) {
+        long timoId = timo.get("id").getAsLong();
+        long bank_account_id = timo.get("bank_account_id").getAsLong();
+        if(bank_account_id == 0){
+            JsonObject response = BankServices.timoService.getBankAccountInfo(timo);
+            if(BaseResponse.isSuccessFullMessage(response)){
+                JsonObject bank = response.getAsJsonObject("data");
+                String accountNumber = bank.get("accountNumber").getAsString();
+                String accountOwner = bank.get("fullName").getAsString();
+                response = createBankAccount(BankCode.TIMO, accountOwner,
+                        accountNumber, timo.get("id").getAsLong());
+                if(BaseResponse.isSuccessFullMessage(response)) {
+                    bank_account_id = response.getAsJsonObject("data")
+                            .get("id").getAsLong();
+                    long bank_detail_id = response.getAsJsonObject("data")
+                            .get("bank_detail_id").getAsLong();
+                    if(bank_detail_id != timoId){
+                        updateBankDetailId(bank_account_id, timoId);
+                    }
+                    BankServices.timoService.updateBankAccountId(timoId, bank_account_id);
+                }
+                return response;
+            }else{
+                return response;
+            }
+        }else{
+            JsonObject response = getAccountById(bank_account_id);
+            return response;
+        }
+    }
+
+    private JsonObject updateBankDetailId(long id, long detail_id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE bank_account SET state = ? WHERE id = ?";
-            bridge.update(query, BankAccountState.WORKING, id);
+            String query = "UPDATE bank_account SET bank_detail_id = ? WHERE id = ?";
+            bridge.update(query, detail_id, id);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 
-    @Override
-    public JsonObject getBalanceTransactionById(long id) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM bank_transaction WHERE id = ?";
-            JsonObject data = bridge.queryOne(query, id);
-            return BaseResponse.createFullMessageResponse(0, "success", data);
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
+    public JsonObject waitToWork(long id) {
+        JsonObject response = updateBankAccountState(id, BankAccountState.WAIT_TO_WORK);
+        return response;
     }
 
-    @Override
-    public JsonObject listWaitingTransaction() {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM bank_transaction WHERE state = ?";
-            JsonArray data = bridge.query(query, BankTransactionState.WAITING);
-            return BaseResponse.createFullMessageResponse(0, "success", data);
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-    @Override
-    public void updateBankTransactionState(long id, int state) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE bank_transaction SET state = ? WHERE id = ?";
-            bridge.update(query, state, id);
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-        }
+    public JsonObject startWorking(long id) {
+        JsonObject response = updateBankAccountState(id, BankAccountState.WORKING);
+        return response;
     }
 
-    @Override
-    public void setStarTransactionId(long id,
-                                     long star_transaction_id){
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE bank_transaction SET star_transaction_id = ? WHERE id = ?";
-            bridge.update(query, star_transaction_id, id);
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-        }
-    }
-    @Override
-    public void completeBankTransaction(long id, int service,
-                                        long target_id){
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE bank_transaction SET state =?, service = ?, target_id = ? WHERE id = ?";
-            bridge.update(query, BankTransactionState.DONE, service, target_id, id);
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-        }
+    public JsonObject disable(long id) {
+        JsonObject response = updateBankAccountState(id, BankAccountState.DISABLE);
+        return response;
     }
 }

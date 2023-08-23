@@ -143,7 +143,7 @@ public class StarService implements IStarService {
         }
         int service = data.get("service").getAsInt();
         if (service == StarConstant.SERVICE_STAR_RECHARGE) {
-            JsonObject response = BankServices.bankService.getBalanceTransactionById(referId);
+            JsonObject response = BankServices.bankTransactionService.getBalanceTransactionById(referId);
             if (BaseResponse.isSuccessFullMessage(response)) {
                 JsonObject account = response.getAsJsonObject("data");
                 data.add("refer", account);

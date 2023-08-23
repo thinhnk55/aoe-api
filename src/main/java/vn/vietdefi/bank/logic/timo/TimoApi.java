@@ -105,7 +105,7 @@ public class TimoApi {
                 transactionInfo.addProperty("sender_bank_account", "");
                 transactionInfo.addProperty("sender_name", "");
                 transactionInfo.addProperty("create_time", System.currentTimeMillis());
-                JsonObject response = BankServices.bankService.createBalanceTransaction(transactionInfo);
+                JsonObject response = BankServices.bankTransactionService.createBalanceTransaction(transactionInfo);
                 if(BaseResponse.isSuccessFullMessage(response)){
                     last = json.get("iD").getAsLong();
                 }else{
