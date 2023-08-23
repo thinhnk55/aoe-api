@@ -15,7 +15,7 @@ public class ClanService implements IClanService{
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String clanName = data.get("nick_name").getAsString();
-            String query = "SELECT nick_name FROM aoe_clan WHERE nick_name = ?";
+            String query = "SELECT nick_name FROM aoe_clan WHERE nick_name = ?";    
             if(bridge.queryExist(query,clanName)) {
                 return BaseResponse.createFullMessageResponse(12,"clan_name_exist");
             }
@@ -52,7 +52,7 @@ public class ClanService implements IClanService{
             JsonArray clans = bridge.query(query,
                     recordPerPage, (page - 1) * recordPerPage);
             JsonObject result = new JsonObject();
-            result.add("clans", clans);
+            result.add("clan", clans);
             return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

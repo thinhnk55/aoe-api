@@ -12,21 +12,17 @@ import vn.vietdefi.util.sql.SQLJavaBridge;
 
 public class EventService implements IEventService {
     @Override
-    public JsonObject createEvent(JsonObject json) {
+    public JsonObject createEvent(JsonObject data) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long matchId = json.get("match_id").getAsLong();
-            JsonObject match = AoeServices.matchService.getById(matchId);
-            if (!BaseResponse.isSuccessFullMessage(match)) {
-                return match;
+            long matchId = data.get("match_id").getAsLong();
+            JsonObject response = AoeServices.matchService.getById(matchId);
+            if (!BaseResponse.isSuccessFullMessage(response)) {
+                return response;
             }
-            JsonObject insertToDb = new JsonObject();
-            insertToDb.addProperty("match_id", matchId);
-            insertToDb.addProperty("reward_date", json.get("reward_date").getAsLong());
-            insertToDb.addProperty("start_time", System.currentTimeMillis());
-            insertToDb.add("detail", json.get("detail"));
-            bridge.insertObjectToDB("aoe_event", insertToDb);
-            return BaseResponse.createFullMessageResponse(0, "success");
+            data.addProperty("start_time", System.currentTimeMillis());
+            bridge.insertObjectToDB("aoe_event", data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
@@ -34,57 +30,51 @@ public class EventService implements IEventService {
         }
     }
 
-    @Override
-    public JsonObject lockEvent(JsonObject data) {
+    public JsonObject updateStateByEventId(JsonObject data) {
         try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-//            int state = data.get("state").getAsInt();
             long eventId = data.get("event_id").getAsLong();
-            JsonObject update = updateStateEvent(EventState.EVENT_LOCKED, eventId);
-            if (!BaseResponse.isSuccessFullMessage(update)) {
-                return update;
-            }
-            String query = "SELECT * FROM aoe_event WHERE id =?";
-            return BaseResponse.createFullMessageResponse(0, "success", bridge.queryOne(query, eventId));
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
-    private JsonObject updateStateEvent(int state, long eventId) {
-        try {
+            int state = data.get("state").getAsInt();
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject check = checkState(state, eventId);
-            if (!BaseResponse.isSuccessFullMessage(check)) {
-                return check;
+            JsonObject response = checkStateByEventId(state, eventId);
+            if (!BaseResponse.isSuccessFullMessage(response)) {
+                return response;
             }
-            String query = "UPDATE aoe_event SET state = ? WHERE id = ? ";
-            bridge.update(query, state, eventId);
+            if (state != EventConstants.EVENT_FINISHED) {
+                String query = "UPDATE aoe_event SET state = ? WHERE id = ?";
+                int row = bridge.update(query, state, eventId);
+                if (row == 0) {
+                    return BaseResponse.createFullMessageResponse(12, "update_failure");
+                }
+            } else {
+                int winningNumber = data.get("winning_number").getAsInt();
+                String query = "UPDATE aoe_event SET state = ?, winning_number = ? WHERE id = ? AND state = ?";
+                int row = bridge.update(query, state, winningNumber, eventId, EventConstants.EVENT_DRAWING);
+                if (row == 0) {
+                    return BaseResponse.createFullMessageResponse(12, "update_failure");
+                }
+            }
             return BaseResponse.createFullMessageResponse(0, "success");
-
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system");
         }
-
-
     }
 
-    private JsonObject checkState(int state, long eventId) {
+    private JsonObject checkStateByEventId(int state, long eventId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT state FROM aoe_event WHERE id = ? ";
             JsonObject event = bridge.queryOne(query, eventId);
             if (event == null) {
-                return BaseResponse.createFullMessageResponse(10, "not_found_event");
+                return BaseResponse.createFullMessageResponse(10, "event_not_found");
+            } else {
+                int currentState = event.get("state").getAsInt();
+                if (currentState == state || currentState == EventConstants.EVENT_FINISHED) {
+                    return BaseResponse.createFullMessageResponse(11, "invalid_operation");
+                }
             }
-            if (event.get("state").getAsInt() > state || state - event.get("state").getAsInt() > 1) {
-                return BaseResponse.createFullMessageResponse(11, "Invalid_operation");
-            }
-            return BaseResponse.createFullMessageResponse(0, "success", bridge.queryOne(query, eventId));
+            return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
@@ -100,7 +90,7 @@ public class EventService implements IEventService {
             String query = "SELECT * FROM aoe_event WHERE id = ? ";
             JsonObject json = bridge.queryOne(query, eventId);
             if (json == null) {
-                return BaseResponse.createFullMessageResponse(10, "not_found_event");
+                return BaseResponse.createFullMessageResponse(10, "event_not_found");
             }
             json.add("participants", getNumberOfParticipant(eventId).get("total"));
             return BaseResponse.createFullMessageResponse(0, "success", json);
@@ -111,26 +101,90 @@ public class EventService implements IEventService {
         }
     }
 
-    @Override
-    public JsonObject addParticipant(JsonObject json) {
+    public JsonObject getNumberOfParticipant(long eventId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long userId = json.get("userid").getAsLong();
-            long eventId = json.get("id").getAsLong();
-            String query = "SELECT id FROM aoe_event WHERE id = ? AND state = 0";
-            if (!bridge.queryExist(query, eventId)) {
+            String query = "SELECT COUNT(*) AS total FROM aoe_event_participants WHERE event_id = ? ";
+            JsonObject data = bridge.queryOne(query, eventId);
+            return data;
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject joinEvent(long userId, JsonObject data) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            if (userId != data.get("user_id").getAsLong()) {
+                return BaseResponse.createFullMessageResponse(12, "join_reject");
+            }
+            long eventId = data.get("event_id").getAsLong();
+            String query = "SELECT * FROM aoe_event WHERE id = ? AND state = ?";
+            JsonObject event = bridge.queryOne(query, eventId, EventConstants.EVENT_ON_GOING);
+            if(event == null){
                 return BaseResponse.createFullMessageResponse(10, "event_finished_or_not_exist");
             }
             query = "SELECT user_id FROM aoe_event_participants WHERE event_id = ? AND user_id = ? ";
             if (bridge.queryExist(query, eventId, userId)) {
                 return BaseResponse.createFullMessageResponse(11, "participated");
             }
-            JsonObject insertToDb = new JsonObject();
-            insertToDb.addProperty("id", eventId);
-            insertToDb.addProperty("user_id", userId);
-            insertToDb.addProperty("lucky_number", json.get("lucky_number").getAsInt());
-            insertToDb.addProperty("create_time", System.currentTimeMillis());
-            bridge.insertObjectToDB("aoe_event_participants", insertToDb);
+            int maxNumber = event.get("max_number").getAsInt();
+            int luckyNumber = data.get("lucky_number").getAsInt();
+            if(luckyNumber < 0 || luckyNumber > maxNumber){
+                return BaseResponse.createFullMessageResponse(13, "invalid_number");
+            }
+            data.addProperty("create_time", System.currentTimeMillis());
+            bridge.insertObjectToDB("aoe_event_participants", data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject cancelParticipant(JsonObject data) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long userId = data.get("user_id").getAsLong();
+            long eventId = data.get("event_id").getAsLong();
+            String query = "UPDATE aoe_event_participants SET state = ? WHERE event_id = ? AND user_id = ?";
+            int row = bridge.update(query, EventConstants.CANCELLED_PARTICIPANT, eventId, userId);
+            if(row == 0){
+                return BaseResponse.createFullMessageResponse(10, "cancel_failure");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject awardParticipant(JsonObject data) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long userId = data.get("user_id").getAsLong();
+            long eventId = data.get("event_id").getAsLong();
+            long amount = data.get("amount").getAsLong();
+            String query = "UPDATE aoe_event_participants SET state = ? WHERE event_id = ? AND user_id = ?";
+            int row = bridge.update(query, EventConstants.REWARDED_PARTICIPANT, eventId, userId);
+            if(row == 0){
+                return BaseResponse.createFullMessageResponse(10, "award_failure");
+            }
+            JsonObject detail = new JsonObject();
+            detail.addProperty("amount", amount);
+            detail.addProperty("user_id", userId);
+            query = "UPDATE aoe_event SET detail = ? WHERE id = ?";
+            row = bridge.update(query, detail, eventId);
+            if(row == 0){
+                return BaseResponse.createFullMessageResponse(10, "award_failure");
+            }
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -144,13 +198,14 @@ public class EventService implements IEventService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT * FROM aoe_event_participants WHERE event_id = ? LIMIT ? OFFSET ?";
-            JsonArray json = bridge.query(query, eventId, recordPerPage, offset);
-//            for (JsonElement user : json) {
-//                AoeServices.profileService.getUserProfileByUserId(user.getAsJsonObject());
-//            }
-            query = "SELECT COUNT(*) AS total FROM aoe_event_participants  WHERE event_id = ? ";
+            JsonObject response = getEvent(eventId);
+            if (!BaseResponse.isSuccessFullMessage(response)) {
+                return response;
+            }
+            String query = "SELECT COUNT(*) AS total FROM aoe_event_participants WHERE event_id = ? ";
             JsonObject data = bridge.queryOne(query, eventId);
+            query = "SELECT * FROM aoe_event_participants WHERE event_id = ? LIMIT ? OFFSET ?";
+            JsonArray json = bridge.query(query, eventId, recordPerPage, offset);
             data.add("participant", json);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -161,22 +216,19 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public JsonObject getEventByStatus(int state, long page, long recordPerPage) {
+    public JsonObject getListEventByState(int state, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long offset = (page - 1) * 20;
-            String query = "SELECT id,reward_date,match_id,state,lucky_number FROM aoe_event WHERE state = ? LIMIT ? OFFSET ?";
-            JsonArray json = bridge.query(query, state, 20, offset);
-            long eventId = 0;
-            for (JsonElement event : json) {
-                eventId = event.getAsJsonObject().get("id").getAsLong();
-                event.getAsJsonObject().add("participants", getNumberOfParticipant(eventId).get("total"));
+            long offset = (page - 1) * recordPerPage;
+            String query = "SELECT * FROM aoe_event WHERE state = ? LIMIT ? OFFSET ?";
+            JsonArray json = bridge.query(query, state, recordPerPage, offset);
+            for (JsonElement element : json) {
+                JsonObject event = element.getAsJsonObject();
+                long eventId = event.get("id").getAsLong();
+                event.add("participants", getNumberOfParticipant(eventId).get("total"));
             }
-            query = "SELECT count(*) AS total FROM aoe_event_participants WHERE  event_id = ? ";
             JsonObject result = new JsonObject();
-
-            result.addProperty("total_page",bridge.queryOne(query,eventId).get("total").getAsLong()/recordPerPage + 1);
-            result.add("event",json);
+            result.add("event", json);
             return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -185,77 +237,43 @@ public class EventService implements IEventService {
         }
     }
 
-    @Override
-    public JsonObject getEventByMatch(long match_id) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM event WHERE match_id = ? AND status = 0"; // status 0 is take place
-            JsonObject json = bridge.queryOne(query, match_id);
-
-            JsonObject linkStream = AoeServices.matchService.getById(match_id).get("data").getAsJsonObject().get("detail").getAsJsonObject();
-            json.addProperty("link_livestream", linkStream.get("link_livestream").getAsString());
-            json.addProperty("participants", getNumberOfParticipant(json.get("id").getAsLong()).get("total").getAsLong());
-            return BaseResponse.createFullMessageResponse(0, "success", json);
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
+//    @Override
+//    public JsonObject getEventByMatch(long match_id) {
+//        try {
+//            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+//            JsonObject response = AoeServices.matchService.getById(match_id);
+//            if (!BaseResponse.isSuccessFullMessage(response)) {
+//                return response;
+//            }
+//            JsonObject match = response.getAsJsonObject("data");
+//            String link = match.getAsJsonObject("detail").get("link_livestream").getAsString();
+//            String query = "SELECT * FROM aoe_event WHERE match_id = ? AND state = ?";
+//            JsonObject data = bridge.queryOne(query, match_id, EventConstants.EVENT_ON_GOING);
+//            if (data == null) {
+//                return BaseResponse.createFullMessageResponse(11, "event_unavailable");
+//            }
+//            data.addProperty("link_livestream", link);
+//            data.add("participants", getNumberOfParticipant(data.get("id").getAsLong()).get("total"));
+//            return BaseResponse.createFullMessageResponse(0, "success", data);
+//        } catch (Exception e) {
+//            String stacktrace = ExceptionUtils.getStackTrace(e);
+//            DebugLogger.error(stacktrace);
+//            return BaseResponse.createFullMessageResponse(1, "system_error");
+//        }
+//    }
 
     @Override
     public JsonObject getListWinning(long eventId, int luckyNumber, int limit) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query =
-                    new StringBuilder("SELECT e.user_id, e.lucky_number, e.create_time,ABS(? - e.lucky_number) AS margin_of_error , \n")
-                            .append("FROM event_participants e\n")
-                            .append("WHERE e.event_id = ?\n")
-                            .append("GROUP BY e.event_id, e.lucky_number\n")
-                            .append("ORDER BY ABS(? - e.lucky_number), e.create_time\n")
+                    new StringBuilder("SELECT user_id, lucky_number, create_time,ABS(? - lucky_number) AS margin_of_error\n")
+                            .append("FROM aoe_event_participants\n")
+                            .append("WHERE event_id = ? AND state = ?\n")
+                            .append("ORDER BY ABS(? - lucky_number), create_time\n")
                             .append("LIMIT ?").toString();
-            JsonArray json = bridge.query(query, luckyNumber, eventId, luckyNumber, limit);
-
-//            for (JsonElement user : json) {
-//                AoeServices.profileService.getUserProfile(user.getAsJsonObject());
-//                user.getAsJsonObject().addProperty("lucky_number_of_event", luckyNumber);
-//            }
-            return BaseResponse.createFullMessageResponse(0, "success", json);
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
-    @Override
-    public JsonObject getListEventParticipant(long userid, long page, long recordPerPage) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long offset = (page - 1) * recordPerPage;
-            String query = "SELECT event_id,lucky_number FROM event_participants  WHERE user_id = ? LIMIT ? OFFSET ?";
-            JsonArray json = bridge.query(query, userid, recordPerPage, offset);
-            JsonArray data = new JsonArray();
-            for (JsonElement event : json) {
-                long eventId = event.getAsJsonObject().get("event_id").getAsLong();
-                JsonObject detail_event = getEvent(eventId).get("data").getAsJsonObject();
-                detail_event.remove("detail");
-                detail_event.add("lucky_number_of_user", event.getAsJsonObject().get("lucky_number"));
-                data.add(detail_event);
-            }
+            JsonArray data = bridge.query(query, luckyNumber, eventId, EventConstants.QUEUED_PARTICIPANT, luckyNumber, limit);
             return BaseResponse.createFullMessageResponse(0, "success", data);
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
-    public JsonObject getNumberOfParticipant(long eventId) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT COUNT(*) AS total FROM aoe_event_participants WHERE event_id = ? ";
-            return bridge.queryOne(query, eventId);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
