@@ -166,7 +166,7 @@ public class MatchSuggestService implements IMatchSuggestService{
                     StarConstant.SERVICE_DONATE_MATCH
                     ,-star, match_id);
             if (!BaseResponse.isSuccessFullMessage(response)) {
-                return response;
+                return BaseResponse.createFullMessageResponse(16, "donate_match_again_reject");
             }
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE aoe_match_suggest SET state = ? WHERE id = ?";
