@@ -152,23 +152,7 @@ public class DonateService implements IDonateService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
-
-    @Override
-    public long getTotalDonateByUserId(long id) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT count(*) FROM aoe_donate_gamer WHERE gamer_id = ? GROUP BY gamer_id";
-            Long value = bridge.queryLong(query, id);
-            if(value == null){
-                return 0;
-            }
-            return value;
-        } catch (Exception e) {
-            DebugLogger.error(ExceptionUtils.getStackTrace(e));
-            return 0;
-        }
-    }
-
+    
     private JsonObject verifyTarget(int service, long targetId) {
         if (service == StarConstant.SERVICE_DONATE_MATCH) {
             return AoeServices.matchService.checkAcceptDonate(targetId);
