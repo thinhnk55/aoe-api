@@ -71,7 +71,7 @@ public class DonateService implements IDonateService {
                 AoeServices.matchService.addStarCurrentMatch(target_id, star);
             }
             if(service == StarConstant.SERVICE_DONATE_GAMER) {
-
+                AoeServices.gamerService.gamerUpdateStatistic(target_id);
             }
             if(service == StarConstant.SERVICE_DONATE_CASTER) {
 
@@ -207,14 +207,11 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject totalInfoDonate(long targetId, int serviceDonate) {
+    public JsonObject statisticDonate(int service, long targetId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query =  "SELECT COUNT(DISTINCT user_id) AS total_supporter ,SUM(amount) AS total_star_donate FROM aoe_donate WHERE target_id = ? AND service = ?";
-            JsonObject data = bridge.queryOne(query, targetId, serviceDonate);
-            if (data == null) {
-                return  BaseResponse.createFullMessageResponse(10, "not_found_transaction");
-            }
+            String query =  "SELECT COUNT(DISTINCT user_id) AS total_supporter, COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE target_id = ? AND service = ?";
+            JsonObject data = bridge.queryOne(query, targetId, service);
             return BaseResponse.createFullMessageResponse(0, "success",data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));

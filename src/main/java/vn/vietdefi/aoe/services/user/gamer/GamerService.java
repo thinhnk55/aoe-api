@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.api.services.ApiServices;
 import vn.vietdefi.api.services.auth.UserConstant;
 import vn.vietdefi.common.BaseResponse;
@@ -190,16 +191,19 @@ public class GamerService implements IGamerService {
     }
 
     @Override
-    public JsonObject gamerUpdateSupporter(long id) {
+    public JsonObject gamerUpdateStatistic(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject response = AoeServices.donateService.totalInfoDonate(id, GamerConstant.DONATE_SERVICE);
+            JsonObject response = AoeServices.donateService.statisticDonate(StarConstant.SERVICE_DONATE_GAMER, id);
+            DebugLogger.info("{}", response);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             }
-            String query = "UPDATE gamer SET total_star_donate = ? , total_supporter =?  WHERE user_id = ?";
-            bridge.update(query, response.get("total_star_donate"), response.get("total_supporter"), id);
-            int x = bridge.update(query, id);
+            JsonObject data = response.getAsJsonObject("data");
+            long total_star_donate = data.get("total_star_donate").getAsLong();
+            long total_supporter = data.get("total_supporter").getAsLong();
+            String query = "UPDATE gamer SET total_star_donate = ?, total_supporter = ?  WHERE user_id = ?";
+            bridge.update(query, total_star_donate, total_supporter, id);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

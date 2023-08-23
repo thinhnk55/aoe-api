@@ -6,7 +6,6 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
 import vn.vietdefi.aoe.api.Common;
 import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.donate.DonateConstants;
 import vn.vietdefi.aoe.services.match.MatchConstants;
 import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
@@ -157,7 +156,7 @@ public class DonateTest {
         public void test1(){
             long gamerId = 135;
             int service = StarConstant.SERVICE_DONATE_GAMER;
-            JsonObject response = AoeServices.gamerService.gamerUpdateSupporter(gamerId);
+            JsonObject response = AoeServices.gamerService.gamerUpdateStatistic(gamerId);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         }
     }

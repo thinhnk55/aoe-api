@@ -3,9 +3,6 @@ package vn.vietdefi.aoe.services;
 import com.google.gson.JsonObject;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
-import vn.vietdefi.aoe.services.donate.DonateService;
-import vn.vietdefi.aoe.services.donate.IDonateService;
-import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 
@@ -32,23 +29,8 @@ public class DonateTest {
         }
         @Test
         public void test0(){
-            JsonObject response = AoeServices.starService.exchangeStar(1, StarConstant.SERVICE_STAR_RECHARGE, 100000,
-                    0);
+            JsonObject response = AoeServices.gamerService.gamerUpdateStatistic(1000);
             DebugLogger.info("{}", response);
-            IDonateService donateService = new DonateService();
-            response = AoeServices.starService.getStarWalletByUserId(5);
-            DebugLogger.info("{}", response);
-            response = donateService.donate(1,100, StarConstant.SERVICE_DONATE_CASTER,
-                    5, "");
-            DebugLogger.info("{}", response);
-        }
-        @Test
-        public void test1(){
-
-        }
-        @Test
-        public void test2(){
-
         }
     }
 
