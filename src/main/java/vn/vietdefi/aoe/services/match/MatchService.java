@@ -27,7 +27,7 @@ public class MatchService implements IMatchService {
             data.addProperty("create_time", System.currentTimeMillis());
             data.add("team_player", json.get("team_player").getAsJsonArray());
             bridge.insertObjectToDB("aoe_match", data);
-            JsonObject response =  MatchGamer.createTeamPlayer(data.get("team_player").getAsJsonArray(),
+            JsonObject response =  MatchGamerService.createTeamPlayer(data.get("team_player").getAsJsonArray(),
                     data.get("id").getAsLong());
             if (!BaseResponse.isSuccessFullMessage(response)){
                 response = updateState(data.get("id").getAsLong(),MatchConstants.STATE_ERROR_CREATE_TEAM);
@@ -82,7 +82,7 @@ public class MatchService implements IMatchService {
             bridge.updateObjectToDb("aoe_match", data);
             JsonArray teamPlayers = json.get("team_player").getAsJsonArray();
             long matchId = json.get("id").getAsLong();
-            JsonObject response = MatchGamer.updateTeamPlayer(teamPlayers,matchId);
+            JsonObject response = MatchGamerService.updateTeamPlayer(teamPlayers,matchId);
             if (!BaseResponse.isSuccessFullMessage(response)){
                 return response;
             }
@@ -287,6 +287,7 @@ public class MatchService implements IMatchService {
             updateDb.add("detail",data.get("detail").getAsJsonObject());
             updateDb.addProperty("state", MatchConstants.STATE_FINISHED);
             bridge.updateObjectToDb("aoe_match", "id", updateDb);
+
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

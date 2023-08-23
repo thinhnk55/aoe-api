@@ -12,7 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 
-public class MatchGamer {
+public class MatchGamerService {
 
     public static JsonObject createTeamPlayer(JsonArray data, long match_id) {
         String stInsertMatchGamer = "INSERT INTO aoe_match_gamer (match_id, user_id, team, nick_name, avatar) VALUES (?, ?, ?, ?, ?)";

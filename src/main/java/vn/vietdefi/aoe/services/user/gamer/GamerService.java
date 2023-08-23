@@ -39,7 +39,7 @@ public class GamerService implements IGamerService {
             long createTime = System.currentTimeMillis();
             data.addProperty("create_time", createTime);
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            bridge.insertObjectToDB("gamer", "user_id", data);
+            bridge.insertObjectToDB("aoe_gamer", "user_id", data);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stackTrace = ExceptionUtils.getStackTrace(e);
@@ -52,7 +52,7 @@ public class GamerService implements IGamerService {
     private JsonObject getGamerByNickName(String nickname) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT user_id FROM gamer WHERE nick_name = ?";
+            String query = "SELECT user_id FROM aoe_gamer WHERE nick_name = ?";
             JsonObject user = bridge.queryOne(query, nickname);
             if (user == null) {
                 return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
@@ -69,7 +69,7 @@ public class GamerService implements IGamerService {
     public JsonObject getGamerByUserId(long userId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM gamer WHERE user_id = ?";
+            String query = "SELECT * FROM aoe_gamer WHERE user_id = ?";
             JsonObject data = bridge.queryOne(query, userId);
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
@@ -93,7 +93,7 @@ public class GamerService implements IGamerService {
     public static JsonObject getGamerById(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM gamer WHERE user_id = ?";
+            String query = "SELECT * FROM aoe_gamer WHERE user_id = ?";
             JsonObject data = bridge.queryOne(query, id);
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
@@ -127,7 +127,7 @@ public class GamerService implements IGamerService {
             oldData.add("rank", data.get("rank"));
             oldData.add("rank_info", data.get("rank_info"));
             oldData.add("state", data.get("state"));
-            bridge.updateObjectToDb("gamer", "user_id", oldData);
+            bridge.updateObjectToDb("aoe_gamer", "user_id", oldData);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stackTrace = ExceptionUtils.getStackTrace(e);
@@ -142,7 +142,7 @@ public class GamerService implements IGamerService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject result = new JsonObject();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT * FROM gamer LIMIT ? OFFSET ?";
+            String query = "SELECT * FROM aoe_gamer LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, recordPerPage, offset);
             result.add("gamer", data);
             return BaseResponse.createFullMessageResponse(0, "success", result);
@@ -163,9 +163,9 @@ public class GamerService implements IGamerService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject result = new JsonObject();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT * FROM gamer WHERE clan_id = ? LIMIT ? OFFSET ?";
+            String query = "SELECT * FROM aoe_gamer WHERE clan_id = ? LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, clanId, recordPerPage, offset);
-            result.add("gamers", data);
+            result.add("gamer", data);
             return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -179,7 +179,7 @@ public class GamerService implements IGamerService {
     public JsonObject deleteGamerByUserId(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "DELETE FROM gamer WHERE user_id = ?";
+            String query = "DELETE FROM aoe_gamer WHERE user_id = ?";
             int x = bridge.update(query, id);
             if (x == 1) return BaseResponse.createFullMessageResponse(0, "success");
             return BaseResponse.createFullMessageResponse(10, "not_found_gamer");
@@ -202,7 +202,7 @@ public class GamerService implements IGamerService {
             JsonObject data = response.getAsJsonObject("data");
             long total_star_donate = data.get("total_star_donate").getAsLong();
             long total_supporter = data.get("total_supporter").getAsLong();
-            String query = "UPDATE gamer SET total_star_donate = ?, total_supporter = ?  WHERE user_id = ?";
+            String query = "UPDATE aoe_gamer SET total_star_donate = ?, total_supporter = ?  WHERE user_id = ?";
             bridge.update(query, total_star_donate, total_supporter, id);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
