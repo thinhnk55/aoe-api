@@ -200,35 +200,42 @@ public class BankService implements IBankService {
             return BaseResponse.createFullMessageResponse(11, "failure");
         }
     }
+    private JsonObject createBankAccountFromTimo(JsonObject timo){
+        long timoId = timo.get("id").getAsLong();
+        JsonObject response = BankServices.timoService.getBankAccountInfo(timo);
+        if(BaseResponse.isSuccessFullMessage(response)){
+            JsonObject bank = response.getAsJsonObject("data");
+            String accountNumber = bank.get("accountNumber").getAsString();
+            String accountOwner = bank.get("fullName").getAsString();
+            response = createBankAccount(BankCode.TIMO, accountOwner,
+                    accountNumber, timo.get("id").getAsLong());
+            if(BaseResponse.isSuccessFullMessage(response)) {
+                long bank_account_id = response.getAsJsonObject("data")
+                        .get("id").getAsLong();
+                long bank_detail_id = response.getAsJsonObject("data")
+                        .get("bank_detail_id").getAsLong();
+                if(bank_detail_id != timoId){
+                    updateBankDetailId(bank_account_id, timoId);
+                }
+                BankServices.timoService.updateBankAccountId(timoId, bank_account_id);
+            }
+            return response;
+        }else{
+            return response;
+        }
+    }
 
     private JsonObject getBankAccountFromTimo(JsonObject timo) {
-        long timoId = timo.get("id").getAsLong();
         long bank_account_id = timo.get("bank_account_id").getAsLong();
         if(bank_account_id == 0){
-            JsonObject response = BankServices.timoService.getBankAccountInfo(timo);
-            if(BaseResponse.isSuccessFullMessage(response)){
-                JsonObject bank = response.getAsJsonObject("data");
-                String accountNumber = bank.get("accountNumber").getAsString();
-                String accountOwner = bank.get("fullName").getAsString();
-                response = createBankAccount(BankCode.TIMO, accountOwner,
-                        accountNumber, timo.get("id").getAsLong());
-                if(BaseResponse.isSuccessFullMessage(response)) {
-                    bank_account_id = response.getAsJsonObject("data")
-                            .get("id").getAsLong();
-                    long bank_detail_id = response.getAsJsonObject("data")
-                            .get("bank_detail_id").getAsLong();
-                    if(bank_detail_id != timoId){
-                        updateBankDetailId(bank_account_id, timoId);
-                    }
-                    BankServices.timoService.updateBankAccountId(timoId, bank_account_id);
-                }
-                return response;
-            }else{
-                return response;
-            }
+            return createBankAccountFromTimo(timo);
         }else{
             JsonObject response = getAccountById(bank_account_id);
-            return response;
+            if(BaseResponse.isSuccessFullMessage(response)) {
+                return response;
+            }else{
+                return createBankAccountFromTimo(timo);
+            }
         }
     }
 
