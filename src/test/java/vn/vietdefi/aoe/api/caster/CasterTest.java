@@ -23,11 +23,13 @@ public class CasterTest {
     class ClanTest1 {
         String baseUrl;
         String nick_name;
+        String username;
 
         @BeforeEach
         void init() {
 //            baseUrl = "https://api.godoo.asia/aoe";
             baseUrl = "http://127.0.0.1:8000/aoe";
+            username = "09846673112";
             nick_name = "SBS2804";
         }
 
@@ -55,9 +57,9 @@ public class CasterTest {
             DebugLogger.info("{}", response);
         }
         public void updateCaster(JsonObject caster){
-            caster.addProperty("phone", "0911214231");
-            caster.addProperty("nick_name", "BLV Khanh1234");
-            caster.addProperty("full_name", "Nguyen Duc Binh H");
+            caster.addProperty("phone", username);
+            caster.addProperty("nick_name", nick_name);
+            caster.addProperty("full_name", "Nguyen Duc Binh HAIII");
             caster.addProperty("avatar", "https://chimsedinang.com/wp-content/uploads/2021/10/clan-sbs-450x600-1.png");
             caster.addProperty("clan_id", 1);
             JsonObject detail1 = new JsonObject();
@@ -109,7 +111,7 @@ public class CasterTest {
 
         public JsonObject createCasterSuccess() {
             JsonObject data = new JsonObject();
-            data.addProperty("phone", "0224118830");
+            data.addProperty("phone", username);
             data.addProperty("nick_name", nick_name);
             data.addProperty("full_name", "Nguyen Duc Binh");
             data.addProperty("avatar", "https://chimsedinang.com/wp-content/uploads/2021/10/clan-sbs-450x600-1.png");

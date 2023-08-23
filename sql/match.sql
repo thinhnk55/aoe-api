@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS aoe_match_suggest
     match_id BIGINT NOT NULL DEFAULT 0,
     type INT NOT NULL,
     format INT NOT NULL,
-    team_play VARCHAR(256) NOT NULL DEFAULT '{}',
+    team_player TEXT NOT NULL DEFAULT '{}',
     detail VARCHAR(4096) NOT NULL DEFAULT '{}',
     amount INT NOT NULL,
     create_time BIGINT NOT NULL,

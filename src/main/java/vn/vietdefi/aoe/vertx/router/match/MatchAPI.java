@@ -19,17 +19,14 @@ public class MatchAPI {
         router.get(ApiConfig
                         .instance()
                         .getPath("/match/info"))
-                .handler(AuthRouter::authorizeUser)
                 .handler(MatchRouter::getById);
         router.get(ApiConfig
                         .instance()
                         .getPath("/match/getlist/state"))
-                .handler(AuthRouter::authorizeUser)
                 .handler(MatchRouter::getListMatch);
         router.get(ApiConfig
                         .instance()
                         .getPath("/match/outstanding"))
-                .handler(AuthRouter::authorizeUser)
                 .handler(MatchRouter::getOutstandingMatch);
     }
     public static void supportAuthApi(Router router) {

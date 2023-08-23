@@ -13,6 +13,7 @@ import vn.vietdefi.aoe.vertx.router.gamer.GamerApi;
 import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
 import vn.vietdefi.aoe.vertx.router.match.MatchAPI;
 import vn.vietdefi.aoe.vertx.router.match.MatchRouter;
+import vn.vietdefi.aoe.vertx.router.matchsuggest.MatchSuggestApi;
 import vn.vietdefi.aoe.vertx.router.profile.ProfileAPI;
 import vn.vietdefi.aoe.vertx.router.star.StarAPI;
 import vn.vietdefi.api.vertx.ApiConfig;
@@ -28,6 +29,7 @@ public class AoeAPI {
         CasterAPI.configAPI(router);
         DonateAPI.configAPI(router);
         MatchAPI.configAPI(router);
+        MatchSuggestApi.configAPI(router);
         adminApi(router);
         eventApi(router);
     }
