@@ -35,7 +35,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
                         BankServices.bankService.updateBankTransactionState(transaction.id, BankTransactionState.ERROR);
                     } else {
                         long targetId = response.getAsJsonObject("data").get("id").getAsLong();
-                        BankServices.bankService.doneBankTransactionState(transaction.id, message.service
+                        BankServices.bankService.completeBankTransaction(transaction.id, message.service
                                 ,targetId);
                     }
                 }
@@ -141,7 +141,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
                 JsonObject data = response.getAsJsonObject("data");
                 star_transaction_id = data.get("id").getAsLong();
                 //Cap nhat lai star_transaction_id trong bank_transaction
-                BankServices.bankService.updateStarTransactionId(transaction.id, star_transaction_id);
+                BankServices.bankService.setStarTransactionId(transaction.id, star_transaction_id);
                 return BaseResponse.createFullMessageResponse(0,"success", data);
             }else {
                 response = AoeServices.starService.getStarTransactionById(star_transaction_id);

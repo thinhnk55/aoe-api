@@ -5,6 +5,7 @@ import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.aoe.services.star.StarConstant;
+import vn.vietdefi.aoe.services.user.gamer.GamerConstant;
 import vn.vietdefi.api.services.ApiServices;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
@@ -56,7 +57,7 @@ public class GamerRouter {
     public static void listGamer(RoutingContext rc) {
         try{
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.gamerService.listGamer(page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.gamerService.listGamer(page, GamerConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         }
         catch (Exception e){
@@ -82,6 +83,21 @@ public class GamerRouter {
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
+
+    public static void listGamerOfClan(RoutingContext rc) {
+        try{
+            long page = Long.parseLong(rc.request().getParam("page", "1"));
+            long clanId = Long.parseLong(rc.request().getParam("clan_id"));
+            JsonObject response = AoeServices.gamerService.listGamerByClanId(clanId, page, GamerConstant.DEFAULT_RECORD_PER_PAGE);
+            rc.response().end(response.toString());
+        }
+        catch (Exception e){
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
+            rc.response().end(response.toString());
         }
     }
 }

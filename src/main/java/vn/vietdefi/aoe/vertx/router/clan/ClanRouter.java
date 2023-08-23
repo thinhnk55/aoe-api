@@ -68,8 +68,8 @@ public class ClanRouter {
         try{
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            String clan = json.get("clan").getAsString();
-            JsonObject response = AoeServices.clanService.deleteClan(clan);
+            String nickname = json.get("nick_name").getAsString();
+            JsonObject response = AoeServices.clanService.deleteClan(nickname);
             rc.response().end(response.toString());
         }catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

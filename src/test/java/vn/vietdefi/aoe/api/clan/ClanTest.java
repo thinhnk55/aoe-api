@@ -10,7 +10,6 @@ import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
-import vn.vietdefi.util.sql.HikariClients;
 
 public class ClanTest {
     @BeforeAll
@@ -135,67 +134,6 @@ public class ClanTest {
             Assertions.assertEquals(clan.get("nick_name").getAsString(), nick_name);
             DebugLogger.info("{}", response);
             return clan;
-        }
-        @Test
-        public void test1(){
-//            //Tao Clan
-//
-//            //Get clan
-//            String getUrlByName = new StringBuilder(baseUrl)
-//                    .append("/clan/get-by-name?clan_name=")
-//                    .append(clanNickName).toString();
-//            response = OkHttpUtil.get(getUrlByName);
-//            DebugLogger.info("{}", response);
-//            JsonObject getClan = response.getAsJsonObject("data");
-//            long clanIdNew = getClan.get("id").getAsLong();
-//            Assertions.assertEquals(clanId, clanIdNew);
-//
-//            //Get clan
-//            String getUrlById = new StringBuilder(baseUrl)
-//                    .append("/clan/get?clan_id=")
-//                    .append(clanId).toString();
-//            response = OkHttpUtil.get(getUrlById);
-//            DebugLogger.info("{}", response);
-//            getClan = response.getAsJsonObject("data");
-//            clanIdNew = getClan.get("id").getAsLong();
-//            Assertions.assertEquals(clanId, clanIdNew);
-//            //update clan
-//            JsonObject data1 = new JsonObject();
-//            data1.addProperty("id", clanId);
-//            data1.addProperty("nick_name", "SBSDDDSSD3");
-//            data1.addProperty("full_name", "slowbutsssure");
-//            data1.addProperty("avatar", "https://chimsssedinang.com/wp-content/uploads/2021/10/clan-sbs-450x600-1.png");
-//            data1.addProperty("create_day", "1622400000000");
-//            data1.addProperty("founder", "Nguyen Duc Binh");
-//            data1.addProperty("owner_unit", "Chim Se Di Nang Studio");
-//            data1.addProperty("sport", "Age of Empsire");
-//            JsonObject detail1 = new JsonObject();
-//            detail1.addProperty("facebook_link", "httssps:/");
-//            detail1.addProperty("fanpage_link", "httssps:/");
-//            detail1.addProperty("tiktok_link", "httpsss:/");
-//            detail1.addProperty("youtube_link", "httssps:/");
-//            data1.add("detail", detail1);;
-//            String updateClan = new StringBuilder(baseUrl)
-//                    .append("/clan/update").toString();
-//            response = OkHttpUtil.postJson(updateClan, data1.toString(), Common.createHeaderAdmin());
-//            DebugLogger.info("{}", response);
-//            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-//            //list clan
-//            String getList = new StringBuilder(baseUrl)
-//                    .append("/clan/list").toString();
-//            response = OkHttpUtil.get(getList);
-//            DebugLogger.info("{}", response);
-//            JsonArray clans = response.getAsJsonObject("data").getAsJsonArray("clans");
-//            int size = clans.size();
-//            Assertions.assertTrue(size > 0);
-//            //Xoa luon clan vua tao
-//            String deleteUrl = new StringBuilder(baseUrl)
-//                    .append("/clan/delete").toString();
-//            data = new JsonObject();
-//            data.addProperty("clan_id", clanId);
-//            response = OkHttpUtil.postJson(deleteUrl, data.toString(), Common.createHeaderSystemAdmin());
-//            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-//            DebugLogger.info("{}", response);
         }
     }
 

@@ -42,9 +42,9 @@ public class CasterRouter {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            long casterId = json.get("caster_id").getAsLong();
-            DebugLogger.info("{} dam xoa data", casterId);
-            JsonObject response = AoeServices.casterService.deleteCaster(casterId);
+            String nickname = json.get("nick_name").getAsString();
+            DebugLogger.info("{} dam xoa data", nickname);
+            JsonObject response = AoeServices.casterService.deleteCaster(nickname);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

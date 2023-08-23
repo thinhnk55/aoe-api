@@ -186,7 +186,7 @@ public class DonateService implements IDonateService {
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
     @Override
-    public JsonObject deleteDonate(long userId) {
+    public JsonObject deleteDonateBySenderId(long userId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "DELETE FROM aoe_donate WHERE user_id = ?";

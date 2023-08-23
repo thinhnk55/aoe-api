@@ -5,6 +5,7 @@ import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.aoe.services.match.MatchConstants;
+import vn.vietdefi.aoe.services.matchsuggest.MatchSuggestConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
@@ -73,7 +74,7 @@ public class MatchSuggestRouter {
         try {
             long userid = Long.parseLong(rc.request().getHeader("userid"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.suggestService.getListMatchSuggested(userid, page, MatchConstants.ITEMS_PER_PAGE);
+            JsonObject response = AoeServices.suggestService.getListMatchSuggested(userid, page, MatchSuggestConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
