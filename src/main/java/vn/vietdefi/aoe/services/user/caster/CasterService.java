@@ -2,6 +2,7 @@ package vn.vietdefi.aoe.services.user.caster;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.vertx.core.json.Json;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.api.services.ApiServices;
@@ -17,8 +18,12 @@ public class CasterService implements ICasterService {
     public JsonObject createCaster(JsonObject data) {
         try {
             String phone = data.get("phone").getAsString();
-            JsonObject response =
-                    ApiServices.authService.get(phone);
+            String nickname = data.get("nick_name").getAsString();
+            JsonObject response = getCasterByNickname(nickname);
+            if (BaseResponse.isSuccessFullMessage(response)){
+                return BaseResponse.createFullMessageResponse(13, "nick_name_exists");
+            }
+            response = ApiServices.authService.get(phone);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 String password = StringUtil.generateRandomStringNumberCharacter(8);
                 response = AoeServices.aoeAuthService
@@ -28,13 +33,31 @@ public class CasterService implements ICasterService {
                     return response;
                 }
             } else {
-                return BaseResponse.createFullMessageResponse(10, "phone_exist");
+                long userId = response.getAsJsonObject("data").get("id").getAsLong();
+                String password = StringUtil.generateRandomStringNumberCharacter(8);
+                ApiServices.authService.updatePassword(userId, password);
             }
             JsonObject user = response.getAsJsonObject("data");
             data.addProperty("user_id", user.get("id").getAsLong());
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             bridge.insertObjectToDB("aoe_caster","user_id", data);
             return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    private JsonObject getCasterByNickname(String nickname) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT user_id FROM aoe_caster WHERE nick_name = ?";
+            JsonObject user = bridge.queryOne(query, nickname);
+            if (user == null) {
+                return BaseResponse.createFullMessageResponse(11, "caster_not_found");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", user);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
@@ -60,11 +83,11 @@ public class CasterService implements ICasterService {
     }
 
     @Override
-    public JsonObject deleteCaster(long casterId) {
+    public JsonObject deleteCaster(String nickname) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "DELETE FROM aoe_caster WHERE user_id = ?";
-            int row = bridge.update(query, casterId);
+            String query = "DELETE FROM aoe_caster WHERE nick_name = ?";
+            int row = bridge.update(query, nickname);
             if (row == 0) {
                 return BaseResponse.createFullMessageResponse(10, "delete_failure");
             }
@@ -100,7 +123,9 @@ public class CasterService implements ICasterService {
             long offset = (page - 1) * recordPerPage;
             String query = "SELECT * FROM aoe_caster LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, recordPerPage, offset);
-            return BaseResponse.createFullMessageResponse(0, "success", data);
+            JsonObject result = new JsonObject();
+            result.add("casters", data);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");

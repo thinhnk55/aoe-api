@@ -11,6 +11,6 @@ public interface IClanService {
     JsonObject getClanByNickName(String nickName);
     JsonObject listClan(long page, long recordPerPage);
     /*These function user for TEST only. In real situation these actions is prohibited*/
-    JsonObject deleteClan(String clan);
+    JsonObject deleteClan(String nickname);
 
 }

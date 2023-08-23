@@ -10,7 +10,6 @@ import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
-import vn.vietdefi.util.sql.HikariClients;
 
 public class ClanTest {
     @BeforeAll

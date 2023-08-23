@@ -61,7 +61,7 @@ public class MatchRouter {
         try {
             int state =  Integer.parseInt(rc.request().getParam("state"));
             long page = Long.parseLong(rc.request().getParam("page"));
-            JsonObject response = AoeServices.matchService.getListMatch(state,page, MatchConstants.ITEMS_PER_PAGE);
+            JsonObject response = AoeServices.matchService.getListMatch(state,page, MatchConstants.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

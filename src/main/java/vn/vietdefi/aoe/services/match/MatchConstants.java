@@ -21,6 +21,6 @@ public class MatchConstants {
 
 
 
-    public static final int ITEMS_PER_PAGE = 15;
+    public static final int DEFAULT_RECORD_PER_PAGE = 20;
 
 }

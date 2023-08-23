@@ -95,11 +95,11 @@ public class ClanService implements IClanService{
     }
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
-    public JsonObject deleteClan(String clan){
+    public JsonObject deleteClan(String nickname){
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "DELETE FROM aoe_clan WHERE nick_name = ?";
-            int row = bridge.update(query, clan);
+            int row = bridge.update(query, nickname);
             if(row == 0){
                 return BaseResponse.createFullMessageResponse(10, "delete_failure");
             }

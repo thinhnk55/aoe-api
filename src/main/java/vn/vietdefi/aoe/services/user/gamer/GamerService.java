@@ -157,6 +157,10 @@ public class GamerService implements IGamerService {
     @Override
     public JsonObject listGamerByClanId(long clanId, long page, long recordPerPage) {
         try {
+            JsonObject response = AoeServices.clanService.getClanById(clanId);
+            if(!BaseResponse.isSuccessFullMessage(response)){
+                return response;
+            }
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject result = new JsonObject();
             long offset = (page - 1) * recordPerPage;
