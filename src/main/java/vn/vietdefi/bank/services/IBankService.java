@@ -1,7 +1,6 @@
 package vn.vietdefi.bank.services;
 
 import com.google.gson.JsonObject;
-import vn.vietdefi.bank.logic.BankTransaction;
 
 public interface IBankService {
     //Bank Account
@@ -19,7 +18,7 @@ public interface IBankService {
 
     JsonObject updateBankAccount(JsonObject data);
 
-    JsonObject selectBankAccount(long id);
+    JsonObject setBankWorking(long id);
 
     //Bank Transaction
     JsonObject createBalanceTransaction(JsonObject data);
@@ -29,7 +28,7 @@ public interface IBankService {
     JsonObject listWaitingTransaction();
     void updateBankTransactionState(long id,
                                     int state);
-    void updateStarTransactionId(long id,long star_transaction_id);
-    void doneBankTransactionState(long id,
+    void setStarTransactionId(long id, long star_transaction_id);
+    void completeBankTransaction(long id,
                                  int service, long targetId);
 }
