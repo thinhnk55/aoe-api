@@ -284,7 +284,7 @@ public class MatchService implements IMatchService {
                 return data;
             }
             int state = data.get("data").getAsJsonObject().get("state").getAsInt();
-            if (state != MatchConstants.STATE_VOTING) {
+            if (state > MatchConstants.STATE_STOP_VOTING) {
                 return BaseResponse.createFullMessageResponse(11,
                         "cancel_reject", data);
             }
