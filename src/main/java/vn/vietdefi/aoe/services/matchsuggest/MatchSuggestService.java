@@ -141,17 +141,23 @@ public class MatchSuggestService implements IMatchSuggestService{
             if (!AoeServices.starService.checkStar(star, suggester)) {
                 return BaseResponse.createFullMessageResponse(12, "balance_not_enough");
             }
+            response = AoeServices.starService.exchangeStar(suggester,
+                    StarConstant.SERVICE_REFUND_SUGGEST
+                    ,star, 0);
+            if (!BaseResponse.isSuccessFullMessage(response)) {
+                return BaseResponse.createFullMessageResponse(13, "refund_suggest_error");
+            }
             JsonObject match = new JsonObject();
+            match.addProperty("userid", suggester);
             match.addProperty("format", info.get("format").getAsInt());
             match.addProperty("type", info.get("type").getAsInt());
             match.addProperty("star_default", info.get("star_default").getAsLong());
             match.add("detail", suggest.get("detail").getAsJsonObject());
             match.addProperty("time_expired", info.get("time_expired").getAsLong());
-            match.addProperty("suggester_id", suggester);
             match.addProperty("state", MatchConstants.STATE_VOTING);
             match.addProperty("create_time", System.currentTimeMillis());
             match.add("team_player", suggest.get("team_player").getAsJsonArray());
-            response = AoeServices.matchService.createMatch(suggest);
+            response = AoeServices.matchService.createMatch(match);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             }

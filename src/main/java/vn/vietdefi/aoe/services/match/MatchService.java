@@ -16,10 +16,11 @@ public class MatchService implements IMatchService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject data = new JsonObject();
 
+            DebugLogger.info("{}", json);
             data.addProperty("format", json.get("format").getAsInt());
             data.addProperty("type", json.get("type").getAsInt());
             data.addProperty("star_default", json.get("star_default").getAsLong());
-            data.add("detail", json.get("detail"));
+            data.add("detail", json.get("detail").getAsJsonObject());
             data.addProperty("time_expired", json.get("time_expired").getAsLong());
             data.addProperty("suggester_id", json.get("userid").getAsLong());
             data.addProperty("state", MatchConstants.STATE_VOTING);
@@ -33,7 +34,7 @@ public class MatchService implements IMatchService {
                 if (!BaseResponse.isSuccessFullMessage(response)){
                     return response;
                 }else {
-                    return BaseResponse.createFullMessageResponse(11, "create_team_error");
+                    return BaseResponse.createFullMessageResponse(15, "create_team_error");
                 }
             }
             return BaseResponse.createFullMessageResponse(0, "success", data);
