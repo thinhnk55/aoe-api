@@ -7,9 +7,9 @@ public interface IDonateService {
     void updateDonateUsed(long id, long add_star_transaction_id);
     public JsonObject createDonate(JsonObject data);
     public JsonObject getDonateById(long id);
-    JsonObject listDonateByTargetId(long targetId, long page, long recordPerPage);
-    JsonObject listAllTopDonate(long page, long recordPerPage);
-    JsonObject listTopDonateByTargetId(long targetId, long page, long recordPerPage);
+    JsonObject listDonateByTargetId(int service, long targetId, long page, long recordPerPage);
+    JsonObject listAllTopDonate(long from, long to, long page, long recordPerPage);
+    JsonObject listTopDonateByTargetId(long targetId, long from, long to, long page, long recordPerPage);
     long getTotalDonateByUserId(long id);
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
