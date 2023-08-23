@@ -71,7 +71,7 @@ public class MatchSuggestTest {
             payload.add("team_player", new JsonArray());
             payload.add("detail", new JsonObject());
             payload.addProperty("amount", amount);
-            String createSuggestMatchURL = new StringBuilder(baseUrl).append("/match/user/suggest").toString();
+            String createSuggestMatchURL = new StringBuilder(baseUrl).append("/match/user/suggest/create").toString();
             DebugLogger.info("{}", createSuggestMatchURL);
             JsonObject response = OkHttpUtil.postJson(createSuggestMatchURL, payload.toString(), Common.createHeader(user));
             DebugLogger.info("{}", response);
@@ -122,7 +122,7 @@ public class MatchSuggestTest {
             payload.addProperty("type", 1);
             payload.addProperty("star_default", 1000);
             payload.addProperty("time_expired", System.currentTimeMillis() + 6220800000L);
-            String confirmMatchURL = new StringBuilder(baseUrl).append("/match/confirm").toString();
+            String confirmMatchURL = new StringBuilder(baseUrl).append("/match/suggest/confirm").toString();
             DebugLogger.info("{}", confirmMatchURL);
             JsonObject response = OkHttpUtil.postJson(confirmMatchURL, payload.toString(), Common.createHeaderAdmin());
             DebugLogger.info("{}", response);

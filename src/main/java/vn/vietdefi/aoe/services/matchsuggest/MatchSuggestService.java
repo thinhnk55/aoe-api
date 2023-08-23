@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.donate.DonateConstants;
 import vn.vietdefi.aoe.services.match.MatchConstants;
 import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
@@ -162,9 +163,8 @@ public class MatchSuggestService implements IMatchSuggestService{
                 return response;
             }
             long match_id = response.get("data").getAsJsonObject().get("id").getAsInt();
-            response = AoeServices.starService.exchangeStar(suggester,
-                    StarConstant.SERVICE_DONATE_MATCH
-                    ,-star, match_id);
+            response = AoeServices.donateService.donate(suggester, star,
+                    StarConstant.SERVICE_DONATE_MATCH, match_id, "Donate suggest match");
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(16, "donate_match_again_reject");
             }
