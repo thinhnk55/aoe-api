@@ -18,7 +18,7 @@ import vn.vietdefi.util.string.StringUtil;
 public class AoeBankHandlerService implements IBankHandlerService {
     @Override
     public void completeBalanceTransaction() {
-        JsonObject response = BankServices.bankService.listWaitingTransaction();
+        JsonObject response = BankServices.bankTransactionService.listWaitingTransaction();
         if(BaseResponse.isSuccessFullMessage(response)){
             JsonArray data = response.getAsJsonArray("data");
             for(int i = 0; i < data.size(); i++){
@@ -27,15 +27,15 @@ public class AoeBankHandlerService implements IBankHandlerService {
                 AoeBankAction message = AoeBankAction.createFromBalanceTransaction(transaction);
                 if (message == null) {
                     DebugLogger.error("extract error id {} note {}", transaction.id, transaction.note);
-                    BankServices.bankService.updateBankTransactionState(transaction.id, BankTransactionState.ERROR);
+                    BankServices.bankTransactionService.updateBankTransactionState(transaction.id, BankTransactionState.ERROR);
                 }else {
                     response = completeBalanceTransaction(transaction, message);
                     if (!BaseResponse.isSuccessFullMessage(response)) {
                         DebugLogger.error("completeBalanceTransaction {} {}", transaction.id, response);
-                        BankServices.bankService.updateBankTransactionState(transaction.id, BankTransactionState.ERROR);
+                        BankServices.bankTransactionService.updateBankTransactionState(transaction.id, BankTransactionState.ERROR);
                     } else {
                         long targetId = response.getAsJsonObject("data").get("id").getAsLong();
-                        BankServices.bankService.completeBankTransaction(transaction.id, message.service
+                        BankServices.bankTransactionService.completeBankTransaction(transaction.id, message.service
                                 ,targetId);
                     }
                 }
@@ -141,7 +141,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
                 JsonObject data = response.getAsJsonObject("data");
                 star_transaction_id = data.get("id").getAsLong();
                 //Cap nhat lai star_transaction_id trong bank_transaction
-                BankServices.bankService.setStarTransactionId(transaction.id, star_transaction_id);
+                BankServices.bankTransactionService.setStarTransactionId(transaction.id, star_transaction_id);
                 return BaseResponse.createFullMessageResponse(0,"success", data);
             }else {
                 response = AoeServices.starService.getStarTransactionById(star_transaction_id);

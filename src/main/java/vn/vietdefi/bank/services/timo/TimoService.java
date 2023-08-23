@@ -3,6 +3,7 @@ package vn.vietdefi.bank.services.timo;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.bank.BankServices;
+import vn.vietdefi.bank.logic.BankCode;
 import vn.vietdefi.bank.logic.BankController;
 import vn.vietdefi.bank.logic.timo.TimoApi;
 import vn.vietdefi.bank.logic.timo.TimoConfig;
@@ -48,10 +49,6 @@ public class TimoService implements ITimoService {
                 long id = data.get("id").getAsLong();
                 String query = "UPDATE timo_account SET password = ?, token = ?, other = ?, state = ? WHERE id = ?";
                 bridge.update(query, password, token, other, TimoAccountState.COMMIT, id);
-                response = BankServices.bankService.createBankAccountFromTimoAccount(data);
-                if(BaseResponse.isSuccessFullMessage(response)){
-                    data.addProperty("bank_account_id", response.getAsJsonObject("data").get("id").getAsLong());
-                }
                 return BaseResponse.createFullMessageResponse(0, "success", data);
             }else if(response.get("error").getAsInt() == TimoConfig.ERROR_LOGIN_TIMO_ACCOUNT_NOT_COMMIT){
                 JsonObject timoResponse = response.getAsJsonObject("data");
@@ -119,10 +116,6 @@ public class TimoService implements ITimoService {
             data.addProperty("state", TimoAccountState.COMMIT);
             String query = "UPDATE timo_account SET token = ?, other = ?, state = ? WHERE id = ?";
             bridge.update(query, newToken, other, TimoAccountState.COMMIT, id);
-            response = BankServices.bankService.createBankAccountFromTimoAccount(data);
-            if(BaseResponse.isSuccessFullMessage(response)){
-                data.addProperty("bank_account_id", response.getAsJsonObject("data").get("id").getAsLong());
-            }
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception exception) {
             String stacktrace = ExceptionUtils.getStackTrace(exception);
@@ -216,16 +209,14 @@ public class TimoService implements ITimoService {
     }
 
     @Override
-    public boolean isExistedByUsername(String username) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT id FROM timo_account WHERE username = ?";
-            return bridge.queryExist(query, username);
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return false;
+    public JsonObject getBankAccountInfo(JsonObject data) {
+        String token = data.get("token").getAsString();
+        JsonObject response = TimoApi.getBankInfo(token);
+        if (BaseResponse.isSuccessFullMessage(response)) {
+            JsonObject bankInfo = response.getAsJsonObject("data");
+            return BaseResponse.createFullMessageResponse(0, "success", bankInfo);
+        }else{
+            return BaseResponse.createFullMessageResponse(10, "failure");
         }
     }
-
 }

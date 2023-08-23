@@ -7,31 +7,52 @@ import vn.vietdefi.api.vertx.router.AuthRouter;
 
 public class BankHttpAPI {
     public static void configAPI(Router router) {
-        bankApi(router);
+        publicApi(router);
+        userAuthApi(router);
+        supportAuthApi(router);
+        adminAuthApi(router);
+        superAdminAuthApi(router);
+        systemAdminAuthApi(router);
     }
-    private static void bankApi(Router router){
-        router.post(ApiConfig.instance().getPath("/bank/timo/login"))
+    private static void publicApi(Router router){
+        router.get(ApiConfig.instance().getPath("/bank/get/work"))
                 .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(BankRouter::timoLogin);
-        router.post(ApiConfig.instance().getPath("/bank/timo/commit"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(BankRouter::timoCommit);
+                .handler(BankRouter::getWorkingBank);
+    }
+    public static void userAuthApi(Router router) {
+
+    }
+    public static void supportAuthApi(Router router) {
         router.get(ApiConfig.instance().getPath("/bank/list"))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(BankRouter::getListBank);
-        router.post(ApiConfig.instance().getPath("/bank/add"))
+                .handler(AuthRouter::authorizeSupport)
+                .handler(BankRouter::getListBankByState);
+    }
+    public static void adminAuthApi(Router router) {
+
+    }
+    public static void superAdminAuthApi(Router router) {
+        router.post(ApiConfig.instance().getPath("/bank/login"))
                 .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(BankRouter::addBank);
-        router.post(ApiConfig.instance().getPath("/bank/update"))
+                .handler(AuthRouter::authorizeSuperAdmin)
+                .handler(BankRouter::login);
+        router.post(ApiConfig.instance().getPath("/bank/commit"))
                 .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(BankRouter::updateBank);
-        router.post(ApiConfig.instance().getPath("/bank/select"))
+                .handler(AuthRouter::authorizeSuperAdmin)
+                .handler(BankRouter::commitOTP);
+        router.post(ApiConfig.instance().getPath("/bank/disable"))
                 .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(BankRouter::selectBank);
+                .handler(AuthRouter::authorizeSuperAdmin)
+                .handler(BankRouter::disableBank);
+        router.post(ApiConfig.instance().getPath("/bank/wait_to_work"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeSuperAdmin)
+                .handler(BankRouter::waitToWorkBank);
+        router.post(ApiConfig.instance().getPath("/bank/work"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeSuperAdmin)
+                .handler(BankRouter::startWorkingBank);
+    }
+    public static void systemAdminAuthApi(Router router) {
+
     }
 }
