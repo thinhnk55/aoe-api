@@ -29,23 +29,20 @@ public class TimoService implements ITimoService {
                 data.addProperty("password", password);
                 device = TimoUtil.generateRandomTimoDevice();
                 data.addProperty("device", device);
+                data.add("other", createOther());
                 bridge.insertObjectToDB("timo_account", data);
             }else{
                 data = response.getAsJsonObject("data");
                 device = data.get("device").getAsString();
             }
             response = TimoApi.login(username, hashedPassword, device);
+            DebugLogger.info("TimoApi.login {}", response);
             if(BaseResponse.isSuccessFullMessage(response)){
                 JsonObject timoResponse = response.getAsJsonObject("data");
                 String token = timoResponse.get("token").getAsString();
                 data.addProperty("token", token);
                 JsonObject other = data.getAsJsonObject("other");
-                if(other == null){
-                    other = createOther();
-                    data.add("other", other);
-                }else{
-                    other.addProperty("force_update_notification", true);
-                }
+                other.addProperty("force_update_notification", true);
                 long id = data.get("id").getAsLong();
                 String query = "UPDATE timo_account SET password = ?, token = ?, other = ?, state = ? WHERE id = ?";
                 bridge.update(query, password, token, other, TimoAccountState.COMMIT, id);
@@ -55,13 +52,7 @@ public class TimoService implements ITimoService {
                 String refNo = timoResponse.get("refNo").getAsString();
                 String token = timoResponse.get("token").getAsString();
                 JsonObject other = data.getAsJsonObject("other");
-                if(other == null){
-                    other = createOther();
-                    other.addProperty("login_refNo", refNo);
-                    data.add("other", other);
-                }else{
-                    other.addProperty("login_refNo", refNo);
-                }
+                other.addProperty("login_refNo", refNo);
                 long id = data.get("id").getAsLong();
                 String query = "UPDATE timo_account SET password = ?, token = ?, other = ?, state = ? WHERE id = ?";
                 bridge.update(query, password, token, other, TimoAccountState.NOT_COMMIT, id);

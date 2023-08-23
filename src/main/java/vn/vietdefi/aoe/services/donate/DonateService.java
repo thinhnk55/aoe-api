@@ -67,7 +67,15 @@ public class DonateService implements IDonateService {
                     donate.addProperty("state", DonateState.USED);
                 }
             }
-            AoeServices.matchService.addStarCurrentMatch(target_id, star);
+            if(service == StarConstant.SERVICE_DONATE_MATCH) {
+                AoeServices.matchService.addStarCurrentMatch(target_id, star);
+            }
+            if(service == StarConstant.SERVICE_DONATE_GAMER) {
+
+            }
+            if(service == StarConstant.SERVICE_DONATE_CASTER) {
+                
+            }
             return BaseResponse.createFullMessageResponse(0, "success", donate);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));

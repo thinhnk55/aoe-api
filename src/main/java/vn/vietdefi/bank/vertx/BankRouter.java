@@ -40,15 +40,25 @@ public class BankRouter {
         }
     }
 
-    public static void getListBankByState(RoutingContext routingContext) {
+    public static void listBankByState(RoutingContext rc) {
         try {
-            int page = Integer.parseInt(routingContext.request().getParam("page","1"));
-            int state = Integer.parseInt(routingContext.request().getParam("state"));
+            int page = Integer.parseInt(rc.request().getParam("page","1"));
+            int state = Integer.parseInt(rc.request().getParam("state"));
             JsonObject response = BankServices.bankService.listBankAccountByState(state, page, 20);
-            routingContext.response().end(response.toString());
+            rc.response().end(response.toString());
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
-            routingContext.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
+    public static void listBank(RoutingContext rc) {
+        try {
+            int page = Integer.parseInt(rc.request().getParam("page","1"));
+            JsonObject response = BankServices.bankService.listBankAccount(page, 20);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
         }
     }
 
@@ -96,6 +106,20 @@ public class BankRouter {
     public static void getWorkingBank(RoutingContext rc) {
         try {
             JsonObject response = BankServices.bankService.getOneWorkingBankAccount();
+            BankController.instance().updateWorkingBank();
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
+
+    public static void getBank(RoutingContext rc) {
+        try {
+            String request = rc.body().asString();
+            JsonObject data = GsonUtil.toJsonObject(request);
+            long id = Long.parseLong(data.get("id").getAsString());
+            JsonObject response = BankServices.bankService.getAccountById(id);
             BankController.instance().updateWorkingBank();
             rc.response().end(response.toString());
         } catch (Exception e) {

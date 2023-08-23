@@ -74,8 +74,14 @@ public class AoeBankHandlerService implements IBankHandlerService {
         //Lay profile message.sender
         long userId = response.getAsJsonObject("data").get("user_id").getAsLong();
         long star = transaction.amount / StarConstant.STAR_PRICE_RATE;
-        return AoeServices.donateService.donate(userId, star,
-                StarConstant.SERVICE_DONATE_MATCH, message.receiverId, "");
+        long targetId = transaction.target_id;
+        if(targetId == 0) {
+            return AoeServices.donateService.donate(userId, star,
+                    StarConstant.SERVICE_DONATE_MATCH, message.receiverId, "");
+        }else{
+            response = AoeServices.donateService.getDonateById(targetId);
+            return response;
+        }
     }
 
     private JsonObject donateCaster(BankTransaction transaction, AoeBankAction message) {

@@ -4,9 +4,11 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
+import vn.vietdefi.bank.vertx.transaction.BankTransactionAPI;
 
 public class BankHttpAPI {
     public static void configAPI(Router router) {
+        BankTransactionAPI.configAPI(router);
         publicApi(router);
         userAuthApi(router);
         supportAuthApi(router);
@@ -16,16 +18,18 @@ public class BankHttpAPI {
     }
     private static void publicApi(Router router){
         router.get(ApiConfig.instance().getPath("/bank/get/work"))
-                .handler(BodyHandler.create(false))
                 .handler(BankRouter::getWorkingBank);
     }
     public static void userAuthApi(Router router) {
 
     }
     public static void supportAuthApi(Router router) {
+        router.get(ApiConfig.instance().getPath("/bank/list_by_state"))
+                .handler(AuthRouter::authorizeSupport)
+                .handler(BankRouter::listBankByState);
         router.get(ApiConfig.instance().getPath("/bank/list"))
                 .handler(AuthRouter::authorizeSupport)
-                .handler(BankRouter::getListBankByState);
+                .handler(BankRouter::listBank);
     }
     public static void adminAuthApi(Router router) {
 
@@ -39,6 +43,10 @@ public class BankHttpAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSuperAdmin)
                 .handler(BankRouter::commitOTP);
+        router.post(ApiConfig.instance().getPath("/bank/get"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeSuperAdmin)
+                .handler(BankRouter::getBank);
         router.post(ApiConfig.instance().getPath("/bank/disable"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSuperAdmin)
