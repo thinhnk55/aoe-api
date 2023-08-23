@@ -26,7 +26,7 @@ public class Common {
         String loginUrl = new StringBuilder(baseUrl)
                 .append("/auth/login").toString();
         String deleteUrl = new StringBuilder(baseUrl)
-                .append("/auth/delete_user").toString();
+                .append("/auth/admin/delete_user").toString();
         JsonObject payload = new JsonObject();
         payload.addProperty("username", username);
         payload.addProperty("password", password);
