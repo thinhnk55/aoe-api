@@ -70,9 +70,13 @@ public class BankService implements IBankService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM bank_account WHERE state = ?";
             JsonArray array = bridge.query(query, BankAccountState.WORKING);
-            int random = RandomUtil.nextInt(array.size());
-            JsonObject data = array.get(random).getAsJsonObject();
-            return BaseResponse.createFullMessageResponse(0, "success", data);
+            if(array.size() > 0) {
+                int random = RandomUtil.nextInt(array.size());
+                JsonObject data = array.get(random).getAsJsonObject();
+                return BaseResponse.createFullMessageResponse(0, "success", data);
+            }else{
+                return BaseResponse.createFullMessageResponse(10, "no_working_bank");
+            }
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
@@ -116,6 +120,21 @@ public class BankService implements IBankService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM bank_account WHERE state = ? LIMIT ? OFFSET ?";
             JsonArray array = bridge.query(query, state, recordPerPage, offset);
+            JsonObject data = new JsonObject();
+            data.add("banks", array);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+    @Override
+    public JsonObject listBankAccount(long page, long recordPerPage) {
+        try {
+            long offset = (page - 1) * recordPerPage;
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM bank_account LIMIT ? OFFSET ?";
+            JsonArray array = bridge.query(query, recordPerPage, offset);
             JsonObject data = new JsonObject();
             data.add("banks", array);
             return BaseResponse.createFullMessageResponse(0, "success", data);

@@ -67,7 +67,15 @@ public class DonateService implements IDonateService {
                     donate.addProperty("state", DonateState.USED);
                 }
             }
-            AoeServices.matchService.addStarCurrentMatch(target_id, star);
+            if(service == StarConstant.SERVICE_DONATE_MATCH) {
+                AoeServices.matchService.addStarCurrentMatch(target_id, star);
+            }
+            if(service == StarConstant.SERVICE_DONATE_GAMER) {
+                AoeServices.gamerService.gamerUpdateStatistic(target_id);
+            }
+            if(service == StarConstant.SERVICE_DONATE_CASTER) {
+
+            }
             return BaseResponse.createFullMessageResponse(0, "success", donate);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -192,6 +200,19 @@ public class DonateService implements IDonateService {
             String query = "DELETE FROM aoe_donate WHERE user_id = ?";
             bridge.update(query, userId);
             return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject statisticDonate(int service, long targetId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query =  "SELECT COUNT(DISTINCT user_id) AS total_supporter, COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE target_id = ? AND service = ?";
+            JsonObject data = bridge.queryOne(query, targetId, service);
+            return BaseResponse.createFullMessageResponse(0, "success",data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");

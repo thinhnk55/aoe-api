@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS aoe_profile  (
     lang           INT NOT NULL DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS gamer
+CREATE TABLE IF NOT EXISTS aoe_gamer
 (
     user_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     phone VARCHAR(32) UNIQUE NOT NULL,
@@ -24,7 +24,9 @@ CREATE TABLE IF NOT EXISTS gamer
     match_won INT NOT NULL DEFAULT 0,
     total_user_support INT NOT NULL DEFAULT 0,
     create_time BIGINT NOT NULL DEFAULT 0,
-    state INT NOT NULL DEFAULT 0
+    state INT NOT NULL DEFAULT 0,
+    total_supporter INT NOT NULL DEFAULT 0,
+    total_star_donate INT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS aoe_caster
@@ -36,7 +38,9 @@ CREATE TABLE IF NOT EXISTS aoe_caster
     avatar VARCHAR(2048) DEFAULT '' NOT NULL,
     detail TEXT NOT NULL DEFAULT '{}',
     clan_id BIGINT DEFAULT 0  NULL,
-    state INT NOT NULL DEFAULT 0
+    state INT NOT NULL DEFAULT 0,
+    total_supporter INT NOT NULL DEFAULT 0,
+    total_star_donate INT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS aoe_clan

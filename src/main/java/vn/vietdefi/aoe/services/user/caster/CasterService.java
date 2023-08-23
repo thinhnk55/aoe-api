@@ -124,7 +124,7 @@ public class CasterService implements ICasterService {
             String query = "SELECT * FROM aoe_caster LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, recordPerPage, offset);
             JsonObject result = new JsonObject();
-            result.add("casters", data);
+            result.add("caster", data);
             return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));

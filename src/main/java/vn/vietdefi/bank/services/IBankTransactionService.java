@@ -14,4 +14,8 @@ public interface IBankTransactionService {
     void setStarTransactionId(long id, long star_transaction_id);
     void completeBankTransaction(long id,
                                  int service, long targetId);
+
+    JsonObject fixTransaction(long id, String note);
+
+    JsonObject listBankTransactionError();
 }

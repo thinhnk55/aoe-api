@@ -13,6 +13,7 @@ public interface IBankService {
     JsonObject getAccountById(long id);
 
     JsonObject listBankAccountByState(int state, long page, long recordPerPage);
+    JsonObject listBankAccount(long page, long recordPerPage);
 
     JsonObject waitToWork(long id);
     JsonObject startWorking(long id);
