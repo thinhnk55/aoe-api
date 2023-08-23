@@ -70,7 +70,8 @@ public class MatchService implements IMatchService {
     public JsonObject updateMatch(JsonObject json) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject data =  getById(json.get("id").getAsLong());
+
+            JsonObject data = new JsonObject();
             data.addProperty("id", json.get("id").getAsLong());
             data.add("detail", json.get("detail").getAsJsonObject());
             data.addProperty("type", json.get("type").getAsInt());
@@ -78,11 +79,13 @@ public class MatchService implements IMatchService {
             data.addProperty("time_expired", json.get("time_expired").getAsLong());
             data.addProperty("star_default", json.get("star_default").getAsLong());
             data.add("team_player", json.get("team_player").getAsJsonArray());
-            JsonObject response = MatchGamer.updateTeamPlayer(json.get("team_player").getAsJsonArray(),json.get("id").getAsLong());
+            bridge.updateObjectToDb("aoe_match", data);
+            JsonArray teamPlayers = json.get("team_player").getAsJsonArray();
+            long matchId = json.get("id").getAsLong();
+            JsonObject response = MatchGamer.updateTeamPlayer(teamPlayers,matchId);
             if (!BaseResponse.isSuccessFullMessage(response)){
                 return response;
             }
-            bridge.updateObjectToDb("aoe_match", data);
             DebugLogger.info("{}",data);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
