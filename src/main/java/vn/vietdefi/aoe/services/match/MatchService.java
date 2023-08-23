@@ -66,8 +66,6 @@ public class MatchService implements IMatchService {
             updateToDb.addProperty("time_expired", json.get("time_expired").getAsLong());
             updateToDb.addProperty("star_default", json.get("star_default").getAsLong());
             updateToDb.add("team_player", json.get("team_player").getAsJsonArray());
-
-
             bridge.updateObjectToDb("aoe_match", "id", updateToDb);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
@@ -287,7 +285,7 @@ public class MatchService implements IMatchService {
             }
             int state = data.get("data").getAsJsonObject().get("state").getAsInt();
             if (state != MatchConstants.STATE_VOTING) {
-                return BaseResponse.createFullMessageResponse(10,
+                return BaseResponse.createFullMessageResponse(11,
                         "cancel_reject", data);
             }
             String query = "UPDATE aoe_match SET state = ? ,time_expired = ? WHERE id = ?";

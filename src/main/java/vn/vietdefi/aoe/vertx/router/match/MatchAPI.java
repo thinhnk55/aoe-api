@@ -23,7 +23,7 @@ public class MatchAPI {
                 .handler(MatchRouter::getById);
         router.get(ApiConfig
                         .instance()
-                        .getPath("/match/getList/state"))
+                        .getPath("/match/getlist/state"))
                 .handler(AuthRouter::authorizeUser)
                 .handler(MatchRouter::getListMatch);
         router.get(ApiConfig

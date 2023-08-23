@@ -140,7 +140,7 @@ public class MatchTest {
             String cancelMatchURL = new StringBuilder(baseUrl).append("/match/cancel").toString();
             response = OkHttpUtil.postJson(cancelMatchURL, payload.toString(), Common.createHeaderAdmin());
             DebugLogger.info("Cancel match{}", response);
-            Assertions.assertEquals(10, response.get("error").getAsInt());
+            Assertions.assertEquals(11, response.get("error").getAsInt());
             matchInfo = Common.getMatchById(baseUrl, user, matchId);
             Assertions.assertEquals(matchInfo.getAsJsonObject("data").get("state").getAsInt(),
                     MatchConstants.STATE_FINISHED);
@@ -148,7 +148,7 @@ public class MatchTest {
             /*Test get list match*/
             int state = MatchConstants.STATE_FINISHED;
             int page = 1;
-            String getListMatchURL = new StringBuilder(baseUrl).append("/match/getList/state")
+            String getListMatchURL = new StringBuilder(baseUrl).append("/match/getlist/state")
                     .append("?state=").append(state).append("&page=").append(page).toString();
             response = OkHttpUtil.get(getListMatchURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
