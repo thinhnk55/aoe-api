@@ -9,4 +9,5 @@ public interface ICasterService {
     JsonObject deleteCaster(String nickname);
     JsonObject getCasterByUserId(long user_id);
     JsonObject listCaster(long page, long recordPerPage);
+    JsonObject casterUpdateStatistic(long id);
 }

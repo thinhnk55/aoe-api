@@ -3,6 +3,7 @@ package vn.vietdefi.aoe.services;
 import com.google.gson.JsonObject;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
+import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 
@@ -29,7 +30,9 @@ public class DonateTest {
         }
         @Test
         public void test0(){
-            JsonObject response = AoeServices.gamerService.gamerUpdateStatistic(1000);
+            JsonObject response = AoeServices.casterService.casterUpdateStatistic(5);
+            DebugLogger.info("{}", response);
+            response = AoeServices.donateService.listDonateByTargetId(StarConstant.SERVICE_DONATE_GAMER,135,1,15);
             DebugLogger.info("{}", response);
         }
     }

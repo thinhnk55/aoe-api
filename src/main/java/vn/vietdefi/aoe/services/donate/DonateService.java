@@ -74,6 +74,7 @@ public class DonateService implements IDonateService {
                 AoeServices.gamerService.gamerUpdateStatistic(target_id);
             }
             if(service == StarConstant.SERVICE_DONATE_CASTER) {
+                AoeServices.casterService.casterUpdateStatistic(target_id);
 
             }
             return BaseResponse.createFullMessageResponse(0, "success", donate);
@@ -111,12 +112,12 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject listDonateByTargetId(long targetId, long page, long recordPerPage) {
+    public JsonObject listDonateByTargetId(int service, long targetId, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT * FROM aoe_donate WHERE target_id = ? ORDER BY id DESC LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, targetId, recordPerPage, offset);
+            String query = "SELECT * FROM aoe_donate WHERE target_id = ? AND service = ? ORDER BY id DESC LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, targetId, service, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));

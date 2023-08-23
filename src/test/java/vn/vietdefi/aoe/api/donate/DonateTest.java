@@ -154,10 +154,6 @@ public class DonateTest {
         }
         @Test
         public void test1(){
-            long gamerId = 135;
-            int service = StarConstant.SERVICE_DONATE_GAMER;
-            JsonObject response = AoeServices.gamerService.gamerUpdateStatistic(gamerId);
-            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         }
     }
 

@@ -73,7 +73,8 @@ public class  DonateRouter {
         try {
             long targetId = Long.parseLong(rc.request().getParam("target_id"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.donateService.listDonateByTargetId(targetId, page, DonateConstants.DEFAULT_RECORD_PER_PAGE);
+            int service = Integer.parseInt(rc.request().getParam("service"));
+            JsonObject response = AoeServices.donateService.listDonateByTargetId(service, targetId, page, DonateConstants.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
