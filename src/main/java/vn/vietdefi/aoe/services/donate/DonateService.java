@@ -74,7 +74,7 @@ public class DonateService implements IDonateService {
 
             }
             if(service == StarConstant.SERVICE_DONATE_CASTER) {
-                
+
             }
             return BaseResponse.createFullMessageResponse(0, "success", donate);
         } catch (Exception e) {
