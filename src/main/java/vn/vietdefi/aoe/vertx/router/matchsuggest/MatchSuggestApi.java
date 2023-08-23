@@ -18,7 +18,7 @@ public class MatchSuggestApi {
     public static void userAuthApi(Router router) {
         router.post(ApiConfig
                         .instance()
-                        .getPath("/match/user/suggest"))
+                        .getPath("/match/user/suggest/create"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeUser)
                 .handler(MatchSuggestRouter::createMatchSuggest);
@@ -45,7 +45,7 @@ public class MatchSuggestApi {
     public static void adminAuthApi(Router router) {
         router.post(ApiConfig
                         .instance()
-                        .getPath("/match/confirm"))
+                        .getPath("/match/suggest/confirm"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(MatchSuggestRouter::confirmMatch);
