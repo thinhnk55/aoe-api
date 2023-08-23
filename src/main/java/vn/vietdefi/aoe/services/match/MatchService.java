@@ -70,15 +70,20 @@ public class MatchService implements IMatchService {
     public JsonObject updateMatch(JsonObject json) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject updateToDb = new JsonObject();
-            updateToDb.addProperty("id", json.get("id").getAsLong());
-            updateToDb.add("detail", json.get("detail").getAsJsonObject());
-            updateToDb.addProperty("type", json.get("type").getAsInt());
-            updateToDb.addProperty("format", json.get("format").getAsInt());
-            updateToDb.addProperty("time_expired", json.get("time_expired").getAsLong());
-            updateToDb.addProperty("star_default", json.get("star_default").getAsLong());
-            updateToDb.add("team_player", json.get("team_player").getAsJsonArray());
-            bridge.updateObjectToDb("aoe_match", "id", updateToDb);
+            JsonObject data =  getById(json.get("id").getAsLong());
+            data.addProperty("id", json.get("id").getAsLong());
+            data.add("detail", json.get("detail").getAsJsonObject());
+            data.addProperty("type", json.get("type").getAsInt());
+            data.addProperty("format", json.get("format").getAsInt());
+            data.addProperty("time_expired", json.get("time_expired").getAsLong());
+            data.addProperty("star_default", json.get("star_default").getAsLong());
+            data.add("team_player", json.get("team_player").getAsJsonArray());
+            JsonObject response = MatchGamer.updateTeamPlayer(json.get("team_player").getAsJsonArray(),json.get("id").getAsLong());
+            if (!BaseResponse.isSuccessFullMessage(response)){
+                return response;
+            }
+            bridge.updateObjectToDb("aoe_match", data);
+            DebugLogger.info("{}",data);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
