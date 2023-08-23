@@ -30,8 +30,8 @@ public class MatchTest {
 
         @BeforeEach
         void init(){
-//            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.1.23:8000/aoe";
+            baseUrl = "https://api.godoo.asia/aoe";
+//            baseUrl = "http://192.168.1.23:8000/aoe";
             username = "086888444";
             password = "12344321";
         }

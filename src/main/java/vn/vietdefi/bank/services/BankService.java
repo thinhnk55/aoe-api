@@ -161,6 +161,14 @@ public class BankService implements IBankService {
             String password = data.get("password").getAsString();
             switch (bankCode) {
                 case BankCode.TIMO:
+                    JsonObject response = BankServices.timoService.getAccountByUsername(username);
+                    if(BaseResponse.isSuccessFullMessage(response)){
+                        JsonObject timo = response.getAsJsonObject("data");
+                        long bank_account_id = timo.get("bank_account_id").getAsLong();
+                        if(bank_account_id == 0){
+                            createBankAccountFromTimoAccount(timo);
+                        }
+                    }
                     if(BankServices.timoService.isExistedByUsername(username)){
                         return BaseResponse.createFullMessageResponse(12, "account_existed");
                     }else {
@@ -198,17 +206,11 @@ public class BankService implements IBankService {
     }
 
     @Override
-    public JsonObject selectBankAccount(long id) {
+    public JsonObject setBankWorking(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE bank_account SET state = ? WHERE id = ?";
-            int row = bridge.update(query, BankAccountState.WORKING, id);
-            if (row == 0) {
-                return BaseResponse.createFullMessageResponse(10, "bank_not_found");
-            } else {
-                query = "UPDATE bank_account SET state = ? WHERE id <> ?";
-                bridge.update(query, BankAccountState.ACTIVE, id);
-            }
+            bridge.update(query, BankAccountState.WORKING, id);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -257,8 +259,8 @@ public class BankService implements IBankService {
     }
 
     @Override
-    public void updateStarTransactionId(long id,
-                                        long star_transaction_id){
+    public void setStarTransactionId(long id,
+                                     long star_transaction_id){
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE bank_transaction SET star_transaction_id = ? WHERE id = ?";
@@ -269,7 +271,7 @@ public class BankService implements IBankService {
         }
     }
     @Override
-    public void doneBankTransactionState(long id, int service,
+    public void completeBankTransaction(long id, int service,
                                         long target_id){
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();

@@ -87,7 +87,7 @@ public class BankRouter {
             String request = routingContext.body().asString();
             JsonObject data = GsonUtil.toJsonObject(request);
             long id = data.get("id").getAsLong();
-            JsonObject response = BankServices.bankService.selectBankAccount(id);
+            JsonObject response = BankServices.bankService.setBankWorking(id);
             routingContext.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
