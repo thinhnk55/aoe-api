@@ -107,6 +107,9 @@ public class CasterService implements ICasterService {
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "caster_not_found");
             }
+            long clanId = data.get("clan_id").getAsLong();
+            JsonObject response = AoeServices.clanService.getClanById(clanId);
+            data.add("clan", response.getAsJsonObject("data"));
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

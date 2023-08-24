@@ -50,7 +50,9 @@ public class EventTest {
             joinEvent(eventId);
             listParticipant(eventId);
             listByState();
+            listWinning(eventId);
             updateState(eventId);
+            awardParticipant(eventId);
         }
         public JsonObject createEventSuccess() {
             JsonObject data = new JsonObject();
@@ -119,7 +121,11 @@ public class EventTest {
                     .append("/event/list-winning?event_id=")
                     .append(eventId).append("&lucky_number=1231")
                     .append("&limit=1").toString();
-
+            JsonObject response = OkHttpUtil.get(listUrl, Common.createHeader(userId, token));
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            JsonArray listWin = response.getAsJsonObject("data").getAsJsonArray("listWinning");
+            Assertions.assertTrue(listWin.size() > 0);
         }
         public void updateState(long eventId){
             JsonObject data = new JsonObject();
@@ -149,7 +155,17 @@ public class EventTest {
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         }
-
+        public void awardParticipant(long eventId){
+            JsonObject data = new JsonObject();
+            data.addProperty("event_id", eventId);
+            data.addProperty("amount", "100000");
+            data.addProperty("user_id", userId);
+            String url = new StringBuilder(baseUrl)
+                    .append("/event/award").toString();
+            JsonObject response = OkHttpUtil.postJson(url, data.toString(), Common.createHeaderAdmin());
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+        }
         @Test
         public void test1() {
         }
