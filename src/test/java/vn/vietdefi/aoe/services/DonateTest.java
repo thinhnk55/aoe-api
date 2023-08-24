@@ -34,6 +34,8 @@ public class DonateTest {
             JsonObject response = AoeServices.statisticService.updateStatistic();
             long gap = System.currentTimeMillis()-now;
             DebugLogger.info("{} {}", gap, response);
+            response = AoeServices.matchService.getListMatchByGamerId(148);
+            DebugLogger.info("{} ", response);
         }
     }
 

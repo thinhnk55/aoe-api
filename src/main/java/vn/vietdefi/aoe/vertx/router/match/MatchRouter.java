@@ -57,6 +57,21 @@ public class MatchRouter {
         }
     }
 
+    public static void getListMatchByGamerId(RoutingContext rc){
+        try {
+            long id =  Long.parseLong(rc.request().getParam("gamer_id"));
+            JsonObject response = AoeServices.matchService.getListMatchByGamerId(id);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+
     public static void getListMatch(RoutingContext rc){
         try {
             int state =  Integer.parseInt(rc.request().getParam("state"));

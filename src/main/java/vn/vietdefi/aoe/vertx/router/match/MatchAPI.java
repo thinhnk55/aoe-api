@@ -28,6 +28,10 @@ public class MatchAPI {
                         .instance()
                         .getPath("/match/outstanding"))
                 .handler(MatchRouter::getOutstandingMatch);
+        router.get(ApiConfig
+                .instance()
+                .getPath("/match/list/gamer"))
+                .handler(MatchRouter::getListMatchByGamerId);
     }
     public static void supportAuthApi(Router router) {
 

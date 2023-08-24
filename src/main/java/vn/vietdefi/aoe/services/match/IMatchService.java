@@ -21,10 +21,11 @@ public interface IMatchService {
     long totalMatch(long userId);
     JsonObject checkAcceptDonate(long targetId);
 
-    JsonObject confirmMatch(JsonObject json);
+    JsonObject statistic();
+    JsonObject getListMatchByGamerId(long gamerId);
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
     JsonObject deleteMatch(long matchId);
 
-    JsonObject statistic();
+
 }
