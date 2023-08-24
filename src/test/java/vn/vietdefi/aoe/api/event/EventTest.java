@@ -9,7 +9,6 @@ import vn.vietdefi.aoe.services.event.EventConstants;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
-import vn.vietdefi.util.string.StringUtil;
 
 public class EventTest {
     @BeforeAll
@@ -24,16 +23,14 @@ public class EventTest {
     @Nested
     class ClanTest1 {
         String baseUrl;
-        long matchId;
-        long userId;
-        String token;
+        String username;
+        String password;
         @BeforeEach
         void init() {
 //            baseUrl = "https://api.godoo.asia/aoe";
             baseUrl = "http://127.0.0.1:8000/aoe";
-            matchId = 1;
-            userId = 71;
-            token = "044uldwgrtgrjaecknqvxh79khpzkspb";
+            username = "09748172134";
+            password = "123456";
         }
 
         @RepeatedTest(1)
@@ -43,18 +40,50 @@ public class EventTest {
 
         @Test
         public void test0() {
-            JsonObject event = createEventSuccess();
-            createEventFailure();
+            JsonObject response = Common.deleleUser(baseUrl, username, password);
+            DebugLogger.info("{}", response);
+            response = Common.registerUserSuccess(baseUrl, username, password);
+            DebugLogger.info("{}", response);
+            long userId = response.getAsJsonObject("data").get("id").getAsLong();
+            String token = response.getAsJsonObject("data").get("token").getAsString();
+            long matchId = createMatch();
+            JsonObject event = createEventSuccess(matchId);
+            createEventFailure(matchId);
             long eventId = event.get("id").getAsLong();
-            getEvent(eventId);
-            joinEvent(eventId);
+            getEvent(eventId, matchId);
+            joinEvent(eventId, userId, token);
             listParticipant(eventId);
             listByState();
             listWinning(eventId);
             updateState(eventId);
-            awardParticipant(eventId);
+            awardParticipant(eventId, userId);
+            deleteMatch(matchId);
         }
-        public JsonObject createEventSuccess() {
+        public void deleteMatch(long matchId) {
+            JsonObject payload = new JsonObject();
+            payload.addProperty("match_id", matchId);
+            String deleteMatchURL = new StringBuilder(baseUrl).append("/match/delete").toString();
+            JsonObject response = OkHttpUtil.postJson(deleteMatchURL, payload.toString(), Common.createHeaderSystemAdmin());
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+        }
+        public long createMatch() {
+            JsonObject payload = new JsonObject();
+            payload.addProperty("format", 1);
+            payload.addProperty("type", 1);
+            payload.addProperty("star_default", 1000);
+            payload.add("detail", new JsonObject());
+            payload.addProperty("time_expired", System.currentTimeMillis() + 6220800000L);
+            payload.add("team_player", new JsonArray());
+
+            String createMatchURL = new StringBuilder(baseUrl).append("/match/create").toString();
+            JsonObject response = OkHttpUtil.postJson(createMatchURL, payload.toString(), Common.createHeaderAdmin());
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            return response.getAsJsonObject("data").get("id").getAsLong();
+        }
+
+        public JsonObject createEventSuccess(long matchId) {
             JsonObject data = new JsonObject();
             data.addProperty("match_id", matchId);
             data.addProperty("reward_date", 1687516800000L);
@@ -67,7 +96,7 @@ public class EventTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             return response.getAsJsonObject("data");
         }
-        public void createEventFailure() {
+        public void createEventFailure(long matchId) {
             JsonObject data = new JsonObject();
             data.addProperty("match_id", matchId);
             String createUrl = new StringBuilder(baseUrl)
@@ -76,7 +105,7 @@ public class EventTest {
             DebugLogger.info("{}", response);
             Assertions.assertTrue(response.get("error").getAsInt() == 1);
         }
-        public void getEvent(long id) {
+        public void getEvent(long id, long matchId) {
             String getUrl = new StringBuilder(baseUrl)
                     .append("/event/get?event_id=").append(id).toString();
             JsonObject response = OkHttpUtil.get(getUrl);
@@ -85,7 +114,7 @@ public class EventTest {
             DebugLogger.info("{}", response);
             Assertions.assertTrue(event.get("match_id").getAsLong() == matchId);
         }
-        public void joinEvent(long eventId){
+        public void joinEvent(long eventId, long userId, String token){
             JsonObject data = new JsonObject();
             data.addProperty("user_id", userId);
             data.addProperty("event_id", eventId);
@@ -93,7 +122,7 @@ public class EventTest {
             data.addProperty("lucky_number", "1234");
             String joinUrl = new StringBuilder(baseUrl)
                     .append("/event/join").toString();
-            JsonObject response = OkHttpUtil.postJson(joinUrl, data.toString(),Common.createHeader(userId, token));
+            JsonObject response = OkHttpUtil.postJson(joinUrl, data.toString(), Common.createHeader(userId, token));
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         }
@@ -121,7 +150,7 @@ public class EventTest {
                     .append("/event/list-winning?event_id=")
                     .append(eventId).append("&lucky_number=1231")
                     .append("&limit=1").toString();
-            JsonObject response = OkHttpUtil.get(listUrl, Common.createHeader(userId, token));
+            JsonObject response = OkHttpUtil.get(listUrl, Common.createHeaderAdmin());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             JsonArray listWin = response.getAsJsonObject("data").getAsJsonArray("listWinning");
@@ -155,7 +184,7 @@ public class EventTest {
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         }
-        public void awardParticipant(long eventId){
+        public void awardParticipant(long eventId, long userId){
             JsonObject data = new JsonObject();
             data.addProperty("event_id", eventId);
             data.addProperty("amount", "100000");
@@ -170,7 +199,6 @@ public class EventTest {
         public void test1() {
         }
     }
-
 
     @BeforeAll
     static void done() {
