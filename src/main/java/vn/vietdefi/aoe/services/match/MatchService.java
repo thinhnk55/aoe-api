@@ -1,9 +1,11 @@
 package vn.vietdefi.aoe.services.match;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -374,6 +376,20 @@ public class MatchService implements IMatchService {
             String query = "DELETE FROM aoe_match WHERE id = ?";
             bridge.update(query, matchId);
             return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonElement statistic() {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT COUNT(*) FROM aoe_match WHERE state = ?";
+            JsonObject result = bridge.queryOne(query,MatchConstants.STATE_FINISHED);
+            return BaseResponse.createFullMessageResponse(0, "success",result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);

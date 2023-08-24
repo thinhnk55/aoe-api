@@ -1,6 +1,7 @@
 package vn.vietdefi.aoe.services.donate;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
@@ -192,7 +193,44 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject statisticDonate(int service, long targetId) {
+    public JsonObject statisticTotalDonate() {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT COUNT(DISTINCT user_id) AS total_user_donate, COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate";
+            JsonObject response = bridge.queryOne(query);
+            query = new StringBuilder("SELECT service, COALESCE(SUM(amount), 0) as total_star_donate\n" )
+                    .append("FROM aoe_donate \n ")
+                    .append("WHERE service IN (?,?,?,?)\n")
+                    .append("GROUP BY service")
+                    .toString();
+            JsonArray array = bridge.query(query,
+                    StarConstant.SERVICE_DONATE_MATCH,
+                    StarConstant.SERVICE_DONATE_GAMER,
+                    StarConstant.SERVICE_DONATE_CASTER,
+                    StarConstant.SERVICE_DONATE_LEAGUE);
+
+            for (JsonElement total:array) {
+                switch (total.getAsJsonObject().get("service").getAsInt()){
+                    case StarConstant.SERVICE_DONATE_MATCH:
+                        response.addProperty("total_star_donate_for_match",array.get(0).getAsJsonObject().get("total_star_donate").getAsLong());
+                    case StarConstant.SERVICE_DONATE_GAMER:
+                        response.addProperty("total_star_donate_for_gamer",array.get(1).getAsJsonObject().get("total_star_donate").getAsLong());
+                    case StarConstant.SERVICE_DONATE_CASTER:
+                        response.addProperty("total_star_donate_for_caster",array.get(2).getAsJsonObject().get("total_star_donate").getAsLong());
+                    case StarConstant.SERVICE_DONATE_LEAGUE:
+                        response.addProperty("total_star_donate_for_league",array.get(3).getAsJsonObject().get("total_star_donate").getAsLong());
+                }
+            }
+
+            return BaseResponse.createFullMessageResponse(0, "success",response);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject statisticDonateById(int service, long targetId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query =  "SELECT COUNT(DISTINCT user_id) AS total_supporter, COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE target_id = ? AND service = ?";

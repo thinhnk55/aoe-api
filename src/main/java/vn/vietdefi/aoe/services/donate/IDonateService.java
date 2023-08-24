@@ -10,8 +10,10 @@ public interface IDonateService {
     JsonObject listDonateByTargetId(int service, long targetId, long page, long recordPerPage);
     JsonObject listAllTopDonate(long page, long recordPerPage);
     JsonObject listTopDonateByTargetId(long targetId, long page, long recordPerPage);
-    JsonObject statisticDonate(int service, long target_id);
+    JsonObject statisticDonateById(int service, long target_id);
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
     JsonObject deleteDonateBySenderId(long userId);
+
+    JsonObject statisticTotalDonate();
 }

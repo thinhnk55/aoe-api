@@ -2,7 +2,6 @@ package vn.vietdefi.aoe.services.user.caster;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.vertx.core.json.Json;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.aoe.services.star.StarConstant;
@@ -107,6 +106,9 @@ public class CasterService implements ICasterService {
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "caster_not_found");
             }
+            long clanId = data.get("clan_id").getAsLong();
+            JsonObject response = AoeServices.clanService.getClanById(clanId);
+            data.add("clan", response.getAsJsonObject("data"));
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -134,7 +136,7 @@ public class CasterService implements ICasterService {
     public JsonObject casterUpdateStatistic(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject response = AoeServices.donateService.statisticDonate(StarConstant.SERVICE_DONATE_CASTER, id);
+            JsonObject response = AoeServices.donateService.statisticDonateById(StarConstant.SERVICE_DONATE_CASTER, id);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             }

@@ -152,8 +152,8 @@ public class EventService implements IEventService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long userId = data.get("user_id").getAsLong();
             long eventId = data.get("event_id").getAsLong();
-            String query = "UPDATE aoe_event_participants SET state = ? WHERE event_id = ? AND user_id = ?";
-            int row = bridge.update(query, EventConstants.CANCELLED_PARTICIPANT, eventId, userId);
+            String query = "UPDATE aoe_event_participants SET state = ? WHERE event_id = ? AND user_id = ? AND state = ?";
+            int row = bridge.update(query, EventConstants.CANCELLED_PARTICIPANT, eventId, userId, EventConstants.QUEUED_PARTICIPANT);
             if(row == 0){
                 return BaseResponse.createFullMessageResponse(10, "cancel_failure");
             }
@@ -172,8 +172,8 @@ public class EventService implements IEventService {
             long userId = data.get("user_id").getAsLong();
             long eventId = data.get("event_id").getAsLong();
             long amount = data.get("amount").getAsLong();
-            String query = "UPDATE aoe_event_participants SET state = ? WHERE event_id = ? AND user_id = ?";
-            int row = bridge.update(query, EventConstants.REWARDED_PARTICIPANT, eventId, userId);
+            String query = "UPDATE aoe_event_participants SET state = ? WHERE event_id = ? AND user_id = ? AND state = ?";
+            int row = bridge.update(query, EventConstants.REWARDED_PARTICIPANT, eventId, userId, EventConstants.QUEUED_PARTICIPANT);
             if(row == 0){
                 return BaseResponse.createFullMessageResponse(10, "award_failure");
             }
@@ -274,7 +274,7 @@ public class EventService implements IEventService {
                             .append("LIMIT ?").toString();
             JsonArray data = bridge.query(query, luckyNumber, eventId, EventConstants.QUEUED_PARTICIPANT, luckyNumber, limit);
             JsonObject result = new JsonObject();
-            result.add("listWinning", result);
+            result.add("listWinning", data);
             return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
