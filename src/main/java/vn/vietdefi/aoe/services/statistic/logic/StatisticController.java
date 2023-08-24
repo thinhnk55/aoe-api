@@ -15,11 +15,10 @@ public class StatisticController {
     }
     private StatisticController(){
         updateStatistic();
-        statisticService = new StatisticService();
     }
 
     Statistic statistic;
-    IStatisticService statisticService ;
+    IStatisticService statisticService = new StatisticService();
 
 
     public void updateStatistic() {
@@ -27,39 +26,39 @@ public class StatisticController {
             statistic = UpdateStatistic();
         }
     }
-
-    public void userRegistered(int newUserCount) {
-        statistic.updateUserRegistrationCount(newUserCount);
+    public Statistic getStatistic() {
+        return statistic;
     }
 
-    public void newUsersThisWeek(int newUsersCount) {
-        statistic.updateNewUsersThisWeek(newUsersCount);
+    public void userRegistered() {
+        statistic.updateUserRegistrationCount();
+    }
+
+    public void newUsersThisWeek() {
+        statistic.updateNewUsersThisWeek();
     }
 
     public void userDonate(int donatedStars) {
         statistic.updateDonationStats(donatedStars);
     }
 
-    public void tournamentComplete(int tournaments) {
-        statistic.updateTournamentStats(tournaments);
+    public void tournamentComplete() {
+        statistic.updateTournamentStats();
     }
 
-    public void championshipComplete(int championships) {
-        statistic.updateMatchStats(championships);
+    public void championshipComplete() {
+        statistic.updateMatchStats();
     }
 
-    public void starDonateToEntity(int entity, int stars) {
+    public void starDonateToEntity(int entity, long stars) {
         statistic.updateStarsDonatedToEntities(entity, stars);
     }
 
     public Statistic UpdateStatistic() {
-         JsonObject response = new JsonObject();
-         response = statisticService.updateStatistic();
-         if (BaseResponse.isSuccessFullMessage(response)){
-             return new Statistic(response.get("data").getAsJsonObject());
-         }
-         return null;
+        JsonObject response = statisticService.updateStatistic();
+        if (BaseResponse.isSuccessFullMessage(response)) {
+            return new Statistic(response.get("data").getAsJsonObject());
+        }
+        return null;
     }
-    
-
 }

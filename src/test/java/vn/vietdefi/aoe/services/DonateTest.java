@@ -30,10 +30,10 @@ public class DonateTest {
         }
         @Test
         public void test0(){
-            JsonObject response = AoeServices.donateService.statisticTotalDonate();
-            DebugLogger.info("{}", response);
-            response = AoeServices.donateService.listDonateByTargetId(StarConstant.SERVICE_DONATE_GAMER,135,1,15);
-            DebugLogger.info("{}", response);
+            long now = System.currentTimeMillis();
+            JsonObject response = AoeServices.statisticService.updateStatistic();
+            long gap = System.currentTimeMillis()-now;
+            DebugLogger.info("{} {}", gap, response);
         }
     }
 

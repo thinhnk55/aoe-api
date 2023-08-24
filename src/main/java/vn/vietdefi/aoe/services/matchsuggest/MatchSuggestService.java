@@ -96,6 +96,22 @@ public class MatchSuggestService implements IMatchSuggestService{
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    public JsonObject getListMatchSuggested(long page, long recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long offset = (page - 1) * recordPerPage;
+            JsonObject data = new JsonObject();
+            String dataQuery = "SELECT * FROM aoe_match_suggest ORDER BY state DESC LIMIT ? OFFSET ?";
+            JsonArray array = bridge.query(dataQuery, recordPerPage, offset);
+            data.add("match", array);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
     public JsonObject cancelMatchSuggest(long matchId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();

@@ -61,9 +61,5 @@ public class EventAPI {
     }
 
     public static void systemAdminAuthApi(Router router) {
-        router.post(ApiConfig.instance().getPath("/gamer/delete"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeSystemAdmin)
-                .handler(GamerRouter::deleteGamer);
     }
 }

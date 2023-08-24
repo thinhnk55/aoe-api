@@ -2,7 +2,6 @@ package vn.vietdefi.aoe.vertx.router.donate;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import vn.vietdefi.aoe.vertx.router.profile.ProfileRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
@@ -41,6 +40,10 @@ public class DonateAPI {
         router.get(ApiConfig.instance().getPath("/donate/list-top-all"))
                 .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::listAllTopDonate);
+        router.get(ApiConfig.instance().getPath("/donate/list-of-user"))
+                .handler(DonateRouter::listDonateOfUser);
+        router.get(ApiConfig.instance().getPath("/donate/list-gamer-favorites"))
+                .handler(DonateRouter::listGamerFavorites);
     }
     public static void supportAuthApi(Router router) {
 

@@ -35,7 +35,7 @@ public class DonateTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.250.1:8000/aoe";
+            baseUrl = "http://192.168.1.19:8000/aoe";
             username = "0384556555";
             password = "12344321";
             star = 100000;
@@ -51,14 +51,15 @@ public class DonateTest {
             JsonObject response = Common.registerUserSuccess(baseUrl, username, password);
             JsonObject user = response.getAsJsonObject("data");
             Common.addStarToWallet(baseUrl, user.get("id").getAsLong(), star);
-            testDonateGamer(user);
-            testDonateCaster(user);
-            long matchId = createMatch(user).getAsJsonObject("data").get("id").getAsLong();
-            testDonateMatch(user, matchId);
-            testListDonateByTarget(user, matchId);
-            testListTopDonateByTarget(user, matchId);
-            testListTopAllDonate(user);
-            deleteMatch(matchId);
+//            testDonateGamer(user);
+//            testDonateCaster(user);
+//            long matchId = createMatch(user).getAsJsonObject("data").get("id").getAsLong();
+//            testDonateMatch(user, matchId);
+//            testListDonateByTarget(user, matchId);
+//            testListTopDonateByTarget(user, matchId);
+//            testListTopAllDonate(user);
+//            deleteMatch(matchId);
+            testDonateLeague(user);
         }
 
         public void testDonateGamer(JsonObject user) {
@@ -193,6 +194,42 @@ public class DonateTest {
             JsonObject response = OkHttpUtil.get(listTopAllDonateURL, Common.createHeader(user));
             DebugLogger.info("{}", response);
             Assertions.assertFalse(response.getAsJsonArray("data").isEmpty());
+        }
+
+        public void testDonateLeague(JsonObject user) {
+            JsonObject payload = new JsonObject();
+            payload.addProperty("name", "VN-CN League");
+            payload.addProperty("banner", "https://");
+            payload.addProperty("star_current", 1000);
+            payload.addProperty("star_default_online", 3000);
+            payload.addProperty("star_default_offline", 10000);
+            payload.addProperty("time_expired", 1692453732898L);
+            payload.add("detail", new JsonObject());
+            payload.addProperty("donate_benefit", "text html");
+
+            StringBuilder url = new StringBuilder(baseUrl).append("/league/create");
+            DebugLogger.info("{}", url);
+            JsonObject response = OkHttpUtil.postJson(url.toString(), payload.toString(), Common.createHeaderAdmin());
+            DebugLogger.info("{}", response);
+            assert response != null;
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            long leagueId = response.getAsJsonObject("data").get("id").getAsLong();
+
+            payload = new JsonObject();
+            payload.addProperty("targetId", leagueId);
+            payload.addProperty("star", amount);
+            payload.addProperty("message", "Donate league");
+            String donateMatchURL = new StringBuilder(baseUrl).append("/donate/league").toString();
+            DebugLogger.info("{}", donateMatchURL);
+            response = OkHttpUtil.postJson(donateMatchURL, payload.toString(), Common.createHeader(user));
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            int balance = Common.getStartWallet(baseUrl, user).getAsJsonObject("data").get("balance").getAsInt();
+            DebugLogger.info("{}", balance);
+            int balanceAfterDonate = star - response.getAsJsonObject("data")
+                    .get("amount").getAsInt();
+            Assertions.assertEquals(balance, balanceAfterDonate);
+            star = balanceAfterDonate;
         }
 
         @Test

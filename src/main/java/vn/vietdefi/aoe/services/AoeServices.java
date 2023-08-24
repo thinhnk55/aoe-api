@@ -14,6 +14,8 @@ import vn.vietdefi.aoe.services.profile.IProfileService;
 import vn.vietdefi.aoe.services.profile.ProfileService;
 import vn.vietdefi.aoe.services.donate.DonateService;
 import vn.vietdefi.aoe.services.donate.IDonateService;
+import vn.vietdefi.aoe.services.statistic.IStatisticService;
+import vn.vietdefi.aoe.services.statistic.StatisticService;
 import vn.vietdefi.aoe.services.user.IUserService;
 import vn.vietdefi.aoe.services.user.UserService;
 import vn.vietdefi.aoe.services.user.caster.CasterService;
@@ -40,5 +42,6 @@ public class AoeServices {
     public static IUserService userService = new UserService();
 
     public static ILeagueService leagueService = new LeagueService();
+    public static IStatisticService statisticService = new StatisticService();
 
 }

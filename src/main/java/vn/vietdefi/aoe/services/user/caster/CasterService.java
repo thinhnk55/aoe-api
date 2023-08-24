@@ -118,6 +118,23 @@ public class CasterService implements ICasterService {
     }
 
     @Override
+    public JsonObject getPartialCaster(long casterId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT user_id, nick_name, full_name, avatar FROM aoe_caster WHERE user_id = ?";
+            JsonObject data = bridge.queryOne(query, casterId);
+            if (data == null) {
+                return BaseResponse.createFullMessageResponse(10, "caster_not_found");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
     public JsonObject listCaster(long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();

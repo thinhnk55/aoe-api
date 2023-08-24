@@ -11,4 +11,9 @@ public interface ILeagueService {
     JsonObject startLeague(long id);
     JsonObject endLeague(JsonObject data);
     JsonObject cancelLeague(long id);
+<<<<<<< HEAD
+    JsonObject deleteLeague(long id);
+=======
+    JsonObject totalLeagueComplete();
+>>>>>>> master
 }

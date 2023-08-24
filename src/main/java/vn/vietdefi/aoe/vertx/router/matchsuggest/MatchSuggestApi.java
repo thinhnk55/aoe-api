@@ -43,6 +43,11 @@ public class MatchSuggestApi {
 
     }
     public static void adminAuthApi(Router router) {
+        router.get(ApiConfig
+                        .instance()
+                        .getPath("/match/suggest/list"))
+                .handler(AuthRouter::authorizeAdmin)
+                .handler(MatchSuggestRouter::getListMatchSuggestedForAdmin);
         router.post(ApiConfig
                         .instance()
                         .getPath("/match/suggest/confirm"))

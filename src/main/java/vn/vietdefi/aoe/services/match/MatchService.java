@@ -121,11 +121,11 @@ public class MatchService implements IMatchService {
     }
 
     @Override
-    public JsonObject getById(long match_id) {
+    public JsonObject getById(long matchId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM aoe_match WHERE id = ?";
-            JsonObject data = bridge.queryOne(query, match_id);
+            JsonObject data = bridge.queryOne(query, matchId);
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "match_not_found");
             }
@@ -384,10 +384,10 @@ public class MatchService implements IMatchService {
     }
 
     @Override
-    public JsonElement statistic() {
+    public JsonObject statistic() {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT COUNT(*) FROM aoe_match WHERE state = ?";
+            String query = "SELECT COUNT(*) AS total_match_complete FROM aoe_match WHERE state = ?";
             JsonObject result = bridge.queryOne(query,MatchConstants.STATE_FINISHED);
             return BaseResponse.createFullMessageResponse(0, "success",result);
         } catch (Exception e) {

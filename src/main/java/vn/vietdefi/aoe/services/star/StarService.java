@@ -110,7 +110,7 @@ public class StarService implements IStarService {
             long daysInMillis = time * 24 * 60 * 60 * 1000;
             currentTime = currentTime + daysInMillis;
             String query = "SELECT * FROM aoe_star_transaction WHERE user_id = ? AND create_time > ? ORDER BY create_time DESC LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, userId,currentTime, recordPerPage, offset);
+            JsonArray data = bridge.query(query, userId, currentTime, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -137,27 +137,49 @@ public class StarService implements IStarService {
     private void addReferToTransaction(JsonObject data) {
         long referId = data.get("refer_id").getAsLong();
         long userId = data.get("user_id").getAsLong();
+        JsonObject response = AoeServices.profileService.getUserProfileByUserId(userId);
+        data.add("profile", response.getAsJsonObject("data"));
         if (referId == 0) {
             data.add("refer", null);
             return;
         }
         int service = data.get("service").getAsInt();
         if (service == StarConstant.SERVICE_STAR_RECHARGE) {
-            JsonObject response = BankServices.bankTransactionService.getBalanceTransactionById(referId);
-            if (BaseResponse.isSuccessFullMessage(response)) {
-                JsonObject account = response.getAsJsonObject("data");
+            JsonObject responseBank = BankServices.bankTransactionService.getBalanceTransactionById(referId);
+            if (BaseResponse.isSuccessFullMessage(responseBank)) {
+                JsonObject account = responseBank.getAsJsonObject("data");
                 data.add("refer", account);
             }
-        }else if (service == StarConstant.SERVICE_DONATE_GAMER
-        || service == StarConstant.SERVICE_DONATE_CASTER
-        || service == StarConstant.SERVICE_SUGGEST_MATCH
-        || service == StarConstant.SERVICE_DONATE_LEAGUE){
-            JsonObject response = AoeServices.donateService.getDonateById(referId);
-            if (BaseResponse.isSuccessFullMessage(response)) {
-                JsonObject gamer = response.getAsJsonObject("data");
-                data.add("refer", gamer);
-            }
         }
+        response = AoeServices.donateService.getDonateById(referId);
+        data.addProperty("message", response.getAsJsonObject("data").get("message").getAsString());
+//        } else if (service == StarConstant.SERVICE_DONATE_GAMER) {
+//            if (BaseResponse.isSuccessFullMessage(response)) {
+//                long id = response.getAsJsonObject("data").get("target_id").getAsLong();
+//                JsonObject gamer = AoeServices.gamerService.getGamerByUserId(id);
+//                data.add("gamer", gamer.getAsJsonObject("data"));
+//            }
+//        } else if (service == StarConstant.SERVICE_DONATE_CASTER){
+//            if (BaseResponse.isSuccessFullMessage(response)) {
+//                long id = response.getAsJsonObject("data").get("target_id").getAsLong();
+//                JsonObject caster = AoeServices.casterService.getCasterByUserId(id);
+//                data.add("caster", caster.getAsJsonObject("data"));
+//            }
+//        } else if (service == StarConstant.SERVICE_DONATE_MATCH) {
+//            if (BaseResponse.isSuccessFullMessage(response)) {
+//                long id = response.getAsJsonObject("data").get("target_id").getAsLong();
+//                JsonObject match = AoeServices.matchService.getById(id);
+//                data.add("match", match.getAsJsonObject("data"));
+//            }
+//        } else if (service == StarConstant.SERVICE_SUGGEST_MATCH) {
+//            if (BaseResponse.isSuccessFullMessage(response)) {
+//                long id = response.getAsJsonObject("data").get("target_id").getAsLong();
+//                JsonObject suggestMatch = AoeServices.suggestService.getMatchSuggest(id);
+//                data.add("suggest_match", suggestMatch.getAsJsonObject("data"));
+//            }
+//        } else if (service == StarConstant.SERVICE_DONATE_LEAGUE) {
+//            //TODO:
+//        }
     }
 
     @Override
@@ -204,7 +226,7 @@ public class StarService implements IStarService {
                         //get id aoe transaction
                         JsonObject data;
                         try (ResultSet result = st3.getGeneratedKeys()) {
-                            if(result.next()){
+                            if (result.next()) {
                                 long id = result.getLong(1);
                                 st4.setLong(1, id);
                             }
@@ -270,7 +292,7 @@ public class StarService implements IStarService {
                         //get id aoe transaction
                         JsonObject data;
                         try (ResultSet result = st3.getGeneratedKeys()) {
-                            if(result.next()){
+                            if (result.next()) {
                                 long id = result.getLong(1);
                                 st4.setLong(1, id);
                             }
@@ -290,6 +312,7 @@ public class StarService implements IStarService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
     @Override
     public void updateReferId(long id, long referId) {
         try {
@@ -328,12 +351,12 @@ public class StarService implements IStarService {
             try {
                 st1.executeUpdate();
                 st2.executeUpdate();
-            }catch (Exception e){
+            } catch (Exception e) {
                 connection.rollback();
             }
             connection.commit();
             return BaseResponse.createFullMessageResponse(0, "success");
-        }catch (Exception e) {
+        } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }

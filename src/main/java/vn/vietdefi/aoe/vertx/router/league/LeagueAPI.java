@@ -75,6 +75,11 @@ public class LeagueAPI {
 
     }
     public static void systemAdminAuthApi(Router router) {
-
+        router.post(ApiConfig
+                        .instance()
+                        .getPath("/league/delete"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeSystemAdmin)
+                .handler(LeagueRouter::deleteLeague);
     }
 }

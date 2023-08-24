@@ -88,7 +88,7 @@ public class LeagueRouter {
         try {
             String body = rc.body().asString();
             JsonObject data = GsonUtil.toJsonObject(body);
-            long leagueId = data.get("league_id").getAsLong();
+            long leagueId = data.get("id").getAsLong();
             JsonObject response = AoeServices.leagueService.startLeague(leagueId);
             rc.response().end(response.toString());
         } catch (Exception e) {
@@ -119,8 +119,24 @@ public class LeagueRouter {
         try {
             String body = rc.body().asString();
             JsonObject data = GsonUtil.toJsonObject(body);
-            long leagueId = data.get("league_id").getAsLong();
+            long leagueId = data.get("id").getAsLong();
             JsonObject response = AoeServices.leagueService.cancelLeague(leagueId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void deleteLeague(RoutingContext rc){
+        try {
+            String body = rc.body().asString();
+            JsonObject data = GsonUtil.toJsonObject(body);
+            long leagueId = data.get("id").getAsLong();
+            JsonObject response = AoeServices.leagueService.deleteLeague(leagueId);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.aoe.services.star.StarConstant;
+import vn.vietdefi.aoe.services.statistic.logic.StatisticController;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -68,15 +69,17 @@ public class DonateService implements IDonateService {
                     donate.addProperty("state", DonateState.USED);
                 }
             }
-            if(service == StarConstant.SERVICE_DONATE_MATCH) {
+            if (service == StarConstant.SERVICE_DONATE_MATCH) {
                 AoeServices.matchService.addStarCurrentMatch(target_id, star);
+                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_MATCH,star);
             }
-            if(service == StarConstant.SERVICE_DONATE_GAMER) {
+            if (service == StarConstant.SERVICE_DONATE_GAMER) {
                 AoeServices.gamerService.gamerUpdateStatistic(target_id);
+                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_GAMER,star);
             }
-            if(service == StarConstant.SERVICE_DONATE_CASTER) {
+            if (service == StarConstant.SERVICE_DONATE_CASTER) {
                 AoeServices.casterService.casterUpdateStatistic(target_id);
-
+                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_CASTER,star);
             }
             return BaseResponse.createFullMessageResponse(0, "success", donate);
         } catch (Exception e) {
@@ -102,7 +105,7 @@ public class DonateService implements IDonateService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM aoe_donate WHERE id = ?";
             JsonObject data = bridge.queryOne(query, id);
-            if(data == null){
+            if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "donate_not_found");
             }
             return BaseResponse.createFullMessageResponse(0, "success", data);
@@ -115,15 +118,54 @@ public class DonateService implements IDonateService {
     @Override
     public JsonObject listDonateByTargetId(int service, long targetId, long page, long recordPerPage) {
         try {
+            JsonObject target = getTargetById(service, targetId);
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
             String query = "SELECT * FROM aoe_donate WHERE target_id = ? AND service = ? ORDER BY id DESC LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, targetId, service, recordPerPage, offset);
-            return BaseResponse.createFullMessageResponse(0, "success", data);
+            JsonObject result = new JsonObject();
+            result.add("donate", data);
+            result.add("target", target);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
+    }
+
+    private JsonObject getTargetById(int service, long targetId) {
+        switch (service) {
+            case StarConstant.SERVICE_DONATE_GAMER:
+                JsonObject gamerResponse = AoeServices.gamerService.getPartialGamer(targetId);
+                if (BaseResponse.isSuccessFullMessage(gamerResponse)) {
+                    return gamerResponse.getAsJsonObject("data");
+                }
+                break;
+            case StarConstant.SERVICE_DONATE_CASTER:
+                JsonObject casterResponse = AoeServices.casterService.getPartialCaster(targetId);
+                if (BaseResponse.isSuccessFullMessage(casterResponse)) {
+                    return casterResponse.getAsJsonObject("data");
+                }
+                break;
+            case StarConstant.SERVICE_DONATE_MATCH:
+                JsonObject matchResponse = AoeServices.matchService.getById(targetId);
+                if (BaseResponse.isSuccessFullMessage(matchResponse)) {
+                    return matchResponse.getAsJsonObject("data");
+                }
+                break;
+            case StarConstant.SERVICE_SUGGEST_MATCH:
+                JsonObject matchSuggestResponse = AoeServices.suggestService.getMatchSuggest(targetId);
+                if (BaseResponse.isSuccessFullMessage(matchSuggestResponse)) {
+                    return matchSuggestResponse.getAsJsonObject("data");
+                }
+                break;
+            case StarConstant.SERVICE_DONATE_LEAGUE:
+                //TODO
+                break;
+            default:
+                return BaseResponse.createFullMessageResponse(11, "invalid_service");
+        }
+        return BaseResponse.createFullMessageResponse(10, "target_not_found");
     }
 
     @Override
@@ -153,7 +195,7 @@ public class DonateService implements IDonateService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
-    
+
     private JsonObject verifyTarget(int service, long targetId) {
         if (service == StarConstant.SERVICE_DONATE_MATCH) {
             return AoeServices.matchService.checkAcceptDonate(targetId);
@@ -163,6 +205,9 @@ public class DonateService implements IDonateService {
         }
         if (service == StarConstant.SERVICE_DONATE_CASTER) {
             return AoeServices.casterService.getCasterByUserId(targetId);
+        }
+        if (service == StarConstant.SERVICE_DONATE_LEAGUE) {
+            return AoeServices.leagueService.getLeagueInfo(targetId);
         }
         return BaseResponse.createFullMessageResponse(10, "invalid_service");
     }
@@ -198,7 +243,7 @@ public class DonateService implements IDonateService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT COUNT(DISTINCT user_id) AS total_user_donate, COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate";
             JsonObject response = bridge.queryOne(query);
-            query = new StringBuilder("SELECT service, COALESCE(SUM(amount), 0) as total_star_donate\n" )
+            query = new StringBuilder("SELECT service, COALESCE(SUM(amount), 0) as total_star_donate\n")
                     .append("FROM aoe_donate \n ")
                     .append("WHERE service IN (?,?,?,?)\n")
                     .append("GROUP BY service")
@@ -208,21 +253,78 @@ public class DonateService implements IDonateService {
                     StarConstant.SERVICE_DONATE_GAMER,
                     StarConstant.SERVICE_DONATE_CASTER,
                     StarConstant.SERVICE_DONATE_LEAGUE);
+            response.addProperty("total_star_donate_for_match", 0);
+            response.addProperty("total_star_donate_for_gamer", 0);
+            response.addProperty("total_star_donate_for_caster", 0);
+            response.addProperty("total_star_donate_for_league", 0);
 
-            for (JsonElement total:array) {
-                switch (total.getAsJsonObject().get("service").getAsInt()){
+            for (int i = 0; i < array.size(); i++) {
+                switch (array.get(i).getAsJsonObject().get("service").getAsInt()) {
                     case StarConstant.SERVICE_DONATE_MATCH:
-                        response.addProperty("total_star_donate_for_match",array.get(0).getAsJsonObject().get("total_star_donate").getAsLong());
+                        response.addProperty("total_star_donate_for_match", array.get(i).getAsJsonObject().get("total_star_donate").getAsLong());
+                        break;
                     case StarConstant.SERVICE_DONATE_GAMER:
-                        response.addProperty("total_star_donate_for_gamer",array.get(1).getAsJsonObject().get("total_star_donate").getAsLong());
+                        response.addProperty("total_star_donate_for_gamer", array.get(i).getAsJsonObject().get("total_star_donate").getAsLong());
+                        break;
                     case StarConstant.SERVICE_DONATE_CASTER:
-                        response.addProperty("total_star_donate_for_caster",array.get(2).getAsJsonObject().get("total_star_donate").getAsLong());
+                        response.addProperty("total_star_donate_for_caster", array.get(i).getAsJsonObject().get("total_star_donate").getAsLong());
+                        break;
                     case StarConstant.SERVICE_DONATE_LEAGUE:
-                        response.addProperty("total_star_donate_for_league",array.get(3).getAsJsonObject().get("total_star_donate").getAsLong());
+                        response.addProperty("total_star_donate_for_league", array.get(i).getAsJsonObject().get("total_star_donate").getAsLong());
+                        break;
                 }
             }
+            return BaseResponse.createFullMessageResponse(0, "success", response);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 
-            return BaseResponse.createFullMessageResponse(0, "success",response);
+    @Override
+    public JsonObject listDonateOfUser(long userId, long page, long recordPerPage) {
+        try {
+            JsonObject response = AoeServices.profileService.getUserProfileByUserId(userId);
+            if (!BaseResponse.isSuccessFullMessage(response)) {
+                return response;
+            }
+            long offset = (page - 1) * recordPerPage;
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM aoe_donate WHERE user_id = ? AND service IN (?,?) LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, userId, StarConstant.SERVICE_DONATE_GAMER, StarConstant.SERVICE_DONATE_CASTER, recordPerPage, offset);
+            for (JsonElement element : data) {
+                int service = element.getAsJsonObject().get("service").getAsInt();
+                long targetId = element.getAsJsonObject().get("target_id").getAsLong();
+                JsonObject target = getTargetById(service, targetId);
+                element.getAsJsonObject().add("target", target);
+            }
+            JsonObject result = new JsonObject();
+            result.add("profile", response.getAsJsonObject("data"));
+            result.add("donate", data);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject listGamerFavorites(long userId, long page, long recordPerPage) {
+        try {
+            long offset = (page - 1) * recordPerPage;
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT target_id FROM aoe_donate WHERE user_id = ? AND service = ? LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, userId, StarConstant.SERVICE_DONATE_GAMER, recordPerPage, offset);
+            JsonArray gamers = new JsonArray();
+            for (JsonElement element : data) {
+                long targetId = element.getAsJsonObject().get("target_id").getAsLong();
+                JsonObject target = getTargetById(StarConstant.SERVICE_DONATE_GAMER, targetId);
+                gamers.add(target);
+                element.getAsJsonObject().add("target", target);
+            }
+            JsonObject result = new JsonObject();
+            result.add("gamer", gamers);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
@@ -233,9 +335,9 @@ public class DonateService implements IDonateService {
     public JsonObject statisticDonateById(int service, long targetId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query =  "SELECT COUNT(DISTINCT user_id) AS total_supporter, COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE target_id = ? AND service = ?";
+            String query = "SELECT COUNT(DISTINCT user_id) AS total_supporter, COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE target_id = ? AND service = ?";
             JsonObject data = bridge.queryOne(query, targetId, service);
-            return BaseResponse.createFullMessageResponse(0, "success",data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
