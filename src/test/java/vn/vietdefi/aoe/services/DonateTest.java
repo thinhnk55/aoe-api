@@ -30,8 +30,10 @@ public class DonateTest {
         }
         @Test
         public void test0(){
+            long now = System.currentTimeMillis();
             JsonObject response = AoeServices.statisticService.updateStatistic();
-            DebugLogger.info("{}",response);
+            long gap = System.currentTimeMillis()-now;
+            DebugLogger.info("{} {}", gap, response);
         }
     }
 

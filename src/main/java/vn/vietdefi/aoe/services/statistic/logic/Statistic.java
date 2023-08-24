@@ -46,11 +46,11 @@ public class Statistic {
     }
 
     public void updateTournamentStats() {
-        this.totalStarDonateForLeague ++;
+        this.totalStarDonateForLeague++;
     }
 
     public void updateMatchStats() {
-        this.totalStarDonateForMatch ++;
+        this.totalStarDonateForMatch++;
     }
 
     public void updateStarsDonatedToEntities(int entity, long stars) {
@@ -63,8 +63,6 @@ public class Statistic {
                 this.totalStarDonateForCaster += stars;
             case ENTITY_LEAGUE:
                 this.totalStarDonateForLeague += stars;
-
         }
-
     }
 }

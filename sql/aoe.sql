@@ -57,3 +57,10 @@ CREATE TABLE IF NOT EXISTS aoe_clan
     state INT NOT NULL DEFAULT 0
 );
 
+
+CREATE TABLE IF NOT EXISTS aoe_data
+(
+    name VARCHAR(256) UNIQUE NOT NULL,
+    data JSON NOT NULL,
+);
+

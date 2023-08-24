@@ -55,12 +55,10 @@ public class StatisticController {
     }
 
     public Statistic UpdateStatistic() {
-         JsonObject response = statisticService.updateStatistic();
-         if (BaseResponse.isSuccessFullMessage(response)){
-             return new Statistic(response.get("data").getAsJsonObject());
-         }
-         return null;
+        JsonObject response = statisticService.updateStatistic();
+        if (BaseResponse.isSuccessFullMessage(response)) {
+            return new Statistic(response.get("data").getAsJsonObject());
+        }
+        return null;
     }
-    
-
 }
