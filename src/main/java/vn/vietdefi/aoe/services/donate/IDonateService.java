@@ -16,4 +16,8 @@ public interface IDonateService {
     JsonObject deleteDonateBySenderId(long userId);
 
     JsonObject statisticTotalDonate();
+
+    JsonObject listDonateOfUser(long userId, long page, long recordPerPage);
+
+    JsonObject listGamerFavorites(long userId, long page, long recordPerPage);
 }

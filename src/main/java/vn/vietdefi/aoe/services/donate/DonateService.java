@@ -99,7 +99,6 @@ public class DonateService implements IDonateService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
-
     @Override
     public JsonObject getDonateById(long id) {
         try {
@@ -119,15 +118,54 @@ public class DonateService implements IDonateService {
     @Override
     public JsonObject listDonateByTargetId(int service, long targetId, long page, long recordPerPage) {
         try {
+            JsonObject target = getTargetById(service, targetId);
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
             String query = "SELECT * FROM aoe_donate WHERE target_id = ? AND service = ? ORDER BY id DESC LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, targetId, service, recordPerPage, offset);
-            return BaseResponse.createFullMessageResponse(0, "success", data);
+            JsonObject result = new JsonObject();
+            result.add("donate", data);
+            result.add("target", target);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
+    }
+
+    private JsonObject getTargetById(int service, long targetId) {
+        switch (service) {
+            case StarConstant.SERVICE_DONATE_GAMER:
+                JsonObject gamerResponse = AoeServices.gamerService.getPartialGamer(targetId);
+                if (BaseResponse.isSuccessFullMessage(gamerResponse)) {
+                    return gamerResponse.getAsJsonObject("data");
+                }
+                break;
+            case StarConstant.SERVICE_DONATE_CASTER:
+                JsonObject casterResponse = AoeServices.casterService.getPartialCaster(targetId);
+                if (BaseResponse.isSuccessFullMessage(casterResponse)) {
+                    return casterResponse.getAsJsonObject("data");
+                }
+                break;
+            case StarConstant.SERVICE_DONATE_MATCH:
+                JsonObject matchResponse = AoeServices.matchService.getById(targetId);
+                if (BaseResponse.isSuccessFullMessage(matchResponse)) {
+                    return matchResponse.getAsJsonObject("data");
+                }
+                break;
+            case StarConstant.SERVICE_SUGGEST_MATCH:
+                JsonObject matchSuggestResponse = AoeServices.suggestService.getMatchSuggest(targetId);
+                if (BaseResponse.isSuccessFullMessage(matchSuggestResponse)) {
+                    return matchSuggestResponse.getAsJsonObject("data");
+                }
+                break;
+            case StarConstant.SERVICE_DONATE_LEAGUE:
+                //TODO
+                break;
+            default:
+                return BaseResponse.createFullMessageResponse(11, "invalid_service");
+        }
+        return BaseResponse.createFullMessageResponse(10, "target_not_found");
     }
 
     @Override
@@ -234,6 +272,56 @@ public class DonateService implements IDonateService {
                 }
             }
             return BaseResponse.createFullMessageResponse(0, "success", response);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject listDonateOfUser(long userId, long page, long recordPerPage) {
+        try {
+            JsonObject response = AoeServices.profileService.getUserProfileByUserId(userId);
+            if (!BaseResponse.isSuccessFullMessage(response)) {
+                return response;
+            }
+            long offset = (page - 1) * recordPerPage;
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM aoe_donate WHERE user_id = ? AND service IN (?,?) LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, userId, StarConstant.SERVICE_DONATE_GAMER, StarConstant.SERVICE_DONATE_CASTER, recordPerPage, offset);
+            for (JsonElement element : data) {
+                int service = element.getAsJsonObject().get("service").getAsInt();
+                long targetId = element.getAsJsonObject().get("target_id").getAsLong();
+                JsonObject target = getTargetById(service, targetId);
+                element.getAsJsonObject().add("target", target);
+            }
+            JsonObject result = new JsonObject();
+            result.add("profile", response.getAsJsonObject("data"));
+            result.add("donate", data);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject listGamerFavorites(long userId, long page, long recordPerPage) {
+        try {
+            long offset = (page - 1) * recordPerPage;
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT target_id FROM aoe_donate WHERE user_id = ? AND service = ? LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, userId, StarConstant.SERVICE_DONATE_GAMER, recordPerPage, offset);
+            JsonArray gamers = new JsonArray();
+            for (JsonElement element : data) {
+                long targetId = element.getAsJsonObject().get("target_id").getAsLong();
+                JsonObject target = getTargetById(StarConstant.SERVICE_DONATE_GAMER, targetId);
+                gamers.add(target);
+                element.getAsJsonObject().add("target", target);
+            }
+            JsonObject result = new JsonObject();
+            result.add("gamer", gamers);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");

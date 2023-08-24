@@ -7,7 +7,7 @@ public interface IMatchService {
     JsonObject createMatch(JsonObject data);
     JsonObject updateMatch(JsonObject data);
     JsonObject getListMatch(int state , long page, long recordPerPage);
-    JsonObject getById(long match_id);
+    JsonObject getById(long matchId);
     JsonObject updateResult(JsonObject json);
     boolean checkMatchExists(long matchId);
     JsonObject getOutstandingMatch();

@@ -121,11 +121,11 @@ public class MatchService implements IMatchService {
     }
 
     @Override
-    public JsonObject getById(long match_id) {
+    public JsonObject getById(long matchId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM aoe_match WHERE id = ?";
-            JsonObject data = bridge.queryOne(query, match_id);
+            JsonObject data = bridge.queryOne(query, matchId);
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "match_not_found");
             }
