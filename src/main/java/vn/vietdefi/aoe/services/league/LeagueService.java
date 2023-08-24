@@ -44,7 +44,7 @@ public class LeagueService implements ILeagueService{
             String query = "SELECT * FROM aoe_league WHERE id = ?";
             JsonObject data = bridge.queryOne(query, id);
             if (data == null)
-                BaseResponse.createFullMessageResponse(10, "league_not_found");
+                return BaseResponse.createFullMessageResponse(10, "league_not_found");
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));

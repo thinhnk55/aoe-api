@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS aoe_league  (
      star_default_offline INT NOT NULL default 0,
      time_expired BIGINT,
      start_date BIGINT DEFAULT 0;
-     detail VARCHAR(4096) NOT NULL DEFAULT '{}',        #{"description":"32432","percent_for_gamer":"100%","percent_for_viewer":"100%","percent_for_organizers":"34%","result":[], "league_date": 1692766232671}
+     detail VARCHAR(4096) NOT NULL DEFAULT '{}',        #{"description":"32432","percent_for_gamer":"100%","percent_for_viewer":"100%","percent_for_organizers":"34%","result":[]}
      donate_benefit VARCHAR(4096) NOT NULL,
      state INT,
      create_time BIGINT NOT NULL

@@ -106,7 +106,7 @@ public class LeagueTest {
         }
 
         public JsonObject getLeagueInfo(JsonObject user ,long leagueId) {
-            StringBuilder url = new StringBuilder(baseUrl).append("/league/get").append("?id=").append(leagueId);
+            StringBuilder url = new StringBuilder(baseUrl).append("/league/get").append("?id=").append(20);
             DebugLogger.info("{}", url);
             JsonObject response = OkHttpUtil.get(url.toString(), Common.createHeader(user));
             DebugLogger.info("{}", response);
