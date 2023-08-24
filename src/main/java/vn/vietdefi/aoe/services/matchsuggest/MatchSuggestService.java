@@ -97,6 +97,7 @@ public class MatchSuggestService implements IMatchSuggestService{
         }
     }
 
+
     public JsonObject getListMatchSuggested(long page, long recordPerPage, int state) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
