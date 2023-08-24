@@ -43,7 +43,7 @@ public class EventAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(EventRouter::updateStateEvent);
-        router.get(ApiConfig.instance().getPath("/event/list/winning"))
+        router.get(ApiConfig.instance().getPath("/event/list-winning"))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(EventRouter::getListWinning);
         router.post(ApiConfig.instance().getPath("/event/cancel"))
