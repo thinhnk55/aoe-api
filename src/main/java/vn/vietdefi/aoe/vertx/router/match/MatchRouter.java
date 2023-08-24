@@ -45,7 +45,7 @@ public class MatchRouter {
 
     public static void getById(RoutingContext rc){
         try {
-            long id =  Long.parseLong(rc.request().getParam("matchId"));
+            long id =  Long.parseLong(rc.request().getParam("match_id"));
             JsonObject response = AoeServices.matchService.getById(id);
             rc.response().end(response.toString());
         } catch (Exception e) {

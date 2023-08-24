@@ -18,11 +18,11 @@ public class MatchAPI {
     public static void userAuthApi(Router router) {
         router.get(ApiConfig
                         .instance()
-                        .getPath("/match/info"))
+                        .getPath("/match/get"))
                 .handler(MatchRouter::getById);
         router.get(ApiConfig
                         .instance()
-                        .getPath("/match/getlist/state"))
+                        .getPath("/match/list/state"))
                 .handler(MatchRouter::getListMatch);
         router.get(ApiConfig
                         .instance()
@@ -35,7 +35,7 @@ public class MatchAPI {
     public static void adminAuthApi(Router router) {
         router.post(ApiConfig
                         .instance()
-                        .getPath("/admin/match/create"))
+                        .getPath("/match/create"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(MatchRouter::create);
@@ -47,7 +47,7 @@ public class MatchAPI {
                 .handler(MatchRouter::update);
         router.post(ApiConfig
                         .instance()
-                        .getPath("/match/voting/stop"))
+                        .getPath("/match/stop/vote"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
                 .handler(MatchRouter::StopVotingMatch);
@@ -82,7 +82,7 @@ public class MatchAPI {
     public static void systemAdminAuthApi(Router router) {
         router.post(ApiConfig
                         .instance()
-                        .getPath("/admin/match/delete"))
+                        .getPath("/match/delete"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSystemAdmin)
                 .handler(MatchRouter::deleteMatch);

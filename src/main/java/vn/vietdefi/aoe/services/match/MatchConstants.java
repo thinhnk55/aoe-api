@@ -16,7 +16,7 @@ public class MatchConstants {
 
 
     public static final int FORMAT_1VS1 = 1;
-    public static final int FORMAT_2VS3 = 2;
+    public static final int FORMAT_2VS2 = 2;
     public static final int FORMAT_3VS3 = 3;
     public static final int FORMAT_4VS4 = 4;
     public static final int FORMAT_FREE = 5;

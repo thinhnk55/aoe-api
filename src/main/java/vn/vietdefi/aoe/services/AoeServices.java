@@ -12,6 +12,8 @@ import vn.vietdefi.aoe.services.profile.IProfileService;
 import vn.vietdefi.aoe.services.profile.ProfileService;
 import vn.vietdefi.aoe.services.donate.DonateService;
 import vn.vietdefi.aoe.services.donate.IDonateService;
+import vn.vietdefi.aoe.services.user.IUserService;
+import vn.vietdefi.aoe.services.user.UserService;
 import vn.vietdefi.aoe.services.user.caster.CasterService;
 import vn.vietdefi.aoe.services.user.caster.ICasterService;
 import vn.vietdefi.aoe.services.user.gamer.GamerService;
@@ -30,7 +32,10 @@ public class AoeServices {
     public static IStarService starService = new StarService();
     public static IAoeAuthService aoeAuthService = new AoeAuthService();
     public static IProfileService profileService = new ProfileService();
+
     public static IDonateService donateService = new DonateService();
     public static IEventService eventService = new EventService();
+    public static IUserService userService = new UserService();
+
 
 }

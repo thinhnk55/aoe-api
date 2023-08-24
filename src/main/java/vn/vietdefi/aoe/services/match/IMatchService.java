@@ -1,5 +1,6 @@
 package vn.vietdefi.aoe.services.match;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public interface IMatchService {
@@ -24,4 +25,6 @@ public interface IMatchService {
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
     JsonObject deleteMatch(long matchId);
+
+    JsonElement statistic();
 }

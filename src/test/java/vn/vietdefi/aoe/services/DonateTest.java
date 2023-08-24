@@ -30,7 +30,7 @@ public class DonateTest {
         }
         @Test
         public void test0(){
-            JsonObject response = AoeServices.casterService.casterUpdateStatistic(5);
+            JsonObject response = AoeServices.donateService.statisticTotalDonate();
             DebugLogger.info("{}", response);
             response = AoeServices.donateService.listDonateByTargetId(StarConstant.SERVICE_DONATE_GAMER,135,1,15);
             DebugLogger.info("{}", response);
