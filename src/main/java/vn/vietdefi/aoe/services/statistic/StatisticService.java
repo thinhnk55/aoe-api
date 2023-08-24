@@ -13,11 +13,13 @@ public class StatisticService implements IStatisticService {
     @Override
     public JsonObject updateStatistic() {
         try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject response = new JsonObject();
-            response.add("donate",AoeServices.donateService.statisticTotalDonate().get("data"));
-            response.add("user",AoeServices.userService.statistic().getAsJsonObject().get("data"));
-            response.add("match",AoeServices.matchService.statistic().getAsJsonObject().get("data"));
+            JsonObject response = AoeServices.donateService.statisticTotalDonate().getAsJsonObject("data");
+            JsonObject user = AoeServices.userService.statistic().getAsJsonObject("data");
+            JsonObject match = AoeServices.matchService.statistic().getAsJsonObject("data");
+            response.add("total_registered_user",user.get("total_registered_user"));
+            response.add("total_new_user_this_week",user.get("total_new_user_this_week"));
+            response.add("total_match_complete",match.get("total_match_complete"));
+            response.add("total_league_complete",AoeServices.leagueService.totalLeagueComplete().get("data").getAsJsonObject().get("total_league_complete"));
             DebugLogger.info("{}", response);
             return BaseResponse.createFullMessageResponse(0, "success",response);
         } catch (Exception e) {

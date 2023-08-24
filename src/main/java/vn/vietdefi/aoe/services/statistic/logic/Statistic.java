@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import static vn.vietdefi.aoe.services.statistic.logic.StatisticConstant.*;
 
 public class Statistic {
-    public long totalUserRegister;
+    public long totalRegisterUser;
     public long totalNewUsersThisWeek;
 
     public long totalUserDonate;
@@ -19,7 +19,7 @@ public class Statistic {
     public long totalLeagueComplete;
 
     public Statistic(JsonObject data) {
-        this.totalUserRegister = data.get("total_user_register").getAsLong();
+        this.totalRegisterUser = data.get("total_registered_user").getAsLong();
         this.totalNewUsersThisWeek = data.get("total_new_user_this_week").getAsLong();
         this.totalUserDonate = data.get("total_user_donate").getAsLong();
         this.totalStarDonate = data.get("total_star_donate").getAsLong();
@@ -31,12 +31,12 @@ public class Statistic {
         this.totalLeagueComplete = data.get("total_league_complete").getAsLong();
     }
 
-    public void updateUserRegistrationCount(int newUserCount) {
-        this.totalUserRegister += newUserCount;
+    public void updateUserRegistrationCount() {
+        this.totalRegisterUser ++;
     }
 
-    public void updateNewUsersThisWeek(int newUsersCount) {
-        this.totalNewUsersThisWeek += newUsersCount;
+    public void updateNewUsersThisWeek() {
+        this.totalNewUsersThisWeek ++;
 
     }
 
@@ -45,17 +45,15 @@ public class Statistic {
 
     }
 
-    public void updateTournamentStats(int tournaments) {
-        this.totalStarDonateForLeague += tournaments;
-
+    public void updateTournamentStats() {
+        this.totalStarDonateForLeague ++;
     }
 
-    public void updateMatchStats(int championships) {
-        this.totalStarDonateForMatch += championships;
-
+    public void updateMatchStats() {
+        this.totalStarDonateForMatch ++;
     }
 
-    public void updateStarsDonatedToEntities(int entity, int stars) {
+    public void updateStarsDonatedToEntities(int entity, long stars) {
         switch (entity) {
             case ENTITY_GAMER:
                 this.totalStarDonateForGamer += stars;

@@ -152,8 +152,8 @@ public class Common {
     }
 
     public static JsonObject getMatchById(String baseUrl, JsonObject data, long matchId) {
-        String getMatchByIdURL = new StringBuilder(baseUrl).append("/match/info")
-                .append("?matchId=").append(matchId).toString();
+        String getMatchByIdURL = new StringBuilder(baseUrl).append("/match/get")
+                .append("?match_id=").append(matchId).toString();
         JsonObject response = OkHttpUtil.get(getMatchByIdURL);
         Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         return response;

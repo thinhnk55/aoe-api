@@ -26,5 +26,5 @@ public interface IMatchService {
     /*These function user for TEST only. In real situation these actions is prohibited*/
     JsonObject deleteMatch(long matchId);
 
-    JsonElement statistic();
+    JsonObject statistic();
 }

@@ -3,6 +3,7 @@ package vn.vietdefi.aoe.services.league;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import vn.vietdefi.aoe.services.match.MatchConstants;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -135,6 +136,20 @@ public class LeagueService implements ILeagueService{
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject totalLeagueComplete() {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT COUNT(*) AS total_league_complete FROM aoe_league WHERE state = ?";
+            JsonObject result = bridge.queryOne(query,LeagueConstants.STATE_FINISHED);
+            return BaseResponse.createFullMessageResponse(0, "success",result);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }

@@ -384,10 +384,10 @@ public class MatchService implements IMatchService {
     }
 
     @Override
-    public JsonElement statistic() {
+    public JsonObject statistic() {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT COUNT(*) FROM aoe_match WHERE state = ?";
+            String query = "SELECT COUNT(*) AS total_match_complete FROM aoe_match WHERE state = ?";
             JsonObject result = bridge.queryOne(query,MatchConstants.STATE_FINISHED);
             return BaseResponse.createFullMessageResponse(0, "success",result);
         } catch (Exception e) {

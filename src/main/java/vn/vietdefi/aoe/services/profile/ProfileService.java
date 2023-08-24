@@ -3,6 +3,8 @@ package vn.vietdefi.aoe.services.profile;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import vn.vietdefi.aoe.services.statistic.logic.Statistic;
+import vn.vietdefi.aoe.services.statistic.logic.StatisticController;
 import vn.vietdefi.api.services.ApiServices;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
@@ -31,6 +33,7 @@ public class ProfileService implements IProfileService {
                 data.addProperty("lang", ProfileConstant.LANG_UNDEFINED);
                 String query = "INSERT INTO aoe_profile(user_id, username, nick_name) VALUES(?,?,?)";
                 bridge.update(query, userId, username, nickName);
+                StatisticController.instance().userRegistered();
                 return BaseResponse.createFullMessageResponse(0, "success", data);
             }
         } catch (Exception e) {
