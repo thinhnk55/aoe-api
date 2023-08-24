@@ -6,6 +6,8 @@ import vn.vietdefi.aoe.services.clan.ClanService;
 import vn.vietdefi.aoe.services.clan.IClanService;
 import vn.vietdefi.aoe.services.event.EventService;
 import vn.vietdefi.aoe.services.event.IEventService;
+import vn.vietdefi.aoe.services.league.ILeagueService;
+import vn.vietdefi.aoe.services.league.LeagueService;
 import vn.vietdefi.aoe.services.matchsuggest.IMatchSuggestService;
 import vn.vietdefi.aoe.services.matchsuggest.MatchSuggestService;
 import vn.vietdefi.aoe.services.profile.IProfileService;
@@ -35,7 +37,11 @@ public class AoeServices {
 
     public static IDonateService donateService = new DonateService();
     public static IEventService eventService = new EventService();
+<<<<<<< Updated upstream
     public static IUserService userService = new UserService();
 
+=======
+    public static ILeagueService leagueService = new LeagueService();
+>>>>>>> Stashed changes
 
 }

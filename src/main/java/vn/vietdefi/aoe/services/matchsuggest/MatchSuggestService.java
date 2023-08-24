@@ -4,8 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.donate.DonateConstants;
-import vn.vietdefi.aoe.services.match.MatchConstants;
 import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
@@ -114,7 +112,7 @@ public class MatchSuggestService implements IMatchSuggestService{
             bridge.update(query, MatchSuggestConstant.MATCH_SUGGEST_CANCELLED, matchId);
             long suggester = data.get("suggester_id").getAsLong();
             long star = data.get("amount").getAsLong();
-            response = AoeServices.starService.exchangeStar(suggester, StarConstant.SERVICE_REFUND_SUGGEST
+            response = AoeServices.starService.exchangeStar(suggester, StarConstant.SERVICE_SUGGEST_MATCH_REFUND
                     ,star,matchId);
             if(!BaseResponse.isSuccessFullMessage(response)){
                 DebugLogger.error("star_refund_error: {} {} {} {}", suggester, star, matchId, response);
@@ -143,7 +141,7 @@ public class MatchSuggestService implements IMatchSuggestService{
                 return BaseResponse.createFullMessageResponse(12, "balance_not_enough");
             }
             response = AoeServices.starService.exchangeStar(suggester,
-                    StarConstant.SERVICE_REFUND_SUGGEST
+                    StarConstant.SERVICE_SUGGEST_MATCH_REFUND
                     ,star, 0);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(13, "refund_suggest_error");
@@ -153,11 +151,9 @@ public class MatchSuggestService implements IMatchSuggestService{
             match.addProperty("format", info.get("format").getAsInt());
             match.addProperty("type", info.get("type").getAsInt());
             match.addProperty("star_default", info.get("star_default").getAsLong());
-            match.add("detail", suggest.get("detail").getAsJsonObject());
+            match.add("detail", info.get("detail").getAsJsonObject());
             match.addProperty("time_expired", info.get("time_expired").getAsLong());
-            match.addProperty("state", MatchConstants.STATE_VOTING);
-            match.addProperty("create_time", System.currentTimeMillis());
-            match.add("team_player", suggest.get("team_player").getAsJsonArray());
+            match.add("team_player", info.get("team_player").getAsJsonArray());
             response = AoeServices.matchService.createMatch(match);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;

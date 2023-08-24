@@ -121,7 +121,10 @@ public class MatchSuggestTest {
             payload.addProperty("format", 1);
             payload.addProperty("type", 1);
             payload.addProperty("star_default", 1000);
+            payload.add("detail", new JsonObject());
             payload.addProperty("time_expired", System.currentTimeMillis() + 6220800000L);
+            payload.add("team_player", new JsonArray());
+
             String confirmMatchURL = new StringBuilder(baseUrl).append("/match/suggest/confirm").toString();
             DebugLogger.info("{}", confirmMatchURL);
             JsonObject response = OkHttpUtil.postJson(confirmMatchURL, payload.toString(), Common.createHeaderAdmin());

@@ -18,7 +18,7 @@ public class Common {
     public static String support_token = "jv17348v1vxy8k11p87l1tjupd2a4l03";
 
     public static long admin_id = 4;
-    public static String admin_token = "0wmv1eiy8yjvp1tc9mjtovj623as7jmu";
+    public static String admin_token = "jv17348v1vxy8k11p87l1tjupd2a4l03";
 
     public static long super_admin_id = 1;
     public static String super_admin_token = "2gbpnlvqtidiifohxnqb1thw1un969uq";

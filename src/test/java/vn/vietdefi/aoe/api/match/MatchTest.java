@@ -31,7 +31,7 @@ public class MatchTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.250.1:8000/aoe";
+            baseUrl = "http://192.168.1.19:8000/aoe";
             username = "0352555556";
             password = "12344321";
         }
@@ -58,9 +58,6 @@ public class MatchTest {
             payload.addProperty("star_default", 1000);
             payload.add("detail", new JsonObject());
             payload.addProperty("time_expired", System.currentTimeMillis() + 6220800000L);
-            payload.addProperty("suggester_id", 45);
-            payload.addProperty("state", MatchConstants.STATE_VOTING);
-            payload.addProperty("create_time", System.currentTimeMillis());
             payload.add("team_player", new JsonArray());
 
             String createMatchURL = new StringBuilder(baseUrl).append("/admin/match/create").toString();
