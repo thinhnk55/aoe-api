@@ -68,6 +68,24 @@ public class  DonateRouter {
             rc.response().end(response.toString());
         }
     }
+    public static void donateLeague(RoutingContext rc) {
+        try {
+            long userId = Long.parseLong(rc.request().getHeader("userid"));
+            String request = rc.body().asString();
+            JsonObject data = GsonUtil.toJsonObject(request);
+            long targetId = data.get("targetId").getAsLong();
+            long star = data.get("star").getAsLong();
+            String message = data.get("message").getAsString();
+            JsonObject response = AoeServices.donateService.donate(userId, star, StarConstant.SERVICE_DONATE_LEAGUE, targetId, message);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
 
     public static void listDonate(RoutingContext rc) {
         try {

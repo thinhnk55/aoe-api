@@ -28,6 +28,10 @@ public class DonateAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::donateMatch);
+        router.post(ApiConfig.instance().getPath("/donate/league"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeUser)
+                .handler(DonateRouter::donateLeague);
         router.get(ApiConfig.instance().getPath("/donate/list"))
                 .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::listDonate);

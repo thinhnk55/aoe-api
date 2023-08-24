@@ -7,7 +7,7 @@ public interface ILeagueService {
     JsonObject updateLeague(JsonObject data);
     JsonObject getLeagueInfo(long id);
     JsonObject getListLeagueByState(int state, int page, int recordPerPage);
-    JsonObject pendLeague(JsonObject data);
+    JsonObject stopVoteLeague(JsonObject data);
     JsonObject startLeague(long id);
     JsonObject endLeague(JsonObject data);
     JsonObject cancelLeague(long id);

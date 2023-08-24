@@ -37,11 +37,8 @@ public class AoeServices {
 
     public static IDonateService donateService = new DonateService();
     public static IEventService eventService = new EventService();
-<<<<<<< Updated upstream
     public static IUserService userService = new UserService();
 
-=======
     public static ILeagueService leagueService = new LeagueService();
->>>>>>> Stashed changes
 
 }

@@ -69,16 +69,16 @@ public class LeagueService implements ILeagueService{
     }
 
     @Override
-    public JsonObject pendLeague(JsonObject data) {
+    public JsonObject stopVoteLeague(JsonObject data) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long leagueId = data.get("id").getAsLong();
-            JsonObject checkState = checkState(leagueId, LeagueConstants.STATE_PENDING);
+            JsonObject checkState = checkState(leagueId, LeagueConstants.STATE_STOP_VOTING);
             if (!BaseResponse.isSuccessFullMessage(checkState))
                 return checkState;
             long startDate = data.get("start_date").getAsLong();
             String query = "UPDATE aoe_league SET start_date = ?, state = ? WHERE id = ?";
-            bridge.update(query, startDate, LeagueConstants.STATE_PENDING, leagueId);
+            bridge.update(query, startDate, LeagueConstants.STATE_STOP_VOTING, leagueId);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
