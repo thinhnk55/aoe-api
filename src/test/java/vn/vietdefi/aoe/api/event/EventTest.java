@@ -114,6 +114,13 @@ public class EventTest {
             JsonArray event = response.getAsJsonObject("data").getAsJsonArray("event");
             Assertions.assertTrue(event.size() > 0);
         }
+        public void listWinning(long eventId){
+            String listUrl = new StringBuilder(baseUrl)
+                    .append("/event/list-winning?event_id=")
+                    .append(eventId).append("&lucky_number=1231")
+                    .append("&limit=1").toString();
+
+        }
         public void updateState(long eventId){
             JsonObject data = new JsonObject();
             data.addProperty("event_id", eventId);

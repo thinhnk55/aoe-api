@@ -273,7 +273,9 @@ public class EventService implements IEventService {
                             .append("ORDER BY ABS(? - lucky_number), create_time\n")
                             .append("LIMIT ?").toString();
             JsonArray data = bridge.query(query, luckyNumber, eventId, EventConstants.QUEUED_PARTICIPANT, luckyNumber, limit);
-            return BaseResponse.createFullMessageResponse(0, "success", data);
+            JsonObject result = new JsonObject();
+            result.add("listWinning", result);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
