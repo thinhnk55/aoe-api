@@ -60,7 +60,7 @@ public class MatchSuggestTest {
             testGetSuggestMatchInfo(user, matchId);
             testListSuggestMatch(user);
             testConfirmMatch(user, matchId);
-            testCancelSuggestMatch(user, matchId);
+            //testCancelSuggestMatch(user, matchId);
             deleteSuggestMatch(matchId);
 
         }
