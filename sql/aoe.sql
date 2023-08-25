@@ -61,6 +61,24 @@ CREATE TABLE IF NOT EXISTS aoe_clan
 CREATE TABLE IF NOT EXISTS aoe_data
 (
     name VARCHAR(256) UNIQUE NOT NULL,
-    data JSON NOT NULL,
+    data JSON NOT NULL
+);
+CREATE TABLE IF NOT EXISTS aoe_donor (
+    user_id BIGINT PRIMARY KEY NOT NULL,
+    logo VARCHAR(2048) NOT NULL,
+    full_name varchar(64) NOT NULL,
+    total_donated BIGINT NOT NULL DEFAULT 0,
+    detail TEXT NOT NULL DEFAULT '{}',
+    phone VARCHAR(32) NOT NULL,
+    state INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS aoe_impresario (
+    user_id BIGINT PRIMARY KEY NOT NULL,
+    avatar VARCHAR(2048) DEFAULT NULL,
+    full_name VARCHAR(64) NOT NULL,
+    phone VARCHAR(32) NOT NULL,
+    detail TEXT NOT NULL DEFAULT '{}',
+    state INT NOT NULL DEFAULT 0
 );
 
