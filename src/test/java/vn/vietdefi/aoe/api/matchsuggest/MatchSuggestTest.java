@@ -31,7 +31,7 @@ public class MatchSuggestTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.250.1:8000/aoe";
+            baseUrl = "http://127.0.0.1:8000/aoe";
             username = "0352555556";
             password = "12344321";
             star = 100000;

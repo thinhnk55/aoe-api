@@ -1,4 +1,5 @@
 CREATE TABLE IF NOT EXISTS aoe_statistic
 (
-    statistic Json
+    name varchar(255) NOT NULL,
+    data Json
 );
