@@ -50,6 +50,12 @@ public class ImpresarioService implements IImpresarioService{
     public JsonObject updateImpresario(JsonObject data) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long userId = data.get("user_id").getAsLong();
+            String phone = data.get("phone").getAsString();
+            String query = "SELECT * FROM aoe_impresario WHERE phone = ? AND user_id != ?";
+            JsonObject imp = bridge.queryOne(query, phone, userId);
+            if (imp != null)
+                return BaseResponse.createFullMessageResponse(13, "phone_number_exist");
             bridge.updateObjectToDb("aoe_impresario", "user_id", data);
             return BaseResponse.createFullMessageResponse(0,"success");
         }catch (Exception e) {

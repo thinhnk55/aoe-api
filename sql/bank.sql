@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS bank_timo_account
 CREATE TABLE IF NOT EXISTS bank_account
 (
     id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    bank_code INT NOT NULL DEFAULT 0,
-    account_number VARCHAR(32),
+    bank_code INT UNIQUE NOT NULL DEFAULT 0,
+    account_number VARCHAR(32) UNIQUE,
     account_owner VARCHAR(256),
     state INT NOT NULL DEFAULT 0,
     bank_detail_id BIGINT NOT NULL DEFAULT 0
@@ -39,4 +39,3 @@ CREATE TABLE IF NOT EXISTS bank_transaction
     target_id   INT       DEFAULT 0  NOT NULL
 );
 CREATE INDEX bank_transaction_create_time_index ON bank_transaction (create_time);
-
