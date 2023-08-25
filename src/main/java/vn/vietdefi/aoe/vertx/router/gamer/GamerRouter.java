@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.aoe.services.user.gamer.GamerConstant;
 import vn.vietdefi.api.services.ApiServices;
 import vn.vietdefi.common.BaseResponse;
@@ -91,6 +90,20 @@ public class GamerRouter {
             long page = Long.parseLong(rc.request().getParam("page", "1"));
             long clanId = Long.parseLong(rc.request().getParam("clan_id"));
             JsonObject response = AoeServices.gamerService.listGamerByClanId(clanId, page, GamerConstant.DEFAULT_RECORD_PER_PAGE);
+            rc.response().end(response.toString());
+        }
+        catch (Exception e){
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1,"system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void getGamerByName(RoutingContext rc) {
+        try{
+            String name = rc.request().getParam("name");
+            JsonObject response = AoeServices.gamerService.getGamerByNickName(name);
             rc.response().end(response.toString());
         }
         catch (Exception e){
