@@ -32,7 +32,7 @@ public class MatchSuggestTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://127.0.0.1:8000/aoe";
+            baseUrl = "http://192.168.250.1:8000/aoe";
             username = "0352555556";
             password = "12344321";
             star = 100000;
@@ -106,11 +106,11 @@ public class MatchSuggestTest {
         public void testAdminListSuggestMatch() {
             String listSuggestMatchURL = new StringBuilder(baseUrl).append("/match/suggest/list?state=").append(MatchSuggestConstant.MATCH_SUGGEST_PENDING).toString();
             DebugLogger.info("{}", listSuggestMatchURL);
-            JsonObject response = OkHttpUtil.get(listSuggestMatchURL, Common.createHeaderSystemAdmin());
+            JsonObject response = OkHttpUtil.get(listSuggestMatchURL, Common.createHeaderAdmin());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             JsonArray listSuggestMatch = response.getAsJsonObject("data").get("match").getAsJsonArray();
-            Assertions.assertTrue(listSuggestMatch.isEmpty());
+            Assertions.assertFalse(listSuggestMatch.isEmpty());
         }
 
         public JsonObject testGetSuggestMatchInfo(JsonObject user, long matchId) {
@@ -134,7 +134,15 @@ public class MatchSuggestTest {
             payload.addProperty("star_default", 1000);
             payload.add("detail", new JsonObject());
             payload.addProperty("time_expired", System.currentTimeMillis() + 6220800000L);
-            payload.add("team_player", new JsonArray());
+            JsonObject player1 = new JsonObject();
+            player1.addProperty("user_id", 4);
+            player1.addProperty("team", 1);
+            player1.addProperty("nick_name", "A");
+            player1.addProperty("avatar", "A");
+            JsonArray teamPlayer = new JsonArray();
+            teamPlayer.add(player1);
+            teamPlayer.add(player1);
+            payload.add("team_player",teamPlayer);
 
             String confirmMatchURL = new StringBuilder(baseUrl).append("/match/suggest/confirm").toString();
             DebugLogger.info("{}", confirmMatchURL);
