@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.donate.DonateConstants;
+import vn.vietdefi.aoe.services.donate.DonateConstant;
 import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
@@ -92,7 +92,7 @@ public class  DonateRouter {
             long targetId = Long.parseLong(rc.request().getParam("target_id"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
             int service = Integer.parseInt(rc.request().getParam("service"));
-            JsonObject response = AoeServices.donateService.listDonateByTargetId(service, targetId, page, DonateConstants.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.donateService.listDonateByTargetId(service, targetId, page, DonateConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -106,7 +106,7 @@ public class  DonateRouter {
         try {
             long targetId = Long.parseLong(rc.request().getParam("target_id"));
             long page = 1;
-            JsonObject response = AoeServices.donateService.listTopDonateByTargetId(targetId, page, DonateConstants.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.donateService.listTopDonateByTargetId(targetId, page, DonateConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -120,7 +120,7 @@ public class  DonateRouter {
     public static void listAllTopDonate(RoutingContext rc) {
         try {
             long page = 1;
-            JsonObject response = AoeServices.donateService.listAllTopDonate(page, DonateConstants.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.donateService.listAllTopDonate(page, DonateConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

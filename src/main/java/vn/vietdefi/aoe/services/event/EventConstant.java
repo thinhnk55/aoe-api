@@ -1,6 +1,6 @@
 package vn.vietdefi.aoe.services.event;
 
-public class EventConstants {
+public class EventConstant {
     public static final int EVENT_ON_GOING = 0;
     public static final int EVENT_LOCKED = 1;
     public static final int EVENT_DRAWING = 2;

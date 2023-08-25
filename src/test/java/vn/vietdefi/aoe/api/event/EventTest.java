@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
 import vn.vietdefi.aoe.api.Common;
-import vn.vietdefi.aoe.services.event.EventConstants;
+import vn.vietdefi.aoe.services.event.EventConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
@@ -137,7 +137,7 @@ public class EventTest {
         }
         public void listByState(){
             String createUrl = new StringBuilder(baseUrl)
-                    .append("/event/list-by-state?state=").append(EventConstants.EVENT_ON_GOING)
+                    .append("/event/list-by-state?state=").append(EventConstant.EVENT_ON_GOING)
                     .append("&page=1").toString();
             JsonObject response = OkHttpUtil.get(createUrl);
             DebugLogger.info("{}", response);
@@ -160,7 +160,7 @@ public class EventTest {
             JsonObject data = new JsonObject();
             data.addProperty("event_id", eventId);
             //Lock
-            data.addProperty("state", EventConstants.EVENT_LOCKED);
+            data.addProperty("state", EventConstant.EVENT_LOCKED);
             String updateUrl = new StringBuilder(baseUrl)
                     .append("/event/update-state")
                     .toString();
@@ -168,17 +168,17 @@ public class EventTest {
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             //On going
-            data.addProperty("state", EventConstants.EVENT_ON_GOING);
+            data.addProperty("state", EventConstant.EVENT_ON_GOING);
             response = OkHttpUtil.postJson(updateUrl, data.toString(), Common.createHeaderAdmin());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             //Drawing
-            data.addProperty("state", EventConstants.EVENT_DRAWING);
+            data.addProperty("state", EventConstant.EVENT_DRAWING);
             response = OkHttpUtil.postJson(updateUrl, data.toString(), Common.createHeaderAdmin());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             //Finish
-            data.addProperty("state", EventConstants.EVENT_FINISHED);
+            data.addProperty("state", EventConstant.EVENT_FINISHED);
             data.addProperty("winning_number", 1234);
             response = OkHttpUtil.postJson(updateUrl, data.toString(), Common.createHeaderAdmin());
             DebugLogger.info("{}", response);

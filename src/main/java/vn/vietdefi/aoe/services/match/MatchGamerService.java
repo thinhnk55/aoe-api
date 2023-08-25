@@ -97,7 +97,7 @@ public class MatchGamerService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT match_id FROM aoe_match_gamer WHERE user_id = ? AND state = ? ";
-            JsonArray data = bridge.query(query,gamer_id,MatchConstants.STATE_GAMER_MATCH_PENDING);
+            JsonArray data = bridge.query(query,gamer_id, MatchConstant.STATE_GAMER_MATCH_PENDING);
             return BaseResponse.createFullMessageResponse(0,"success",data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

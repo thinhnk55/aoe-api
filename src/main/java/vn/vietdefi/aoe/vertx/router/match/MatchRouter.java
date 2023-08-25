@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.match.MatchConstants;
+import vn.vietdefi.aoe.services.match.MatchConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
@@ -76,7 +76,7 @@ public class MatchRouter {
         try {
             int state =  Integer.parseInt(rc.request().getParam("state"));
             long page = Long.parseLong(rc.request().getParam("page"));
-            JsonObject response = AoeServices.matchService.getListMatch(state,page, MatchConstants.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.matchService.getListMatch(state,page, MatchConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -3,7 +3,6 @@ package vn.vietdefi.aoe.services.league;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import vn.vietdefi.aoe.services.match.MatchConstants;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -15,7 +14,7 @@ public class LeagueService implements ILeagueService{
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             data.addProperty("start_date", 0);
-            data.addProperty("state", LeagueConstants.STATE_VOTING);
+            data.addProperty("state", LeagueConstant.STATE_VOTING);
             data.addProperty("create_time", System.currentTimeMillis());
             bridge.insertObjectToDB("aoe_league", data);
             return BaseResponse.createFullMessageResponse(0, "success", data);
@@ -57,7 +56,7 @@ public class LeagueService implements ILeagueService{
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             StringBuilder query = new StringBuilder("SELECT * FROM aoe_league WHERE state = ? ");
-            if (state != LeagueConstants.STATE_CANCELLED) {
+            if (state != LeagueConstant.STATE_CANCELLED) {
                 query.append("ORDER BY (star_current - star_default_online) LIMIT ? OFFSET ?");
             } else {
                 query.append("ORDER BY id DESC LIMIT ? OFFSET ?");
@@ -77,12 +76,12 @@ public class LeagueService implements ILeagueService{
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long leagueId = data.get("id").getAsLong();
-            JsonObject checkState = checkState(leagueId, LeagueConstants.STATE_STOP_VOTING);
+            JsonObject checkState = checkState(leagueId, LeagueConstant.STATE_STOP_VOTING);
             if (!BaseResponse.isSuccessFullMessage(checkState))
                 return checkState;
             long startDate = data.get("start_date").getAsLong();
             String query = "UPDATE aoe_league SET start_date = ?, state = ? WHERE id = ?";
-            bridge.update(query, startDate, LeagueConstants.STATE_STOP_VOTING, leagueId);
+            bridge.update(query, startDate, LeagueConstant.STATE_STOP_VOTING, leagueId);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -94,11 +93,11 @@ public class LeagueService implements ILeagueService{
     public JsonObject startLeague(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject checkState = checkState(id, LeagueConstants.STATE_PLAYING);
+            JsonObject checkState = checkState(id, LeagueConstant.STATE_PLAYING);
             if (!BaseResponse.isSuccessFullMessage(checkState))
                 return checkState;
             String query = "UPDATE aoe_league SET state = ? WHERE id = ?";
-            bridge.update(query, LeagueConstants.STATE_PLAYING, id);
+            bridge.update(query, LeagueConstant.STATE_PLAYING, id);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -111,7 +110,7 @@ public class LeagueService implements ILeagueService{
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long leagueId = data.get("id").getAsLong();
-            JsonObject checkState = checkState(leagueId, LeagueConstants.STATE_FINISHED);
+            JsonObject checkState = checkState(leagueId, LeagueConstant.STATE_FINISHED);
             if (!BaseResponse.isSuccessFullMessage(checkState))
                 return checkState;
             JsonArray result = data.get("result").getAsJsonArray();
@@ -119,7 +118,7 @@ public class LeagueService implements ILeagueService{
             JsonObject detail = league.getAsJsonObject("data").get("detail").getAsJsonObject();
             detail.add("result", result);
             String query = "UPDATE aoe_league SET detail = ?, state = ? WHERE id = ?";
-            bridge.update(query, detail, LeagueConstants.STATE_FINISHED, leagueId);
+            bridge.update(query, detail, LeagueConstant.STATE_FINISHED, leagueId);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -132,10 +131,10 @@ public class LeagueService implements ILeagueService{
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject league = getLeagueInfo(id);
-            if (league.getAsJsonObject("data").get("state").getAsInt() > LeagueConstants.STATE_STOP_VOTING)
+            if (league.getAsJsonObject("data").get("state").getAsInt() > LeagueConstant.STATE_STOP_VOTING)
                 return BaseResponse.createFullMessageResponse(11, "update_reject");
             String query = "UPDATE aoe_league SET state = ? WHERE id = ?";
-            bridge.update(query, LeagueConstants.STATE_CANCELLED, id);
+            bridge.update(query, LeagueConstant.STATE_CANCELLED, id);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -148,7 +147,7 @@ public class LeagueService implements ILeagueService{
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT COUNT(*) AS total_league_complete FROM aoe_league WHERE state = ?";
-            JsonObject result = bridge.queryOne(query,LeagueConstants.STATE_FINISHED);
+            JsonObject result = bridge.queryOne(query, LeagueConstant.STATE_FINISHED);
             return BaseResponse.createFullMessageResponse(0, "success",result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

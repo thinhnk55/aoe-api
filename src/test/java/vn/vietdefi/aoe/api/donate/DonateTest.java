@@ -2,13 +2,10 @@ package vn.vietdefi.aoe.api.donate;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.vertx.core.json.Json;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
 import vn.vietdefi.aoe.api.Common;
-import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.match.MatchConstants;
-import vn.vietdefi.aoe.services.star.StarConstant;
+import vn.vietdefi.aoe.services.match.MatchConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
@@ -127,7 +124,7 @@ public class DonateTest {
             payload.add("detail", new JsonObject());
             payload.addProperty("time_expired", System.currentTimeMillis() + 6220800000L);
             payload.addProperty("suggester_id", user.get("id").getAsLong());
-            payload.addProperty("state", MatchConstants.STATE_VOTING);
+            payload.addProperty("state", MatchConstant.STATE_VOTING);
             payload.addProperty("create_time", System.currentTimeMillis());
             payload.add("team_player", new JsonArray());
 

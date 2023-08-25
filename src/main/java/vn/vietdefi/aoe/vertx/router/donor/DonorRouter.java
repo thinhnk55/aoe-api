@@ -3,17 +3,18 @@ package vn.vietdefi.aoe.vertx.router.donor;
 import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.user.donor.DonorConstant;
 import vn.vietdefi.common.BaseResponse;
-import vn.vietdefi.services.aoe.AoeServices;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 
 public class DonorRouter {
-    public static void create(RoutingContext rc){
+    public static void createDonor(RoutingContext rc) {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.DonorsService.createDonor(json);
+            JsonObject response = AoeServices.donorService.createDonor(json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -24,11 +25,11 @@ public class DonorRouter {
         }
     }
 
-    public static void update(RoutingContext rc) {
+    public static void updateDonor(RoutingContext rc) {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.DonorsService.updateDonor(json);
+            JsonObject response = AoeServices.donorService.updateDonor(json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -39,10 +40,10 @@ public class DonorRouter {
         }
     }
 
-    public static void getInfoDonors(RoutingContext rc) {
+    public static void getDonor(RoutingContext rc) {
         try {
             long id = Long.parseLong(rc.request().getParam("id"));
-            JsonObject response = AoeServices.DonorsService.getDonor(id);
+            JsonObject response = AoeServices.donorService.getDonorByUserId(id);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -53,11 +54,10 @@ public class DonorRouter {
         }
     }
 
-    public static void getListDonors(RoutingContext rc) {
+    public static void getListDonor(RoutingContext rc) {
         try {
-            String data = rc.body().asString();
-            JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.DonorsService.getDonors(json);
+            long page = Long.parseLong(rc.request().getParam("page", "1"));
+            JsonObject response = AoeServices.donorService.getListDonor(page, DonorConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -65,13 +65,15 @@ public class DonorRouter {
             JsonObject response = BaseResponse.createFullMessageResponse(
                     1, "system_error");
             rc.response().end(response.toString());
-    }
+        }
     }
 
-    public static void delete(RoutingContext rc) {
+    public static void deleteDonor(RoutingContext rc) {
         try {
-            long id = Long.parseLong(rc.request().getParam("id"));
-            JsonObject response = AoeServices.DonorsService.deleteDonor(id);
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long id = json.get("id").getAsLong();
+            JsonObject response = AoeServices.donorService.deleteDonorByUserId(id);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

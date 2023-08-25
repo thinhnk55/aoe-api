@@ -78,7 +78,7 @@ public class ImpresarioService implements IImpresarioService{
     public JsonObject getImpresario(long id) {
         try{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM impresario WHERE user_id = ?";
+            String query = "SELECT * FROM aoe_impresario WHERE user_id = ?";
             JsonObject data = bridge.queryOne(query, id);
             if (data == null)
                 return BaseResponse.createFullMessageResponse(10,"impresario_not_found");
@@ -96,7 +96,7 @@ public class ImpresarioService implements IImpresarioService{
         try{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT * FROM impresario LIMIT ? OFFSET ?";
+            String query = "SELECT * FROM aoe_impresario LIMIT ? OFFSET ?";
             JsonArray impresario = bridge.query(query, recordPerPage, offset);
             JsonObject data = new JsonObject();
             data.add("impresario", impresario);

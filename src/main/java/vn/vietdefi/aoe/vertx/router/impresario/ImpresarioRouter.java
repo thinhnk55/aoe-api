@@ -3,18 +3,19 @@ package vn.vietdefi.aoe.vertx.router.impresario;
 import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.user.impresario.ImpresarioConstant;
 import vn.vietdefi.common.BaseResponse;
-import vn.vietdefi.services.aoe.AoeServices;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 
 public class ImpresarioRouter {
 
-    public static void create(RoutingContext rc) {
+    public static void createImp(RoutingContext rc) {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.ImpresarioService.createImp(json);
+            JsonObject response = AoeServices.impresarioService.createImpresario(json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -25,12 +26,11 @@ public class ImpresarioRouter {
         }
     }
 
-    public static void update(RoutingContext rc) {
+    public static void updateImp(RoutingContext rc) {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            long userId = json.get("user_id").getAsLong();
-            JsonObject response = AoeServices.ImpresarioService.updateImp(json,userId);
+            JsonObject response = AoeServices.impresarioService.updateImpresario(json);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -44,7 +44,7 @@ public class ImpresarioRouter {
     public static void getImp(RoutingContext rc) {
         try {
             long id = Long.parseLong(rc.request().getParam("id"));
-            JsonObject response = AoeServices.ImpresarioService.getImp(id);
+            JsonObject response = AoeServices.impresarioService.getImpresario(id);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -57,9 +57,8 @@ public class ImpresarioRouter {
 
     public static void getListImp(RoutingContext rc) {
         try {
-            String data = rc.body().asString();
-            JsonObject json = GsonUtil.toJsonObject(data);
-            JsonObject response = AoeServices.ImpresarioService.getAllImp(json);
+            long page = Long.parseLong(rc.request().getParam("page","1"));
+            JsonObject response = AoeServices.impresarioService.getAllImpresario(page, ImpresarioConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -73,7 +72,7 @@ public class ImpresarioRouter {
     public static void delete(RoutingContext rc) {
         try {
             long id = Long.parseLong(rc.request().getParam("id"));
-            JsonObject response = AoeServices.ImpresarioService.deleteImp(id);
+            JsonObject response = AoeServices.impresarioService.deleteImpresario(id);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

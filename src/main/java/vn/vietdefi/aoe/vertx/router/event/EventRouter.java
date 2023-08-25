@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.event.EventConstants;
+import vn.vietdefi.aoe.services.event.EventConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
@@ -70,7 +70,7 @@ public class EventRouter {
         try {
             long eventId = Long.parseLong(rc.request().getParam("event_id"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.eventService.getListParticipants(eventId, page, EventConstants.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.eventService.getListParticipants(eventId, page, EventConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -84,7 +84,7 @@ public class EventRouter {
         try {
             int state = Integer.parseInt(rc.request().getParam("state"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.eventService.getListEventByState(state, page, EventConstants.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.eventService.getListEventByState(state, page, EventConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

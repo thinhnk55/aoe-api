@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.donate.DonateConstants;
 import vn.vietdefi.aoe.services.profile.ProfileConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;

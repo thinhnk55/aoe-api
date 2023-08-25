@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
 import vn.vietdefi.aoe.api.Common;
-import vn.vietdefi.aoe.services.league.LeagueConstants;
+import vn.vietdefi.aoe.services.league.LeagueConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
@@ -118,7 +118,7 @@ public class LeagueTest {
 
         public void getListLeague(JsonObject user) {
             StringBuilder url = new StringBuilder(baseUrl).append("/league/list").append("?state=")
-                    .append(LeagueConstants.STATE_VOTING).append("&page=").append(1);
+                    .append(LeagueConstant.STATE_VOTING).append("&page=").append(1);
             DebugLogger.info("{}", url);
             JsonObject response = OkHttpUtil.get(url.toString(), Common.createHeader(user));
             DebugLogger.info("{}", response);
@@ -140,7 +140,7 @@ public class LeagueTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             JsonObject league = getLeagueInfo(user, leagueId);
             Assertions.assertEquals(league.getAsJsonObject("data").get("state").getAsInt(),
-                    LeagueConstants.STATE_STOP_VOTING);
+                    LeagueConstant.STATE_STOP_VOTING);
         }
 
         public void startLeague(JsonObject user ,long leagueId) {
@@ -155,7 +155,7 @@ public class LeagueTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             JsonObject league = getLeagueInfo(user, leagueId);
             Assertions.assertEquals(league.getAsJsonObject("data").get("state").getAsInt(),
-                    LeagueConstants.STATE_PLAYING);
+                    LeagueConstant.STATE_PLAYING);
         }
 
         public void endLeague(JsonObject user ,long leagueId) {
@@ -171,7 +171,7 @@ public class LeagueTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             JsonObject league = getLeagueInfo(user, leagueId);
             Assertions.assertEquals(league.getAsJsonObject("data").get("state").getAsInt(),
-                    LeagueConstants.STATE_FINISHED);
+                    LeagueConstant.STATE_FINISHED);
         }
 
         public void cancelLeague(JsonObject user ,long leagueId) {
@@ -186,7 +186,7 @@ public class LeagueTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             JsonObject league = getLeagueInfo(user, leagueId);
             Assertions.assertEquals(league.getAsJsonObject("data").get("state").getAsInt(),
-                    LeagueConstants.STATE_CANCELLED);
+                    LeagueConstant.STATE_CANCELLED);
         }
 
         public void deleteLeague(long leagueId) {

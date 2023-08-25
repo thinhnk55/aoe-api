@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.league.LeagueConstants;
+import vn.vietdefi.aoe.services.league.LeagueConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
@@ -58,7 +58,7 @@ public class LeagueRouter {
         try {
             int state = Integer.parseInt(rc.request().getParam("state"));
             int page = Integer.parseInt(rc.request().getParam("page"));
-            JsonObject response = AoeServices.leagueService.getListLeagueByState(state, page, LeagueConstants.DEFAULT_RECORD_PER_PAGE);
+            JsonObject response = AoeServices.leagueService.getListLeagueByState(state, page, LeagueConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

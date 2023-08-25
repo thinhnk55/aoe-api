@@ -5,10 +5,8 @@ import com.google.gson.JsonObject;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
 import vn.vietdefi.aoe.api.Common;
-import vn.vietdefi.aoe.services.match.MatchConstants;
-import vn.vietdefi.aoe.services.profile.ProfileConstant;
+import vn.vietdefi.aoe.services.match.MatchConstant;
 import vn.vietdefi.common.BaseResponse;
-import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
 
@@ -99,7 +97,7 @@ public class MatchTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             JsonObject matchInfo = Common.getMatchById(baseUrl, user, matchId);
             Assertions.assertEquals(matchInfo.getAsJsonObject("data").get("state").getAsInt(),
-                    MatchConstants.STATE_STOP_VOTING);
+                    MatchConstant.STATE_STOP_VOTING);
 
             /*Test start match*/
             payload = new JsonObject();
@@ -112,7 +110,7 @@ public class MatchTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             matchInfo = Common.getMatchById(baseUrl, user, matchId);
             Assertions.assertEquals(matchInfo.getAsJsonObject("data").get("state").getAsInt(),
-                    MatchConstants.STATE_PLAYING);
+                    MatchConstant.STATE_PLAYING);
 
             /*Test end match*/
             payload = new JsonObject();
@@ -124,7 +122,7 @@ public class MatchTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             matchInfo = Common.getMatchById(baseUrl, user, matchId);
             Assertions.assertEquals(matchInfo.getAsJsonObject("data").get("state").getAsInt(),
-                    MatchConstants.STATE_FINISHED);
+                    MatchConstant.STATE_FINISHED);
 
             /*Test update result for match*/
             payload = new JsonObject();
@@ -148,10 +146,10 @@ public class MatchTest {
             Assertions.assertEquals(11, response.get("error").getAsInt());
             matchInfo = Common.getMatchById(baseUrl, user, matchId);
             Assertions.assertEquals(matchInfo.getAsJsonObject("data").get("state").getAsInt(),
-                    MatchConstants.STATE_FINISHED);
+                    MatchConstant.STATE_FINISHED);
 
             /*Test get list match*/
-            int state = MatchConstants.STATE_FINISHED;
+            int state = MatchConstant.STATE_FINISHED;
             int page = 1;
             String getListMatchURL = new StringBuilder(baseUrl).append("/match/list/state")
                     .append("?state=").append(state).append("&page=").append(page).toString();

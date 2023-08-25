@@ -39,7 +39,7 @@ public class EventService implements IEventService {
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             }
-            if (state != EventConstants.EVENT_FINISHED) {
+            if (state != EventConstant.EVENT_FINISHED) {
                 String query = "UPDATE aoe_event SET state = ? WHERE id = ?";
                 int row = bridge.update(query, state, eventId);
                 if (row == 0) {
@@ -48,7 +48,7 @@ public class EventService implements IEventService {
             } else {
                 int winningNumber = data.get("winning_number").getAsInt();
                 String query = "UPDATE aoe_event SET state = ?, winning_number = ? WHERE id = ? AND state = ?";
-                int row = bridge.update(query, state, winningNumber, eventId, EventConstants.EVENT_DRAWING);
+                int row = bridge.update(query, state, winningNumber, eventId, EventConstant.EVENT_DRAWING);
                 if (row == 0) {
                     return BaseResponse.createFullMessageResponse(12, "update_failure");
                 }
@@ -70,7 +70,7 @@ public class EventService implements IEventService {
                 return BaseResponse.createFullMessageResponse(10, "event_not_found");
             } else {
                 int currentState = event.get("state").getAsInt();
-                if (currentState == state || currentState == EventConstants.EVENT_FINISHED) {
+                if (currentState == state || currentState == EventConstant.EVENT_FINISHED) {
                     return BaseResponse.createFullMessageResponse(11, "invalid_operation");
                 }
             }
@@ -123,7 +123,7 @@ public class EventService implements IEventService {
             }
             long eventId = data.get("event_id").getAsLong();
             String query = "SELECT * FROM aoe_event WHERE id = ? AND state = ?";
-            JsonObject event = bridge.queryOne(query, eventId, EventConstants.EVENT_ON_GOING);
+            JsonObject event = bridge.queryOne(query, eventId, EventConstant.EVENT_ON_GOING);
             if(event == null){
                 return BaseResponse.createFullMessageResponse(10, "event_finished_or_not_exist");
             }
@@ -153,7 +153,7 @@ public class EventService implements IEventService {
             long userId = data.get("user_id").getAsLong();
             long eventId = data.get("event_id").getAsLong();
             String query = "UPDATE aoe_event_participants SET state = ? WHERE event_id = ? AND user_id = ? AND state = ?";
-            int row = bridge.update(query, EventConstants.CANCELLED_PARTICIPANT, eventId, userId, EventConstants.QUEUED_PARTICIPANT);
+            int row = bridge.update(query, EventConstant.CANCELLED_PARTICIPANT, eventId, userId, EventConstant.QUEUED_PARTICIPANT);
             if(row == 0){
                 return BaseResponse.createFullMessageResponse(10, "cancel_failure");
             }
@@ -173,7 +173,7 @@ public class EventService implements IEventService {
             long eventId = data.get("event_id").getAsLong();
             long amount = data.get("amount").getAsLong();
             String query = "UPDATE aoe_event_participants SET state = ? WHERE event_id = ? AND user_id = ? AND state = ?";
-            int row = bridge.update(query, EventConstants.REWARDED_PARTICIPANT, eventId, userId, EventConstants.QUEUED_PARTICIPANT);
+            int row = bridge.update(query, EventConstant.REWARDED_PARTICIPANT, eventId, userId, EventConstant.QUEUED_PARTICIPANT);
             if(row == 0){
                 return BaseResponse.createFullMessageResponse(10, "award_failure");
             }
@@ -272,7 +272,7 @@ public class EventService implements IEventService {
                             .append("WHERE event_id = ? AND state = ?\n")
                             .append("ORDER BY ABS(? - lucky_number), create_time\n")
                             .append("LIMIT ?").toString();
-            JsonArray data = bridge.query(query, luckyNumber, eventId, EventConstants.QUEUED_PARTICIPANT, luckyNumber, limit);
+            JsonArray data = bridge.query(query, luckyNumber, eventId, EventConstant.QUEUED_PARTICIPANT, luckyNumber, limit);
             for (JsonElement element : data) {
                 long userId = element.getAsJsonObject().get("user_id").getAsLong();
                 JsonObject profile = AoeServices.profileService.getUserProfileByUserId(userId);

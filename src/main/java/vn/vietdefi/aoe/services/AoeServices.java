@@ -20,12 +20,16 @@ import vn.vietdefi.aoe.services.user.IUserService;
 import vn.vietdefi.aoe.services.user.UserService;
 import vn.vietdefi.aoe.services.user.caster.CasterService;
 import vn.vietdefi.aoe.services.user.caster.ICasterService;
+import vn.vietdefi.aoe.services.user.donor.DonorService;
+import vn.vietdefi.aoe.services.user.donor.IDonorService;
 import vn.vietdefi.aoe.services.user.gamer.GamerService;
 import vn.vietdefi.aoe.services.user.gamer.IGamerService;
 import vn.vietdefi.aoe.services.match.IMatchService;
 import vn.vietdefi.aoe.services.match.MatchService;
 import vn.vietdefi.aoe.services.star.IStarService;
 import vn.vietdefi.aoe.services.star.StarService;
+import vn.vietdefi.aoe.services.user.impresario.IImpresarioService;
+import vn.vietdefi.aoe.services.user.impresario.ImpresarioService;
 
 public class AoeServices {
     public static IGamerService gamerService = new GamerService();
@@ -43,5 +47,6 @@ public class AoeServices {
 
     public static ILeagueService leagueService = new LeagueService();
     public static IStatisticService statisticService = new StatisticService();
-
+    public static IDonorService donorService = new DonorService();
+    public static IImpresarioService impresarioService = new ImpresarioService();
 }

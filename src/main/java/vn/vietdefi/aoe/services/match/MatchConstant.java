@@ -1,6 +1,6 @@
 package vn.vietdefi.aoe.services.match;
 
-public class MatchConstants {
+public class MatchConstant {
     public static final int STATE_VOTING = 1;
     public static final int STATE_STOP_VOTING = 2;
     public static final int STATE_PLAYING = 3;

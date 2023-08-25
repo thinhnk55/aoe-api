@@ -23,14 +23,14 @@ public class MatchService implements IMatchService {
             data.add("detail", json.get("detail").getAsJsonObject());
             data.addProperty("time_expired", json.get("time_expired").getAsLong());
             data.addProperty("suggester_id", json.get("userid").getAsLong());
-            data.addProperty("state", MatchConstants.STATE_VOTING);
+            data.addProperty("state", MatchConstant.STATE_VOTING);
             data.addProperty("create_time", System.currentTimeMillis());
             data.add("team_player", json.get("team_player").getAsJsonArray());
             bridge.insertObjectToDB("aoe_match", data);
             JsonObject response =  MatchGamerService.createTeamPlayer(data.get("id").getAsLong(),
                     data.get("team_player").getAsJsonArray());
             if (!BaseResponse.isSuccessFullMessage(response)){
-                response = updateState(data.get("id").getAsLong(),MatchConstants.STATE_ERROR_CREATE_TEAM);
+                response = updateState(data.get("id").getAsLong(), MatchConstant.STATE_ERROR_CREATE_TEAM);
                 if (!BaseResponse.isSuccessFullMessage(response)){
                     return response;
                 }else {
@@ -103,7 +103,7 @@ public class MatchService implements IMatchService {
             long offset = (page - 1) * recordPerPage;
             JsonObject result = new JsonObject();
             StringBuilder dataQuery = new StringBuilder("SELECT * FROM aoe_match WHERE state = ? ");
-            if (state < MatchConstants.STATE_CANCELLED) {
+            if (state < MatchConstant.STATE_CANCELLED) {
                 dataQuery.append("ORDER BY ABS(star_current-star_default)  LIMIT ? OFFSET ?");
             } else {
                 dataQuery.append("ORDER BY time_expired DESC LIMIT ? OFFSET ?");
@@ -147,7 +147,7 @@ public class MatchService implements IMatchService {
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "match_not_found");
             }
-            if (data.get("state").getAsInt() != MatchConstants.STATE_FINISHED) {
+            if (data.get("state").getAsInt() != MatchConstant.STATE_FINISHED) {
                 return BaseResponse.createFullMessageResponse(11, "Invalid_operation");
             }
             data.get("detail").getAsJsonObject().add("result", json.get("result").getAsJsonArray());
@@ -211,7 +211,7 @@ public class MatchService implements IMatchService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long matchId = json.get("match_id").getAsLong();
             JsonObject data = getById(matchId);
-            JsonObject res = checkAction(data, MatchConstants.STATE_STOP_VOTING);
+            JsonObject res = checkAction(data, MatchConstant.STATE_STOP_VOTING);
             if (!BaseResponse.isSuccessFullMessage(res)) {
                 return res;
             }
@@ -220,10 +220,10 @@ public class MatchService implements IMatchService {
             updateIntoDb.addProperty("id",matchId);
             updateIntoDb.add("detail",data.get("detail"));
             updateIntoDb.get("detail").getAsJsonObject().addProperty("match_date", json.get("match_date").getAsLong());
-            updateIntoDb.addProperty("state", MatchConstants.STATE_STOP_VOTING);
+            updateIntoDb.addProperty("state", MatchConstant.STATE_STOP_VOTING);
             updateIntoDb.addProperty("time_expired", System.currentTimeMillis());
             bridge.updateObjectToDb("aoe_match", "id", updateIntoDb);
-            MatchGamerService.updateStateTeamPlayer(matchId,MatchConstants.STATE_GAMER_MATCH_WAIT_MATCH);
+            MatchGamerService.updateStateTeamPlayer(matchId, MatchConstant.STATE_GAMER_MATCH_WAIT_MATCH);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -251,7 +251,7 @@ public class MatchService implements IMatchService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long matchId = json.get("match_id").getAsLong();
             JsonObject data = getById(matchId);
-            JsonObject res = checkAction(data, MatchConstants.STATE_PLAYING);
+            JsonObject res = checkAction(data, MatchConstant.STATE_PLAYING);
             if (!BaseResponse.isSuccessFullMessage(res)) {
                 return res;
             }
@@ -260,10 +260,10 @@ public class MatchService implements IMatchService {
             updateIntoDb.addProperty("id",matchId);
             updateIntoDb.add("detail",data.get("detail"));
             updateIntoDb.get("detail").getAsJsonObject().addProperty("link_livestream", json.get("link_livestream").getAsString());
-            updateIntoDb.addProperty("state", MatchConstants.STATE_PLAYING);
+            updateIntoDb.addProperty("state", MatchConstant.STATE_PLAYING);
             updateIntoDb.addProperty("time_expired", System.currentTimeMillis());
             bridge.updateObjectToDb("aoe_match", "id", updateIntoDb);
-            MatchGamerService.updateStateTeamPlayer(matchId,MatchConstants.STATE_GAMER_PLAYING);
+            MatchGamerService.updateStateTeamPlayer(matchId, MatchConstant.STATE_GAMER_PLAYING);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -278,7 +278,7 @@ public class MatchService implements IMatchService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long matchId = json.get("match_id").getAsLong();
             JsonObject data = getById(matchId);
-            JsonObject res = checkAction(data, MatchConstants.STATE_FINISHED);
+            JsonObject res = checkAction(data, MatchConstant.STATE_FINISHED);
             if (!BaseResponse.isSuccessFullMessage(res)) {
                 return res;
             }
@@ -287,7 +287,7 @@ public class MatchService implements IMatchService {
             data.get("detail").getAsJsonObject().add("result", json.get("result").getAsJsonArray());
             updateDb.addProperty("id",data.get("id").getAsLong());
             updateDb.add("detail",data.get("detail").getAsJsonObject());
-            updateDb.addProperty("state", MatchConstants.STATE_FINISHED);
+            updateDb.addProperty("state", MatchConstant.STATE_FINISHED);
             bridge.updateObjectToDb("aoe_match", "id", updateDb);
 
             return BaseResponse.createFullMessageResponse(0, "success");
@@ -307,14 +307,14 @@ public class MatchService implements IMatchService {
                 return data;
             }
             int state = data.get("data").getAsJsonObject().get("state").getAsInt();
-            if (state > MatchConstants.STATE_STOP_VOTING) {
+            if (state > MatchConstant.STATE_STOP_VOTING) {
                 return BaseResponse.createFullMessageResponse(11,
                         "cancel_reject", data);
             }
             String query = "UPDATE aoe_match SET state = ? ,time_expired = ? WHERE id = ?";
-            bridge.update(query, MatchConstants.STATE_CANCELLED, System.currentTimeMillis(), matchId);
+            bridge.update(query, MatchConstant.STATE_CANCELLED, System.currentTimeMillis(), matchId);
             //TODO: refund donate
-            MatchGamerService.updateStateTeamPlayer(matchId,MatchConstants.STATE_GAMER_MATCH_CANCEL);
+            MatchGamerService.updateStateTeamPlayer(matchId, MatchConstant.STATE_GAMER_MATCH_CANCEL);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -348,7 +348,7 @@ public class MatchService implements IMatchService {
             if(BaseResponse.isSuccessFullMessage(response)){
                 int state = response.getAsJsonObject("data")
                         .get("state").getAsInt();
-                if(state == MatchConstants.STATE_VOTING){
+                if(state == MatchConstant.STATE_VOTING){
                     return response;
                 }else{
                     return BaseResponse.createFullMessageResponse(10, "donate_reject");
@@ -385,7 +385,7 @@ public class MatchService implements IMatchService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT COUNT(*) AS total_match_complete FROM aoe_match WHERE state = ?";
-            JsonObject result = bridge.queryOne(query,MatchConstants.STATE_FINISHED);
+            JsonObject result = bridge.queryOne(query, MatchConstant.STATE_FINISHED);
             return BaseResponse.createFullMessageResponse(0, "success",result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -9,9 +9,8 @@ public interface IGamerService {
     JsonObject update(JsonObject json);
     JsonObject listGamer(long page, long recordPerPage);
     JsonObject listGamerByClanId(long clanId, long page, long recordPerPage);
+    JsonObject gamerUpdateStatistic(long id);
+    JsonObject getGamerByNickName(String nickName);
     JsonObject deleteGamerByUserId(long userId);
 
-    JsonObject gamerUpdateStatistic(long id);
-
-    JsonObject getGamerByNickName(String nickName);
 }
