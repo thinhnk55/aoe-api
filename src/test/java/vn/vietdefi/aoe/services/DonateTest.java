@@ -31,11 +31,11 @@ public class DonateTest {
         @Test
         public void test0(){
             long now = System.currentTimeMillis();
-            JsonObject response = AoeServices.statisticService.updateStatistic();
+            JsonObject response = AoeServices.statisticService.getAllStatistic();
             long gap = System.currentTimeMillis()-now;
             DebugLogger.info("{} {}", gap, response);
-            response = AoeServices.matchService.getListMatchByGamerId(148);
-            DebugLogger.info("{} ", response);
+//            response = AoeServices.statisticService.adminCallBackUpdateStatistic();
+//            DebugLogger.info("{} ", response);
         }
     }
 
