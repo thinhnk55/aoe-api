@@ -38,6 +38,9 @@ public class ImpresarioAPI {
 
     }
     public static void systemAdminAuthApi(Router router) {
-
+        router.post(ApiConfig.instance().getPath("/impresario/delete"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeSystemAdmin)
+                .handler(ImpresarioRouter::updateImp);
     }
 }

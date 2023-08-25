@@ -45,6 +45,12 @@ public class DonorService implements IDonorService {
     public JsonObject updateDonor(JsonObject data) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long userId = data.get("user_id").getAsLong();
+            String phone = data.get("phone").getAsString();
+            String query = "SELECT * FROM aoe_donor WHERE phone = ? AND user_id != ?";
+            JsonObject imp = bridge.queryOne(query, phone, userId);
+            if (imp != null)
+                return BaseResponse.createFullMessageResponse(13, "phone_number_exist");
             int row = bridge.updateObjectToDb("aoe_donor", "user_id", data);
             if (row == 0) {
                 return BaseResponse.createFullMessageResponse(10, "update_failure");

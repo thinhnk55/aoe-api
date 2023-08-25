@@ -42,7 +42,7 @@ public class DonorRouter {
 
     public static void getDonor(RoutingContext rc) {
         try {
-            long id = Long.parseLong(rc.request().getParam("id"));
+            long id = Long.parseLong(rc.request().getParam("user_id"));
             JsonObject response = AoeServices.donorService.getDonorByUserId(id);
             rc.response().end(response.toString());
         } catch (Exception e) {
