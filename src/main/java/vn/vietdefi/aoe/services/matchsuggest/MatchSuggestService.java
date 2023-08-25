@@ -72,6 +72,8 @@ public class MatchSuggestService implements IMatchSuggestService{
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "not_found_match_suggest");
             }
+            JsonObject user = AoeServices.profileService.getUserProfileByUserId(data.get("suggester_id").getAsLong());
+            data.addProperty("suggester", user.get("data").getAsJsonObject().get("nick_name").getAsString());
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
