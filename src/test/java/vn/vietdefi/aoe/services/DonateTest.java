@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.jupiter.api.*;
 import vn.vietdefi.aoe.services.star.StarConstant;
+import vn.vietdefi.bank.BankServices;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 
@@ -30,15 +31,15 @@ public class DonateTest {
         }
         @Test
         public void test0(){
-            long now = System.currentTimeMillis();
-            int service = 11;
-            long from = 1692373678535L;
-            String phone = "";
-            JsonObject response = AoeServices.donateService.filterListDonate(phone,from,now,service,1,15);
-            long gap = System.currentTimeMillis()-now;
-            DebugLogger.info("{} {}", gap, response);
-//            response = AoeServices.statisticService.adminCallBackUpdateStatistic();
-//            DebugLogger.info("{} ", response);
+//            long now = System.currentTimeMillis();
+//            int service = 11;
+//            long from = 1692373678535L;
+//            String phone = "";
+//            JsonObject response = AoeServices.donateService.filterListDonate(phone,from,now,service,1,15);
+//            long gap = System.currentTimeMillis()-now;
+//            DebugLogger.info("{} {}", gap, response);
+            JsonObject response = BankServices.bankService.getOneWorkingBankAccount();
+            DebugLogger.info("{} ", response);
         }
     }
 

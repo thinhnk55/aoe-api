@@ -19,8 +19,8 @@ public class AoeLauncher {
     public static void run(){
         try {
             initConfig();
-//            BankController.instance().startLoop();
-            StatisticController controller = StatisticController.instance();
+            BankController.instance().startLoop();
+            StatisticController.instance();
             startHttpServer();
         } catch (Exception e) {
             e.printStackTrace();
