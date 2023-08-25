@@ -1,11 +1,9 @@
 package vn.vietdefi.aoe.services.match;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -29,8 +27,8 @@ public class MatchService implements IMatchService {
             data.addProperty("create_time", System.currentTimeMillis());
             data.add("team_player", json.get("team_player").getAsJsonArray());
             bridge.insertObjectToDB("aoe_match", data);
-            JsonObject response =  MatchGamerService.createTeamPlayer(data.get("team_player").getAsJsonArray(),
-                    data.get("id").getAsLong());
+            JsonObject response =  MatchGamerService.createTeamPlayer(data.get("id").getAsLong(),
+                    data.get("team_player").getAsJsonArray());
             if (!BaseResponse.isSuccessFullMessage(response)){
                 response = updateState(data.get("id").getAsLong(),MatchConstants.STATE_ERROR_CREATE_TEAM);
                 if (!BaseResponse.isSuccessFullMessage(response)){
@@ -84,7 +82,7 @@ public class MatchService implements IMatchService {
             bridge.updateObjectToDb("aoe_match", data);
             JsonArray teamPlayers = json.get("team_player").getAsJsonArray();
             long matchId = json.get("id").getAsLong();
-            JsonObject response = MatchGamerService.updateTeamPlayer(teamPlayers,matchId);
+            JsonObject response = MatchGamerService.updateTeamPlayer(matchId, teamPlayers);
             if (!BaseResponse.isSuccessFullMessage(response)){
                 return response;
             }
@@ -225,6 +223,7 @@ public class MatchService implements IMatchService {
             updateIntoDb.addProperty("state", MatchConstants.STATE_STOP_VOTING);
             updateIntoDb.addProperty("time_expired", System.currentTimeMillis());
             bridge.updateObjectToDb("aoe_match", "id", updateIntoDb);
+            MatchGamerService.updateStateTeamPlayer(matchId,MatchConstants.STATE_GAMER_MATCH_WAIT_MATCH);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -264,6 +263,7 @@ public class MatchService implements IMatchService {
             updateIntoDb.addProperty("state", MatchConstants.STATE_PLAYING);
             updateIntoDb.addProperty("time_expired", System.currentTimeMillis());
             bridge.updateObjectToDb("aoe_match", "id", updateIntoDb);
+            MatchGamerService.updateStateTeamPlayer(matchId,MatchConstants.STATE_GAMER_PLAYING);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -314,6 +314,7 @@ public class MatchService implements IMatchService {
             String query = "UPDATE aoe_match SET state = ? ,time_expired = ? WHERE id = ?";
             bridge.update(query, MatchConstants.STATE_CANCELLED, System.currentTimeMillis(), matchId);
             //TODO: refund donate
+            MatchGamerService.updateStateTeamPlayer(matchId,MatchConstants.STATE_GAMER_MATCH_CANCEL);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -362,10 +363,6 @@ public class MatchService implements IMatchService {
         }
     }
 
-    @Override
-    public JsonObject confirmMatch(JsonObject json) {
-        return null;
-    }
 
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
@@ -396,4 +393,33 @@ public class MatchService implements IMatchService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    @Override
+    public JsonObject getListMatchByGamerId(long gamerId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            JsonArray matchId = MatchGamerService.getListMatchByGamerId(gamerId).get("data").getAsJsonArray();
+            if (matchId.isEmpty()){
+                return BaseResponse.createFullMessageResponse(10, "not_found");
+            }
+            StringBuilder query = new StringBuilder("SElECT * FROM aoe_match WHERE id IN(") ;
+            for (int i = 0; i < matchId.size(); i++) {
+                if (i != matchId.size() - 1){
+                    query.append(matchId.get(i).getAsJsonObject().get("match_id").getAsLong()).append(",");
+                }else {
+                    query.append(matchId.get(i).getAsJsonObject().get("match_id").getAsLong());
+                }
+            }
+            query.append(")")
+                    .append(" ORDER BY create_time DESC");
+            JsonArray result = bridge.query(query.toString());
+            return BaseResponse.createFullMessageResponse(0, "success",result);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+
 }

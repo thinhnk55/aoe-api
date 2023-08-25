@@ -7,7 +7,7 @@ public interface IMatchSuggestService {
     JsonObject updateMatchSuggest( long id, JsonObject data);
     JsonObject getMatchSuggest(long matchId);
     JsonObject getListMatchSuggested(long userId,long page, long recordPerPage);
-    JsonObject getListMatchSuggested(long page, long recordPerPage);
+    JsonObject getListMatchSuggested(long page, long recordPerPage, int state);
 
     JsonObject cancelMatchSuggest(long matchId);
 

@@ -7,6 +7,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
+import vn.vietdefi.util.sql.SQLJavaBridge;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,7 +15,7 @@ import java.sql.Statement;
 
 public class MatchGamerService {
 
-    public static JsonObject createTeamPlayer(JsonArray data, long match_id) {
+    public static JsonObject createTeamPlayer(long match_id, JsonArray data) {
         String stInsertMatchGamer = "INSERT INTO aoe_match_gamer (match_id, user_id, team, nick_name, avatar) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = HikariClients.instance().defaulSQLJavaBridge().sqlClient.getConnection();
              PreparedStatement st1 = connection.prepareStatement(stInsertMatchGamer)
@@ -46,7 +47,7 @@ public class MatchGamerService {
         }
     }
 
-    public static JsonObject updateTeamPlayer(JsonArray data, long match_id) {
+    public static JsonObject updateTeamPlayer(long match_id, JsonArray data) {
         String stUpdateMatch = "DELETE FROM aoe_match_gamer WHERE match_id = ?";
 
         try (Connection connection = HikariClients.instance().defaulSQLJavaBridge().sqlClient.getConnection();
@@ -58,9 +59,47 @@ public class MatchGamerService {
                 return BaseResponse.createFullMessageResponse(11, "update_error");
             }
             connection.commit();
-            return createTeamPlayer(data, match_id);
+            return createTeamPlayer(match_id,data);
         } catch (Exception e) {
             DebugLogger.error("insert into match gamer {}", data);
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    public static JsonObject updateStateTeamPlayer(long matchId,int state){
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE aoe_match_gamer SET state = ? WHERE match_id = ?";
+            bridge.update(query,state,matchId);
+            return BaseResponse.createFullMessageResponse(0,"success");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    JsonObject updateResultTeamPlayer(long matchId,JsonArray data){
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            return BaseResponse.createFullMessageResponse(0,"success");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+
+    public static JsonObject getListMatchByGamerId(long gamer_id){
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT match_id FROM aoe_match_gamer WHERE user_id = ? AND state = ? ";
+            JsonArray data = bridge.query(query,gamer_id,MatchConstants.STATE_GAMER_MATCH_PENDING);
+            return BaseResponse.createFullMessageResponse(0,"success",data);
+        } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");

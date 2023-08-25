@@ -21,8 +21,14 @@ public class MatchConstants {
     public static final int FORMAT_4VS4 = 4;
     public static final int FORMAT_FREE = 5;
 
-    public static final int STATE_GAMER_WINNER = 2;
-    public static final int STATE_GAMER_LOSER = 3;
+    public static final int STATE_GAMER_MATCH_PENDING = 1;
+    public static final int STATE_GAMER_MATCH_WAIT_MATCH = 2;
+    public static final int STATE_GAMER_PLAYING = 3;
+    public static final int STATE_GAMER_WINNER = 4;
+    public static final int STATE_GAMER_LOSER = 5;
+
+    public static final int STATE_GAMER_MATCH_CANCEL = 6;
+
 
     public static final int DEFAULT_RECORD_PER_PAGE = 20;
 

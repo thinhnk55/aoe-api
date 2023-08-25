@@ -32,7 +32,7 @@ public class MatchSuggestTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.1.19:8000/aoe";
+            baseUrl = "http://127.0.0.1:8000/aoe";
             username = "0352555556";
             password = "12344321";
             star = 100000;
@@ -59,6 +59,7 @@ public class MatchSuggestTest {
             testUpdateSuggestMatch(user, matchId);
             testGetSuggestMatchInfo(user, matchId);
             testListSuggestMatch(user);
+            testAdminListSuggestMatch();
             testConfirmMatch(user, matchId);
             //testCancelSuggestMatch(user, matchId);
             deleteSuggestMatch(matchId);
@@ -102,15 +103,16 @@ public class MatchSuggestTest {
             JsonArray listSuggestMatch = response.getAsJsonObject("data").get("match").getAsJsonArray();
             Assertions.assertFalse(listSuggestMatch.isEmpty());
         }
-        public void testListSuggestMatchForAdmin(JsonObject user) {
-            String listSuggestMatchURL = new StringBuilder(baseUrl).append("/match/suggest/list").toString();
+        public void testAdminListSuggestMatch() {
+            String listSuggestMatchURL = new StringBuilder(baseUrl).append("/match/suggest/list?state=").append(MatchSuggestConstant.MATCH_SUGGEST_PENDING).toString();
             DebugLogger.info("{}", listSuggestMatchURL);
-            JsonObject response = OkHttpUtil.get(listSuggestMatchURL, Common.createHeaderAdmin());
+            JsonObject response = OkHttpUtil.get(listSuggestMatchURL, Common.createHeaderSystemAdmin());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             JsonArray listSuggestMatch = response.getAsJsonObject("data").get("match").getAsJsonArray();
-            Assertions.assertFalse(listSuggestMatch.isEmpty());
+            Assertions.assertTrue(listSuggestMatch.isEmpty());
         }
+
         public JsonObject testGetSuggestMatchInfo(JsonObject user, long matchId) {
             String listSuggestMatchURL = new StringBuilder(baseUrl).append("/match/user/suggest/info")
                     .append("?match_id=").append(matchId).toString();

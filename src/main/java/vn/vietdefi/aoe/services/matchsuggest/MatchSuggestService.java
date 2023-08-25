@@ -97,13 +97,14 @@ public class MatchSuggestService implements IMatchSuggestService{
         }
     }
 
-    public JsonObject getListMatchSuggested(long page, long recordPerPage) {
+
+    public JsonObject getListMatchSuggested(long page, long recordPerPage, int state) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
             JsonObject data = new JsonObject();
-            String dataQuery = "SELECT * FROM aoe_match_suggest ORDER BY state DESC LIMIT ? OFFSET ?";
-            JsonArray array = bridge.query(dataQuery, recordPerPage, offset);
+            String dataQuery = "SELECT * FROM aoe_match_suggest WHERE state = ? ORDER BY id DESC LIMIT ? OFFSET ?";
+            JsonArray array = bridge.query(dataQuery,state,recordPerPage, offset);
             data.add("match", array);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
