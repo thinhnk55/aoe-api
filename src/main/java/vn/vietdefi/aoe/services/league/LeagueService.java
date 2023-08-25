@@ -131,9 +131,9 @@ public class LeagueService implements ILeagueService{
     public JsonObject cancelLeague(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject checkState = checkState(id, LeagueConstants.STATE_CANCELLED);
-            if (!BaseResponse.isSuccessFullMessage(checkState))
-                return checkState;
+            JsonObject league = getLeagueInfo(id);
+            if (league.getAsJsonObject("data").get("state").getAsInt() > LeagueConstants.STATE_STOP_VOTING)
+                return BaseResponse.createFullMessageResponse(11, "update_reject");
             String query = "UPDATE aoe_league SET state = ? WHERE id = ?";
             bridge.update(query, LeagueConstants.STATE_CANCELLED, id);
             return BaseResponse.createFullMessageResponse(0, "success");
@@ -165,7 +165,7 @@ public class LeagueService implements ILeagueService{
             if (data == null)
                 return BaseResponse.createFullMessageResponse(10, "league_not_found");
             int oldState = data.get("state").getAsInt();
-            if (oldState > state || state - oldState >= 2)
+            if (oldState > state || state - oldState != 1)
                 return BaseResponse.createFullMessageResponse(11, "update_reject");
 
             return BaseResponse.createFullMessageResponse(0, "success");

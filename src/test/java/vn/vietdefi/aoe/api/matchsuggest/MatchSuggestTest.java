@@ -102,6 +102,15 @@ public class MatchSuggestTest {
             JsonArray listSuggestMatch = response.getAsJsonObject("data").get("match").getAsJsonArray();
             Assertions.assertFalse(listSuggestMatch.isEmpty());
         }
+        public void testListSuggestMatchForAdmin(JsonObject user) {
+            String listSuggestMatchURL = new StringBuilder(baseUrl).append("/match/suggest/list").toString();
+            DebugLogger.info("{}", listSuggestMatchURL);
+            JsonObject response = OkHttpUtil.get(listSuggestMatchURL, Common.createHeaderAdmin());
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            JsonArray listSuggestMatch = response.getAsJsonObject("data").get("match").getAsJsonArray();
+            Assertions.assertFalse(listSuggestMatch.isEmpty());
+        }
         public JsonObject testGetSuggestMatchInfo(JsonObject user, long matchId) {
             String listSuggestMatchURL = new StringBuilder(baseUrl).append("/match/user/suggest/info")
                     .append("?match_id=").append(matchId).toString();
