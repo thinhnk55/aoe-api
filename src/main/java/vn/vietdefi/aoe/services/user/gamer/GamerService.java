@@ -49,7 +49,7 @@ public class GamerService implements IGamerService {
     }
 
 
-    private JsonObject getGamerByNickName(String nickname) {
+    public JsonObject getGamerByNickName(String nickname) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT user_id FROM aoe_gamer WHERE nick_name = ?";

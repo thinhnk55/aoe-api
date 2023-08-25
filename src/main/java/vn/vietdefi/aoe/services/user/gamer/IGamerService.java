@@ -12,4 +12,6 @@ public interface IGamerService {
     JsonObject deleteGamerByUserId(long userId);
 
     JsonObject gamerUpdateStatistic(long id);
+
+    JsonObject getGamerByNickName(String nickName);
 }

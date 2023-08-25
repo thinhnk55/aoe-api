@@ -2,7 +2,6 @@ package vn.vietdefi.aoe.vertx.router.gamer;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import vn.vietdefi.aoe.vertx.router.clan.ClanRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
@@ -20,6 +19,10 @@ public class GamerApi {
                         .instance()
                         .getPath("/gamer/get"))
                 .handler(GamerRouter::getGamerByUserId);
+        router.get(ApiConfig
+                        .instance()
+                        .getPath("/gamer/get-by-name"))
+                .handler(GamerRouter::getGamerByName);
 
         router.get(ApiConfig.instance().getPath("/gamer/list"))
                 .handler(GamerRouter::listGamer);
