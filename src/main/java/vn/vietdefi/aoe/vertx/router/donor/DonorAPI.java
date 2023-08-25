@@ -37,6 +37,8 @@ public class DonorAPI {
 
     }
     public static void systemAdminAuthApi(Router router) {
-
+        router.post(ApiConfig.instance().getPath("/donor/delete"))
+                .handler(AuthRouter::authorizeSystemAdmin)
+                .handler(DonorRouter::deleteDonor);
     }
 }

@@ -2,7 +2,6 @@ package vn.vietdefi.aoe.vertx.router.impresario;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import vn.vietdefi.aoe.vertx.router.donor.DonorRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
@@ -41,6 +40,6 @@ public class ImpresarioAPI {
         router.post(ApiConfig.instance().getPath("/impresario/delete"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSystemAdmin)
-                .handler(ImpresarioRouter::updateImp);
+                .handler(ImpresarioRouter::deleteImp);
     }
 }

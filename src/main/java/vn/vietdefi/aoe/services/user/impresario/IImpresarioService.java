@@ -6,7 +6,7 @@ import vn.vietdefi.api.services.auth.UserConstant;
 public interface IImpresarioService {
     JsonObject createImpresario(JsonObject data);
     JsonObject updateImpresario(JsonObject data);
-    JsonObject deleteImpresario(long id);
     JsonObject getImpresario(long id);
     JsonObject getAllImpresario(long page, long recordPerPage);
+    JsonObject deleteImpresario(String phone);
 }

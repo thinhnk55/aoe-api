@@ -66,21 +66,6 @@ public class ImpresarioService implements IImpresarioService{
     }
 
     @Override
-    public JsonObject deleteImpresario(long id) {
-        try{
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "DELETE FROM aoe_impresario WHERE user_id = ?";
-            bridge.update(query, id);
-            return BaseResponse.createFullMessageResponse(0,"success");
-        }
-        catch(Exception e){
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
-    @Override
     public JsonObject getImpresario(long id) {
         try{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
@@ -107,6 +92,20 @@ public class ImpresarioService implements IImpresarioService{
             JsonObject data = new JsonObject();
             data.add("impresario", impresario);
             return BaseResponse.createFullMessageResponse(0,"success", data);
+        }
+        catch(Exception e){
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+    @Override
+    public JsonObject deleteImpresario(String phone) {
+        try{
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "DELETE FROM aoe_impresario WHERE phone = ?";
+            bridge.update(query, phone);
+            return BaseResponse.createFullMessageResponse(0,"success");
         }
         catch(Exception e){
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -15,18 +15,17 @@ CREATE TABLE IF NOT EXISTS aoe_gamer
     phone VARCHAR(32) UNIQUE NOT NULL,
     nick_name VARCHAR(128) UNIQUE NOT NULL,
     full_name VARCHAR(256) NOT NULL,
-    avatar VARCHAR(2048) DEFAULT '' NOT NULL,
+    avatar VARCHAR(2048) NOT NULL DEFAULT '',
     detail TEXT NOT NULL DEFAULT '{}',
-    clan_id BIGINT DEFAULT 0  NULL,
-    rank INT DEFAULT 0 NOT NULL,
-    rank_info VARCHAR(2048)  NULL,
+    clan_id BIGINT NOT NULL DEFAULT 0,
+    rank INT NOT NULL DEFAULT 0,
+    rank_info VARCHAR(2048) NOT NULL NULL DEFAULT '{}',
     match_played INT NOT NULL DEFAULT 0,
     match_won INT NOT NULL DEFAULT 0,
-    total_user_support INT NOT NULL DEFAULT 0,
     create_time BIGINT NOT NULL DEFAULT 0,
     state INT NOT NULL DEFAULT 0,
     total_supporter INT NOT NULL DEFAULT 0,
-    total_star_donate INT NOT NULL DEFAULT 0
+    total_star_donate BIGINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS aoe_caster
@@ -35,12 +34,12 @@ CREATE TABLE IF NOT EXISTS aoe_caster
     phone VARCHAR(32) UNIQUE NOT NULL,
     nick_name VARCHAR(128) UNIQUE NOT NULL,
     full_name VARCHAR(256) NOT NULL,
-    avatar VARCHAR(2048) DEFAULT '' NOT NULL,
+    avatar VARCHAR(2048) NOT NULL DEFAULT '',
     detail TEXT NOT NULL DEFAULT '{}',
-    clan_id BIGINT DEFAULT 0  NULL,
+    clan_id BIGINT NOT NULL DEFAULT 0,
     state INT NOT NULL DEFAULT 0,
     total_supporter INT NOT NULL DEFAULT 0,
-    total_star_donate INT NOT NULL DEFAULT 0
+    total_star_donate BIGINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS aoe_clan
@@ -65,20 +64,20 @@ CREATE TABLE IF NOT EXISTS aoe_data
 );
 CREATE TABLE IF NOT EXISTS aoe_donor (
     user_id BIGINT PRIMARY KEY NOT NULL,
+    phone VARCHAR(32) UNIQUE NOT NULL,
     logo VARCHAR(2048) NOT NULL,
     full_name varchar(64) NOT NULL,
     total_donated BIGINT NOT NULL DEFAULT 0,
     detail TEXT NOT NULL DEFAULT '{}',
-    phone VARCHAR(32) NOT NULL,
     state INT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS aoe_impresario (
     user_id BIGINT PRIMARY KEY NOT NULL,
+    phone VARCHAR(32) UNIQUE NOT NULL,
     avatar VARCHAR(2048) DEFAULT NULL,
     full_name VARCHAR(64) NOT NULL,
     date_of_birth BIGINT NOT NULL,
-    phone VARCHAR(32) UNIQUE NOT NULL,
     nationality VARCHAR(32) NOT NULL,
     place_of_origin VARCHAR(512) NOT NULL,
     state INT NOT NULL DEFAULT 0

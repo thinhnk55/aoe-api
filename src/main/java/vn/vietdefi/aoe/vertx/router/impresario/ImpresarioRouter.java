@@ -69,10 +69,12 @@ public class ImpresarioRouter {
         }
     }
 
-    public static void delete(RoutingContext rc) {
+    public static void deleteImp(RoutingContext rc) {
         try {
-            long id = Long.parseLong(rc.request().getParam("id"));
-            JsonObject response = AoeServices.impresarioService.deleteImpresario(id);
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            String phone = json.get("phone").getAsString();
+            JsonObject response = AoeServices.impresarioService.deleteImpresario(phone);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
