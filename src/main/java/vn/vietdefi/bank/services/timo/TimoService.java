@@ -30,7 +30,7 @@ public class TimoService implements ITimoService {
                 device = TimoUtil.generateRandomTimoDevice();
                 data.addProperty("device", device);
                 data.add("other", createOther());
-                bridge.insertObjectToDB("timo_account", data);
+                bridge.insertObjectToDB("bank_timo_account", data);
             }else{
                 data = response.getAsJsonObject("data");
                 device = data.get("device").getAsString();
@@ -44,7 +44,7 @@ public class TimoService implements ITimoService {
                 JsonObject other = data.getAsJsonObject("other");
                 other.addProperty("force_update_notification", true);
                 long id = data.get("id").getAsLong();
-                String query = "UPDATE timo_account SET password = ?, token = ?, other = ?, state = ? WHERE id = ?";
+                String query = "UPDATE bank_timo_account SET password = ?, token = ?, other = ?, state = ? WHERE id = ?";
                 bridge.update(query, password, token, other, TimoAccountState.COMMIT, id);
                 return BaseResponse.createFullMessageResponse(0, "success", data);
             }else if(response.get("error").getAsInt() == TimoConfig.ERROR_LOGIN_TIMO_ACCOUNT_NOT_COMMIT){
@@ -54,7 +54,7 @@ public class TimoService implements ITimoService {
                 JsonObject other = data.getAsJsonObject("other");
                 other.addProperty("login_refNo", refNo);
                 long id = data.get("id").getAsLong();
-                String query = "UPDATE timo_account SET password = ?, token = ?, other = ?, state = ? WHERE id = ?";
+                String query = "UPDATE bank_timo_account SET password = ?, token = ?, other = ?, state = ? WHERE id = ?";
                 bridge.update(query, password, token, other, TimoAccountState.NOT_COMMIT, id);
                 return BaseResponse.createFullMessageResponse(10, "require_otp", data);
             }else{
@@ -105,7 +105,7 @@ public class TimoService implements ITimoService {
                 other.addProperty("force_update_notification", true);
             }
             data.addProperty("state", TimoAccountState.COMMIT);
-            String query = "UPDATE timo_account SET token = ?, other = ?, state = ? WHERE id = ?";
+            String query = "UPDATE bank_timo_account SET token = ?, other = ?, state = ? WHERE id = ?";
             bridge.update(query, newToken, other, TimoAccountState.COMMIT, id);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception exception) {
@@ -118,7 +118,7 @@ public class TimoService implements ITimoService {
     public JsonObject updateToken(long id, String token) {
         try{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE timo_account SET token = ? WHERE id = ?";
+            String query = "UPDATE bank_timo_account SET token = ? WHERE id = ?";
             bridge.update(query, token, id);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
@@ -132,7 +132,7 @@ public class TimoService implements ITimoService {
     public JsonObject getAccountById(long id) {
         try{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM timo_account WHERE id = ?";
+            String query = "SELECT * FROM bank_timo_account WHERE id = ?";
             JsonObject data = bridge.queryOne(query, id);
             if(data == null){
                 return BaseResponse.createFullMessageResponse(10, "timo_account_not_found");
@@ -149,7 +149,7 @@ public class TimoService implements ITimoService {
     public JsonObject getAccountByUsername(String username) {
         try{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM timo_account WHERE username = ?";
+            String query = "SELECT * FROM bank_timo_account WHERE username = ?";
             JsonObject data = bridge.queryOne(query, username);
             if(data == null){
                 return BaseResponse.createFullMessageResponse(10, "timo_account_not_found");
@@ -179,7 +179,7 @@ public class TimoService implements ITimoService {
     public void updateOther(long id, JsonObject other) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE timo_account SET other = ? WHERE id = ?";
+            String query = "UPDATE bank_timo_account SET other = ? WHERE id = ?";
             bridge.update(query, other, id);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -191,7 +191,7 @@ public class TimoService implements ITimoService {
     public void updateBankAccountId(long id, long bankAccountId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE timo_account SET bank_account_id = ? WHERE id = ?";
+            String query = "UPDATE bank_timo_account SET bank_account_id = ? WHERE id = ?";
             bridge.update(query, bankAccountId, id);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
