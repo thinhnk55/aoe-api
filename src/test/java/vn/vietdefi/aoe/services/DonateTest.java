@@ -31,7 +31,10 @@ public class DonateTest {
         @Test
         public void test0(){
             long now = System.currentTimeMillis();
-            JsonObject response = AoeServices.statisticService.getAllStatistic();
+            int service = 11;
+            long from = 1692373678535L;
+            String phone = "";
+            JsonObject response = AoeServices.donateService.filterListDonate(phone,from,now,service,1,15);
             long gap = System.currentTimeMillis()-now;
             DebugLogger.info("{} {}", gap, response);
 //            response = AoeServices.statisticService.adminCallBackUpdateStatistic();
