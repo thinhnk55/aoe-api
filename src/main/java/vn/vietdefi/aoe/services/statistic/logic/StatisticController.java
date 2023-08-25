@@ -4,12 +4,14 @@ import com.google.gson.JsonObject;
 import vn.vietdefi.aoe.services.statistic.IStatisticService;
 import vn.vietdefi.aoe.services.statistic.StatisticService;
 import vn.vietdefi.common.BaseResponse;
+import vn.vietdefi.util.log.DebugLogger;
 
 public class StatisticController {
     private static StatisticController ins = null;
     public static StatisticController instance() {
         if (ins == null) {
             ins = new StatisticController();
+
         }
         return ins;
     }
@@ -25,6 +27,10 @@ public class StatisticController {
         if (statistic == null) {
             statistic = UpdateStatistic();
         }
+    }
+
+    public void callBackUpdateStatistic() {
+            statistic = UpdateStatistic();
     }
     public Statistic getStatistic() {
         return statistic;
