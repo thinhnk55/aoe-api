@@ -1,11 +1,12 @@
 package vn.vietdefi.aoe.services.user.impresario;
 
 import com.google.gson.JsonObject;
+import vn.vietdefi.api.services.auth.UserConstant;
 
 public interface IImpresarioService {
-    JsonObject createImp(JsonObject json);
-    JsonObject updateImp(JsonObject json, long id);
-    JsonObject deleteImp(long id);
-    JsonObject getImp(long id);
-    JsonObject getAllImp(JsonObject json);
+    JsonObject createImpresario(JsonObject data);
+    JsonObject updateImpresario(JsonObject data);
+    JsonObject deleteImpresario(long id);
+    JsonObject getImpresario(long id);
+    JsonObject getAllImpresario(long page, long recordPerPage);
 }

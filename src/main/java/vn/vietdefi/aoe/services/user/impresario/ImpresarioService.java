@@ -3,6 +3,9 @@ package vn.vietdefi.aoe.services.user.impresario;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.api.services.ApiServices;
+import vn.vietdefi.api.services.auth.UserConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -11,33 +14,31 @@ import vn.vietdefi.util.string.StringUtil;
 
 public class ImpresarioService implements IImpresarioService{
     @Override
-    public JsonObject createImp(JsonObject json) {
+    public JsonObject createImpresario(JsonObject data) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject detail = new JsonObject();
-            detail.add("date_of_birth",json.get("date_of_birth"));
-            detail.add("nationality",json.get("nationality"));
-            detail.add("address",json.get("address"));
-            detail.addProperty("sport","Age of Empires");
+            String phone = data.get("phone").getAsString();
+            String query = "SELECT * FROM aoe_impresario WHERE phone = ?";
+            JsonObject response = bridge.queryOne(query, phone);
+            if (response != null)
+                return BaseResponse.createFullMessageResponse(13, "phone_number_exist");
+            response = ApiServices.authService.get(phone);
+            if (!BaseResponse.isSuccessFullMessage(response)) {
+                String password = StringUtil.generateRandomStringNumberCharacter(8);
+                response = AoeServices.aoeAuthService.register(phone, password, UserConstant.ROLE_USER, UserConstant.STATUS_ACCOUNT_GENERATE);
+                if (!BaseResponse.isSuccessFullMessage(response)) {
+                    return response;
+                }
+            } else {
+                long userId = response.getAsJsonObject("data").get("id").getAsLong();
+                String password = StringUtil.generateRandomStringNumberCharacter(8);
+                ApiServices.authService.updatePassword(userId, password);
+            }
+            JsonObject user = response.getAsJsonObject("data");
+            data.addProperty("user_id", user.get("id").getAsLong());
 
-            JsonObject insertToImpresario = new JsonObject();
-            insertToImpresario.addProperty("avatar", json.get("avatar").getAsString());
-            insertToImpresario.addProperty("fullname", json.get("fullname").getAsString());
-            insertToImpresario.addProperty("phone_number", json.get("phone_number").getAsString());
-            insertToImpresario.add("detail", detail);
-
-            JsonObject createUser = new JsonObject();
-            createUser.addProperty("username", json.get("phone_number").getAsString());
-            String query = "SELECT id FROM user WHERE username = ?";
-            if (bridge.queryExist(query, json.get("phone_number").getAsString()))
-                return BaseResponse.createFullMessageResponse(11, "phone_number_used");
-            createUser.addProperty("password", StringUtil.generateRandomStringNumberCharacter(12));
-
-            long userid = VdefServices.authService.register(createUser).get("data").getAsJsonObject().get("userid").getAsLong();
-            insertToImpresario.addProperty("user_id", userid);
-            bridge.insertObjectToDB("impresario", insertToImpresario);
-            return BaseResponse.createFullMessageResponse(0,"success",insertToImpresario);
-
+            bridge.insertObjectToDB("aoe_impresario", "user_id", data);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         }catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
@@ -46,26 +47,11 @@ public class ImpresarioService implements IImpresarioService{
     }
 
     @Override
-    public JsonObject updateImp(JsonObject json, long id) {
+    public JsonObject updateImpresario(JsonObject data) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject detail = new JsonObject();
-            detail.add("date_of_birth",json.get("date_of_birth"));
-            detail.add("nationality",json.get("nationality"));
-            detail.add("address",json.get("address"));
-            detail.addProperty("sport","Age of Empires");
-
-            String logo = json.get("avatar").getAsString();
-            String fullname = json.get("fullname").getAsString();
-//            String query = "SELECT id FROM user WHERE username = ?";
-//            JsonObject donor =bridge.queryOne(query, json.get("phone_number").getAsLong());
-//            if (donor!=null && donor.get("id").getAsLong() != id )
-//                return BaseResponse.createFullMessageResponse(10, "phone_number_used");
-
-            String query = "UPDATE impresario SET avatar = ? ,fullname = ?,detail = ? WHERE user_id = ?";
-            bridge.update(query,logo,fullname,detail,id);
+            bridge.updateObjectToDb("aoe_impresario", "user_id", data);
             return BaseResponse.createFullMessageResponse(0,"success");
-
         }catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
@@ -74,12 +60,11 @@ public class ImpresarioService implements IImpresarioService{
     }
 
     @Override
-    public JsonObject deleteImp(long id) {
+    public JsonObject deleteImpresario(long id) {
         try{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE impresario SET is_deleted = 1 WHERE user_id = ? AND is_deleted = 0";
-            int check = bridge.update(query,id);
-            if (check == 0 )return BaseResponse.createFullMessageResponse(10,"not_found");
+            String query = "DELETE FROM aoe_impresario WHERE user_id = ?";
+            bridge.update(query, id);
             return BaseResponse.createFullMessageResponse(0,"success");
         }
         catch(Exception e){
@@ -90,13 +75,14 @@ public class ImpresarioService implements IImpresarioService{
     }
 
     @Override
-    public JsonObject getImp(long id) {
+    public JsonObject getImpresario(long id) {
         try{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM impresario WHERE user_id =?";
-            JsonObject imp = bridge.queryOne(query, id);
-            if (imp == null)return BaseResponse.createFullMessageResponse(10,"not_found");
-            return BaseResponse.createFullMessageResponse(0,"success",imp);
+            String query = "SELECT * FROM impresario WHERE user_id = ?";
+            JsonObject data = bridge.queryOne(query, id);
+            if (data == null)
+                return BaseResponse.createFullMessageResponse(10,"impresario_not_found");
+            return BaseResponse.createFullMessageResponse(0,"success", data);
         }
         catch(Exception e){
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -106,19 +92,15 @@ public class ImpresarioService implements IImpresarioService{
     }
 
     @Override
-    public JsonObject getAllImp(JsonObject json) {
+    public JsonObject getAllImpresario(long page, long recordPerPage) {
         try{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long page = json.get("page").getAsInt();
-            long offset = (page - 1)*25;
-            String query = "SELECT * FROM impresario WHERE is_deleted = 0 " +
-                    "LIMIT 25 OFFSET ?";
-            JsonArray impresario = bridge.query(query,offset);
-            query ="SELECT count(*) FROM donors WHERE is_deleted = 0 ";
-            JsonObject result = new JsonObject();
-            result.addProperty("total_page",bridge.queryInteger(query)/25 + 1);
-            result.add("Impresario",impresario);
-            return BaseResponse.createFullMessageResponse(0,"success", result);
+            long offset = (page - 1) * recordPerPage;
+            String query = "SELECT * FROM impresario LIMIT ? OFFSET ?";
+            JsonArray impresario = bridge.query(query, recordPerPage, offset);
+            JsonObject data = new JsonObject();
+            data.add("impresario", impresario);
+            return BaseResponse.createFullMessageResponse(0,"success", data);
         }
         catch(Exception e){
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -77,8 +77,10 @@ CREATE TABLE IF NOT EXISTS aoe_impresario (
     user_id BIGINT PRIMARY KEY NOT NULL,
     avatar VARCHAR(2048) DEFAULT NULL,
     full_name VARCHAR(64) NOT NULL,
-    phone VARCHAR(32) NOT NULL,
-    detail TEXT NOT NULL DEFAULT '{}',
+    date_of_birth BIGINT NOT NULL,
+    phone VARCHAR(32) UNIQUE NOT NULL,
+    nationality VARCHAR(32) NOT NULL,
+    place_of_origin VARCHAR(512) NOT NULL,
     state INT NOT NULL DEFAULT 0
 );
 
