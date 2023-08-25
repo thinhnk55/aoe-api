@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS aoe_match  (
-     id BIGINT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+     id BIGINT PRIMARY KEY AUTO_INCREMENT,
      admin_id BIGINT NOT NULL DEFAULT 0,
      star_current INT NOT NULL default 0,
      star_default INT NOT NULL default 0,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS aoe_match  (
      state INT,
      create_time BIGINT NOT NULL,
      suggester_id BIGINT NOT NULL,
-     team_player TEXT NOT NULL DEFAULT '{}',
+     team_player VARCHAR(4096) NOT NULL ,
      action_log VARCHAR(4096) NOT NULL DEFAULT '{}'
 );
 
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS aoe_match_gamer (
      id BIGINT PRIMARY KEY AUTO_INCREMENT NOT NULL,
      match_id BIGINT NOT NULL,
      team INT NOT NULL,
-     result VARCHAR(64) NOT NULL DEFAULT '',
+     result VARCHAR(256) NOT NULL DEFAULT '',
      user_id BIGINT NOT NULL,
      nick_name VARCHAR(128),
      avatar VARCHAR(2048),
