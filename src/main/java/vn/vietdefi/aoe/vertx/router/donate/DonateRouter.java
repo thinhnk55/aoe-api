@@ -130,4 +130,23 @@ public class  DonateRouter {
             rc.response().end(response.toString());
         }
     }
+
+    public static void filterListDonate(RoutingContext rc) {
+        try {
+            long page = Long.parseLong(rc.request().getParam("page"));
+            String phone = rc.request().getParam("phone","");
+            int service = Integer.parseInt(rc.request().getParam("service","0"));
+            long from = Long.parseLong(rc.request().getParam("from","0"));
+            long to = Long.parseLong(rc.request().getParam("to","0"));
+            JsonObject response = AoeServices.donateService.filterListDonate(phone,from,to,service,page,DonateConstant.DEFAULT_RECORD_PER_PAGE);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
 }

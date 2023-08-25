@@ -321,6 +321,45 @@ public class DonateService implements IDonateService {
     }
 
     @Override
+    public JsonObject filterListDonate(String phoneNumber, long from, long to, int service, long page, long record_per_page) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long offset = (page - 1) * record_per_page;
+            StringBuilder query = new StringBuilder("SELECT * FROM aoe_donate WHERE ");
+
+            if (!phoneNumber.isEmpty()) {
+                query.append("phone = ? AND ");
+            }
+            if (service != 0) {
+                query.append("service = ? AND ");
+            }
+            if (from == 0){
+                from = DonateConstant.DEFAULT_time_from;
+            }
+            if (to == 0){
+                to = DonateConstant.DEFAULT_time_to;
+            }
+            query.append("create_time > ? AND create_time < ? ");
+            query.append("ORDER BY create_time DESC LIMIT ? OFFSET ?");
+            JsonArray response;
+            if (phoneNumber.isEmpty() && service == 0) {
+                response = bridge.query(query.toString(), from, to, record_per_page, offset);
+            } else if (phoneNumber.isEmpty()) {
+                response = bridge.query(query.toString(), service, from, to, record_per_page, offset);
+            } else if (service == 0) {
+                response = bridge.query(query.toString(), phoneNumber, from, to, record_per_page, offset);
+            } else {
+                response = bridge.query(query.toString(), phoneNumber, service, from, to, record_per_page, offset);
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", response);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
     public JsonObject statisticDonateById(int service, long targetId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
