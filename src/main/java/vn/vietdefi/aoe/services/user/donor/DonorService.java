@@ -98,11 +98,11 @@ public class DonorService implements IDonorService {
         }
     }
     @Override
-    public JsonObject deleteDonorByUserId(long userId) {
+    public JsonObject deleteDonorByPhone(String phone) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "DELETE FROM aoe_donor WHERE user_id = ?";
-            int row = bridge.update(query, userId);
+            String query = "DELETE FROM aoe_donor WHERE phone = ?";
+            int row = bridge.update(query, phone);
             if (row == 0) {
                 return BaseResponse.createFullMessageResponse(10, "delete_failure");
             } else {

@@ -72,8 +72,8 @@ public class DonorRouter {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
-            long id = json.get("id").getAsLong();
-            JsonObject response = AoeServices.donorService.deleteDonorByUserId(id);
+            String phone = json.get("phone").getAsString();
+            JsonObject response = AoeServices.donorService.deleteDonorByPhone(phone);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
