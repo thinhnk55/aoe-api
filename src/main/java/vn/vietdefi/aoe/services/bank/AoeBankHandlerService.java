@@ -57,6 +57,8 @@ public class AoeBankHandlerService implements IBankHandlerService {
                     return donateGamer(transaction, message);
                 case StarConstant.SERVICE_DONATE_CASTER:
                     return donateCaster(transaction, message);
+                case StarConstant.SERVICE_DONATE_LEAGUE:
+                    return donateLeague(transaction, message);
             }
             return BaseResponse.createFullMessageResponse(12, "service_not_found");
         }catch (Exception e){
@@ -96,7 +98,7 @@ public class AoeBankHandlerService implements IBankHandlerService {
         long targetId = transaction.target_id;
         if(targetId == 0) {
             return AoeServices.donateService.donate(userId, star,
-                    StarConstant.SERVICE_DONATE_MATCH, message.receiverId, "");
+                    StarConstant.SERVICE_DONATE_CASTER, message.receiverId, "");
         }else{
             response = AoeServices.donateService.getDonateById(targetId);
             return response;
@@ -115,7 +117,25 @@ public class AoeBankHandlerService implements IBankHandlerService {
         long targetId = transaction.target_id;
         if(targetId == 0) {
             return AoeServices.donateService.donate(userId, star,
-                    StarConstant.SERVICE_DONATE_MATCH, message.receiverId, "");
+                    StarConstant.SERVICE_DONATE_GAMER, message.receiverId, "");
+        }else{
+            response = AoeServices.donateService.getDonateById(targetId);
+            return response;
+        }
+    }
+    private JsonObject donateLeague(BankTransaction transaction, AoeBankAction message) {
+        //Chuyen sao vao tai khoan message.sender
+        JsonObject response = starRecharge(transaction, message);
+        if(!BaseResponse.isSuccessFullMessage(response)){
+            return response;
+        }
+        //Lay profile message.sender
+        long userId = response.getAsJsonObject("data").get("user_id").getAsLong();
+        long star = transaction.amount / StarConstant.STAR_PRICE_RATE;
+        long targetId = transaction.target_id;
+        if(targetId == 0) {
+            return AoeServices.donateService.donate(userId, star,
+                    StarConstant.SERVICE_DONATE_LEAGUE, message.receiverId, "");
         }else{
             response = AoeServices.donateService.getDonateById(targetId);
             return response;

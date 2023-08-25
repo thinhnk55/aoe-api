@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.bank.logic.BankCode;
 import vn.vietdefi.bank.logic.BankTransaction;
+import vn.vietdefi.util.log.DebugLogger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +37,7 @@ public class AoeBankAction {
         String data = transaction.note;
         // Biểu thức chính quy
         String regex = new StringBuilder( "(\\d+) ").append((AoeBankConstant.MESSAGE_DONATE)).append(" (\\w+\\d+)").toString();
+        DebugLogger.info("{}",data);
         String regex2 = new StringBuilder("(\\d+) ").append(AoeBankConstant.MESSAGE_RECHARGE).toString();
         // Tạo Pattern từ biểu thức chính quy
         Pattern pattern = Pattern.compile(regex);
@@ -63,6 +65,8 @@ public class AoeBankAction {
                     case "bl":
                         service = StarConstant.SERVICE_DONATE_CASTER;
                         break;
+                    case "gd":
+                        service = StarConstant.SERVICE_DONATE_LEAGUE;
                 }
                 long receiverId = target.get("id").getAsLong();
                 return new AoeBankAction(phoneNumber,service, receiverId);

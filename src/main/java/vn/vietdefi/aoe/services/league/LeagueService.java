@@ -156,6 +156,21 @@ public class LeagueService implements ILeagueService{
         }
     }
 
+    @Override
+    public JsonObject addStarForLeague(long leagueId, long amount) {
+            try {
+                SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+                String query = "UPDATE aoe_league SET star_current = star_current + ? WHERE id = ?";
+                bridge.update(query, amount, leagueId);
+                return BaseResponse.createFullMessageResponse(0, "success");
+            } catch (Exception e) {
+                String stacktrace = ExceptionUtils.getStackTrace(e);
+                DebugLogger.error(stacktrace);
+                return BaseResponse.createFullMessageResponse(1, "system_error");
+            }
+
+    }
+
     public JsonObject checkState (long id, int state) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();

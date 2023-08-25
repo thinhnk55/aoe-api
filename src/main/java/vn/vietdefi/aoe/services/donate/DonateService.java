@@ -73,6 +73,10 @@ public class DonateService implements IDonateService {
                 AoeServices.matchService.addStarCurrentMatch(target_id, star);
                 StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_MATCH,star);
             }
+            if (service == StarConstant.SERVICE_DONATE_LEAGUE ){
+                AoeServices.leagueService.addStarForLeague(target_id, star);
+                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_LEAGUE,star);
+            }
             if (service == StarConstant.SERVICE_DONATE_GAMER) {
                 AoeServices.gamerService.gamerUpdateStatistic(target_id);
                 StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_GAMER,star);

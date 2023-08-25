@@ -1,6 +1,11 @@
 package vn.vietdefi.aoe.services.league;
 
 import com.google.gson.JsonObject;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import vn.vietdefi.common.BaseResponse;
+import vn.vietdefi.util.log.DebugLogger;
+import vn.vietdefi.util.sql.HikariClients;
+import vn.vietdefi.util.sql.SQLJavaBridge;
 
 public interface ILeagueService {
     JsonObject createLeague(JsonObject data);
@@ -13,4 +18,6 @@ public interface ILeagueService {
     JsonObject cancelLeague(long id);
     JsonObject deleteLeague(long id);
     JsonObject totalLeagueComplete();
+    JsonObject addStarForLeague(long leagueId, long amount);
+
 }
