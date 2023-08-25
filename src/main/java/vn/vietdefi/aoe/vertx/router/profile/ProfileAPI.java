@@ -26,6 +26,12 @@ public class ProfileAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeUser)
                 .handler(ProfileRouter::updateLanguage);
+        router.get(ApiConfig.instance().getPath("/profile/outstanding-view"))
+                .handler(ProfileRouter::outstandingView);
+        router.get(ApiConfig.instance().getPath("/profile/list-gamer-favorites"))
+                .handler(ProfileRouter::listGamerFavorites);
+        router.get(ApiConfig.instance().getPath("/profile/get-partial"))
+                .handler(ProfileRouter::getPartialProfile);
     }
     public static void supportAuthApi(Router router) {
         router.get(ApiConfig.instance().getPath("/profile/search"))

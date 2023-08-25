@@ -130,32 +130,4 @@ public class  DonateRouter {
             rc.response().end(response.toString());
         }
     }
-
-    public static void listDonateOfUser(RoutingContext rc) {
-        try {
-            long userId = Long.parseLong(rc.request().getParam("id"));
-            long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.donateService.listDonateOfUser(userId, page, DonateConstants.DEFAULT_RECORD_PER_PAGE);
-            rc.response().end(response.toString());
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
-            rc.response().end(response.toString());
-        }
-    }
-
-    public static void listGamerFavorites(RoutingContext rc) {
-        try {
-            long userId = Long.parseLong(rc.request().getParam("id"));
-            long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.donateService.listGamerFavorites(userId, page, DonateConstants.DEFAULT_RECORD_PER_PAGE);
-            rc.response().end(response.toString());
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
-            rc.response().end(response.toString());
-        }
-    }
 }

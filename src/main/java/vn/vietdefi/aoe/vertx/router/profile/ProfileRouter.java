@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.donate.DonateConstants;
+import vn.vietdefi.aoe.services.profile.ProfileConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
@@ -65,6 +67,47 @@ public class ProfileRouter {
             DebugLogger.error(stacktrace);
             JsonObject response = BaseResponse.createFullMessageResponse(
                     1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void outstandingView(RoutingContext rc) {
+        try {
+            long userId = Long.parseLong(rc.request().getParam("id"));
+            long page = Long.parseLong(rc.request().getParam("page", "1"));
+            JsonObject response = AoeServices.profileService.getOutstandingView(userId, page, ProfileConstant.DEFAULT_RECORD_PER_PAGE);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void listGamerFavorites(RoutingContext rc) {
+        try {
+            long userId = Long.parseLong(rc.request().getParam("id"));
+            long page = Long.parseLong(rc.request().getParam("page", "1"));
+            JsonObject response = AoeServices.profileService.getListGamerFavorites(userId, page, ProfileConstant.DEFAULT_RECORD_PER_PAGE);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void getPartialProfile(RoutingContext rc) {
+        try {
+            long userId = Long.parseLong(rc.request().getParam("id"));
+            JsonObject response = AoeServices.profileService.getPartialProfile(userId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
             rc.response().end(response.toString());
         }
     }

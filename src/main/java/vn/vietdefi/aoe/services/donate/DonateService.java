@@ -162,10 +162,8 @@ public class DonateService implements IDonateService {
             case StarConstant.SERVICE_DONATE_LEAGUE:
                 //TODO
                 break;
-            default:
-                return BaseResponse.createFullMessageResponse(11, "invalid_service");
         }
-        return BaseResponse.createFullMessageResponse(10, "target_not_found");
+        return null;
     }
 
     @Override
@@ -284,10 +282,6 @@ public class DonateService implements IDonateService {
     @Override
     public JsonObject listDonateOfUser(long userId, long page, long recordPerPage) {
         try {
-            JsonObject response = AoeServices.profileService.getUserProfileByUserId(userId);
-            if (!BaseResponse.isSuccessFullMessage(response)) {
-                return response;
-            }
             long offset = (page - 1) * recordPerPage;
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM aoe_donate WHERE user_id = ? AND service IN (?,?) LIMIT ? OFFSET ?";
@@ -298,10 +292,7 @@ public class DonateService implements IDonateService {
                 JsonObject target = getTargetById(service, targetId);
                 element.getAsJsonObject().add("target", target);
             }
-            JsonObject result = new JsonObject();
-            result.add("profile", response.getAsJsonObject("data"));
-            result.add("donate", data);
-            return BaseResponse.createFullMessageResponse(0, "success", result);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
@@ -322,9 +313,7 @@ public class DonateService implements IDonateService {
                 gamers.add(target);
                 element.getAsJsonObject().add("target", target);
             }
-            JsonObject result = new JsonObject();
-            result.add("gamer", gamers);
-            return BaseResponse.createFullMessageResponse(0, "success", result);
+            return BaseResponse.createFullMessageResponse(0, "success", gamers);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");

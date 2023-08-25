@@ -40,10 +40,6 @@ public class DonateAPI {
         router.get(ApiConfig.instance().getPath("/donate/list-top-all"))
                 .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::listAllTopDonate);
-        router.get(ApiConfig.instance().getPath("/donate/list-of-user"))
-                .handler(DonateRouter::listDonateOfUser);
-        router.get(ApiConfig.instance().getPath("/donate/list-gamer-favorites"))
-                .handler(DonateRouter::listGamerFavorites);
     }
     public static void supportAuthApi(Router router) {
 

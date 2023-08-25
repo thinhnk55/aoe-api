@@ -3,6 +3,7 @@ package vn.vietdefi.aoe.services.profile;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.aoe.services.statistic.logic.Statistic;
 import vn.vietdefi.aoe.services.statistic.logic.StatisticController;
 import vn.vietdefi.api.services.ApiServices;
@@ -96,7 +97,7 @@ public class ProfileService implements IProfileService {
             String query = "UPDATE aoe_profile SET lang = ? WHERE user_id = ?";
             int row = bridge.update(query, lang, id);
             if(row == 0){
-                return BaseResponse.createFullMessageResponse(10, "user_not_found");
+                return BaseResponse.createFullMessageResponse(10, "update_failure");
             }
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
@@ -131,6 +132,67 @@ public class ProfileService implements IProfileService {
                 return BaseResponse.createFullMessageResponse(10, "delete_profile_failed");
             }
             return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject getOutstandingView(long userId, long page, int recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT user_id FROM aoe_profile WHERE user_id = ?";
+            if(!bridge.queryExist(query, userId)){
+                return BaseResponse.createFullMessageResponse(10, "user_not_found");
+            }
+            JsonObject data = new JsonObject();
+            JsonObject response = AoeServices.donateService.listDonateOfUser(userId, page, recordPerPage);
+            if(BaseResponse.isSuccessFullMessage(response)){
+                data.add("donate", response.getAsJsonArray("data"));
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject getListGamerFavorites(long userId, long page, int recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT user_id FROM aoe_profile WHERE user_id = ?";
+            if(!bridge.queryExist(query, userId)){
+                return BaseResponse.createFullMessageResponse(10, "user_not_found");
+            }
+            JsonObject data = new JsonObject();
+            JsonObject response = AoeServices.donateService.listGamerFavorites(userId, page, recordPerPage);
+            if(BaseResponse.isSuccessFullMessage(response)){
+                data.add("gamer", response.getAsJsonArray("data"));
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject getPartialProfile(long userId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT user_id, nick_name, avatar FROM aoe_profile WHERE user_id = ?";
+            JsonObject data = bridge.queryOne(query, userId);
+            if(data == null) {
+                return BaseResponse.createFullMessageResponse(10, "user_not_found");
+            }
+            JsonObject response = AoeServices.starService.getStarWalletByUserId(userId);
+            if(BaseResponse.isSuccessFullMessage(response)) {
+                int star = response.getAsJsonObject("data").get("balance").getAsInt();
+                data.addProperty("star", star);
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");

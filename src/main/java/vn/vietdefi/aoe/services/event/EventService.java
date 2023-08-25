@@ -273,6 +273,11 @@ public class EventService implements IEventService {
                             .append("ORDER BY ABS(? - lucky_number), create_time\n")
                             .append("LIMIT ?").toString();
             JsonArray data = bridge.query(query, luckyNumber, eventId, EventConstants.QUEUED_PARTICIPANT, luckyNumber, limit);
+            for (JsonElement element : data) {
+                long userId = element.getAsJsonObject().get("user_id").getAsLong();
+                JsonObject profile = AoeServices.profileService.getUserProfileByUserId(userId);
+                element.getAsJsonObject().add("profile", profile.getAsJsonObject("data"));
+            }
             JsonObject result = new JsonObject();
             result.add("listWinning", data);
             return BaseResponse.createFullMessageResponse(0, "success", result);

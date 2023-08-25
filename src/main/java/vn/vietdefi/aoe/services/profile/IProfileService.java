@@ -10,4 +10,10 @@ public interface IProfileService {
     JsonObject updateNickName(long id, String nickname);
     /*These function user for TEST only. In real situation these actions is prohibited*/
     JsonObject deleteProfile(long userId);
+
+    JsonObject getOutstandingView(long userId, long page, int recordPerPage);
+
+    JsonObject getListGamerFavorites(long userId, long page, int recordPerPage);
+
+    JsonObject getPartialProfile(long userId);
 }

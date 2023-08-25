@@ -61,7 +61,7 @@ public class LeagueTest {
             startLeague(user, leagueId);
             endLeague(user, leagueId);
             cancelLeague(user, leagueId);
-            deleteLeague(leagueId);
+//            deleteLeague(leagueId);
 
         }
 
