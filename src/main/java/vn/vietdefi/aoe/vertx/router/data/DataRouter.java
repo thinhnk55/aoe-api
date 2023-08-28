@@ -14,7 +14,7 @@ public class DataRouter {
         try{
             String body = rc.body().asString();
             JsonObject data = GsonUtil.toJsonObject(body);
-            JsonObject response = AoeServices.dataService.updateData(DataConstant.aoe_contact, data);
+            JsonObject response = AoeServices.dataService.updateData(DataConstant.AOE_CONTACT, data);
             if(BaseResponse.isSuccessFullMessage(response)){
                 DataCache.AOE_CONTACT = response.toString();
             }
@@ -28,7 +28,7 @@ public class DataRouter {
     public static void getContact(RoutingContext rc){
         try{
             if(DataCache.AOE_CONTACT == null) {
-                JsonObject response = AoeServices.dataService.getData(DataConstant.aoe_contact);
+                JsonObject response = AoeServices.dataService.getData(DataConstant.AOE_CONTACT);
                 if(BaseResponse.isSuccessFullMessage(response)){
                     DataCache.AOE_CONTACT = response.toString();
                     rc.response().end(DataCache.AOE_CONTACT);
@@ -36,7 +36,7 @@ public class DataRouter {
                     JsonObject data = new JsonObject();
                     data.addProperty("phone", "");
                     data.addProperty("facebook", "");
-                    response = AoeServices.dataService.createData(DataConstant.aoe_contact, data);
+                    response = AoeServices.dataService.createData(DataConstant.AOE_CONTACT, data);
                     if(BaseResponse.isSuccessFullMessage(response)){
                         DataCache.AOE_CONTACT = response.toString();
                         rc.response().end(DataCache.AOE_CONTACT);
