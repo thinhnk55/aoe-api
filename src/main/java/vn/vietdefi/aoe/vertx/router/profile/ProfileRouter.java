@@ -25,7 +25,7 @@ public class ProfileRouter {
     }
     public static void searchProfile(RoutingContext rc) {
         try {
-            String query = rc.request().getParam("q");
+            String query = rc.request().getParam("phone_number");
             JsonObject response = AoeServices.profileService.searchProfile(query);
             rc.response().end(response.toString());
         } catch (Exception e) {

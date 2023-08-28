@@ -338,10 +338,10 @@ public class DonateService implements IDonateService {
                 query.append("service = ? AND ");
             }
             if (from == 0){
-                from = DonateConstant.DEFAULT_time_from;
+                from = DonateConstant.DEFAULT_TIME_FROM;
             }
             if (to == 0){
-                to = DonateConstant.DEFAULT_time_to;
+                to = DonateConstant.DEFAULT_TIME_TO;
             }
             query.append("create_time > ? AND create_time < ? ");
             query.append("ORDER BY create_time DESC LIMIT ? OFFSET ?");
