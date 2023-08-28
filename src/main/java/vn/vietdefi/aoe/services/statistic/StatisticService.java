@@ -3,19 +3,16 @@ package vn.vietdefi.aoe.services.statistic;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
-import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.aoe.services.statistic.logic.Statistic;
 import vn.vietdefi.aoe.services.statistic.logic.StatisticController;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
-import vn.vietdefi.util.sql.HikariClients;
-import vn.vietdefi.util.sql.SQLJavaBridge;
 
 public class StatisticService implements IStatisticService {
     @Override
     public JsonObject updateStatistic() {
         try {
-            JsonObject response = AoeServices.donateService.statisticTotalDonate().getAsJsonObject("data");
+            JsonObject response = AoeServices.donateService.statisticTotalDonate(0,System.currentTimeMillis()).getAsJsonObject("data");
             JsonObject user = AoeServices.userService.statistic().getAsJsonObject("data");
             JsonObject match = AoeServices.matchService.statistic().getAsJsonObject("data");
             response.add("total_registered_user",user.get("total_registered_user"));

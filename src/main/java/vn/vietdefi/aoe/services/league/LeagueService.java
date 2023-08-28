@@ -3,6 +3,7 @@ package vn.vietdefi.aoe.services.league;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import vn.vietdefi.aoe.services.statistic.logic.StatisticController;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -119,6 +120,7 @@ public class LeagueService implements ILeagueService{
             detail.add("result", result);
             String query = "UPDATE aoe_league SET detail = ?, state = ? WHERE id = ?";
             bridge.update(query, detail, LeagueConstant.STATE_FINISHED, leagueId);
+            StatisticController.instance().tournamentComplete();
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));

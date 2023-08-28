@@ -242,21 +242,24 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject statisticTotalDonate() {
+    public JsonObject statisticTotalDonate(long from, long to) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT COUNT(DISTINCT user_id) AS total_user_donate, COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate";
-            JsonObject response = bridge.queryOne(query);
+            String query = "SELECT COUNT(DISTINCT user_id) AS total_user_donate, COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE create_time > ? AND create_time < ?";
+            JsonObject response = bridge.queryOne(query,from,to);
             query = new StringBuilder("SELECT service, COALESCE(SUM(amount), 0) as total_star_donate\n")
                     .append("FROM aoe_donate \n ")
                     .append("WHERE service IN (?,?,?,?)\n")
+                    .append(" AND create_time > ? AND create_time < ?\n")
                     .append("GROUP BY service")
                     .toString();
             JsonArray array = bridge.query(query,
                     StarConstant.SERVICE_DONATE_MATCH,
                     StarConstant.SERVICE_DONATE_GAMER,
                     StarConstant.SERVICE_DONATE_CASTER,
-                    StarConstant.SERVICE_DONATE_LEAGUE);
+                    StarConstant.SERVICE_DONATE_LEAGUE,
+                    from,
+                    to);
             response.addProperty("total_star_donate_for_match", 0);
             response.addProperty("total_star_donate_for_gamer", 0);
             response.addProperty("total_star_donate_for_caster", 0);
@@ -339,11 +342,8 @@ public class DonateService implements IDonateService {
             if (service != 0) {
                 query.append("service = ? AND ");
             }
-            if (from == 0){
-                from = DonateConstant.DEFAULT_TIME_FROM;
-            }
             if (to == 0){
-                to = DonateConstant.DEFAULT_TIME_TO;
+                to = System.currentTimeMillis();
             }
             query.append("create_time > ? AND create_time < ? ");
             query.append("ORDER BY create_time DESC LIMIT ? OFFSET ?");

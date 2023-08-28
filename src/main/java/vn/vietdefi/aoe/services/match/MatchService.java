@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.statistic.logic.StatisticController;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
@@ -289,7 +290,7 @@ public class MatchService implements IMatchService {
             updateDb.add("detail",data.get("detail").getAsJsonObject());
             updateDb.addProperty("state", MatchConstant.STATE_FINISHED);
             bridge.updateObjectToDb("aoe_match", "id", updateDb);
-
+            StatisticController.instance().matchComplete();
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
