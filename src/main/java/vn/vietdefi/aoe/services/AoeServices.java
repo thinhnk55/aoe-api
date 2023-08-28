@@ -4,7 +4,7 @@ import vn.vietdefi.aoe.services.auth.AoeAuthService;
 import vn.vietdefi.aoe.services.auth.IAoeAuthService;
 import vn.vietdefi.aoe.services.clan.ClanService;
 import vn.vietdefi.aoe.services.clan.IClanService;
-import vn.vietdefi.aoe.services.data.DataSevice;
+import vn.vietdefi.aoe.services.data.DataService;
 import vn.vietdefi.aoe.services.data.IDataService;
 import vn.vietdefi.aoe.services.event.EventService;
 import vn.vietdefi.aoe.services.event.IEventService;
@@ -51,5 +51,5 @@ public class AoeServices {
     public static IStatisticService statisticService = new StatisticService();
     public static IDonorService donorService = new DonorService();
     public static IImpresarioService impresarioService = new ImpresarioService();
-    public static IDataService dataService = new DataSevice();
+    public static IDataService dataService = new DataService();
 }

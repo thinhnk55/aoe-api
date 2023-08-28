@@ -34,18 +34,6 @@ public class StatisticRouter {
             rc.response().end(response.toString());
         }
     }
-    public static void updateStatistic(RoutingContext rc){
-        try {
-            JsonObject response = AoeServices.statisticService.updateStatistic();
-            rc.response().end(response.toString());
-        } catch (Exception e) {
-            String stacktrace = ExceptionUtils.getStackTrace(e);
-            DebugLogger.error(stacktrace);
-            JsonObject response = BaseResponse.createFullMessageResponse(
-                    1, "system_error");
-            rc.response().end(response.toString());
-        }
-    }
 
     public static void adminCallBackUpdateStatistic(RoutingContext rc){
         try {

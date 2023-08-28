@@ -1,13 +1,17 @@
 package vn.vietdefi.aoe.services.statistic.logic;
 
 import com.google.gson.JsonObject;
+import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.aoe.services.statistic.IStatisticService;
 import vn.vietdefi.aoe.services.statistic.StatisticService;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 
+import java.util.jar.JarEntry;
+
 public class StatisticController {
     private static StatisticController ins = null;
+
     public static StatisticController instance() {
         if (ins == null) {
             ins = new StatisticController();
@@ -15,23 +19,29 @@ public class StatisticController {
         }
         return ins;
     }
-    private StatisticController(){
-        updateStatistic();
+
+    private StatisticController() {
+        StatisticStart();
     }
 
     Statistic statistic;
     IStatisticService statisticService = new StatisticService();
 
 
-    public void updateStatistic() {
+    public void StatisticStart() {
+        JsonObject response = AoeServices.dataService.getData("statistic");
+        if (BaseResponse.isSuccessFullMessage(response)) {
+            statistic = new Statistic(response.get("data").getAsJsonObject());
+        }
         if (statistic == null) {
-            statistic = UpdateStatistic();
+            statistic = updateStatistic();
         }
     }
 
     public void callBackUpdateStatistic() {
-            statistic = UpdateStatistic();
+        statistic = updateStatistic();
     }
+
     public Statistic getStatistic() {
         return statistic;
     }
@@ -60,11 +70,20 @@ public class StatisticController {
         statistic.updateStarsDonatedToEntities(entity, stars);
     }
 
-    public Statistic UpdateStatistic() {
+    public Statistic updateStatistic() {
         JsonObject response = statisticService.updateStatistic();
         if (BaseResponse.isSuccessFullMessage(response)) {
-            return new Statistic(response.get("data").getAsJsonObject());
+            statistic = new Statistic(response.get("data").getAsJsonObject());
+            JsonObject data = AoeServices.dataService.getData("statistic");
+            if (!BaseResponse.isSuccessFullMessage(data)) {
+                response = AoeServices.dataService.createData("statistic", response.get("data").getAsJsonObject());
+                DebugLogger.info("{}",response);
+            } else {
+                response = AoeServices.dataService.updateData("statistic", response.get("data").getAsJsonObject());
+                DebugLogger.info("{}",response);
+            }
         }
-        return null;
+        return statistic;
+
     }
 }

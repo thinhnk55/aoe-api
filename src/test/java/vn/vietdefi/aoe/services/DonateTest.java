@@ -40,7 +40,8 @@ public class DonateTest {
 //            DebugLogger.info("{} {}", gap, response);
 //            JsonObject response = BankServices.bankService.getOneWorkingBankAccount();
 //            DebugLogger.info("{} ", response);
-            JsonObject response = AoeServices.donateService.statisticTotalDonate(0,System.currentTimeMillis());
+
+            JsonObject response = AoeServices.statisticService.adminCallBackUpdateStatistic();
             DebugLogger.info("{} ", response);
         }
     }
