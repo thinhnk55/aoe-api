@@ -45,7 +45,7 @@ public class DataTest {
 
         @Test
         public void test0() {
-            createContact();
+            getContact();
             updateContact();
             getContact();
         }

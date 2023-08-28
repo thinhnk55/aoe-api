@@ -28,7 +28,7 @@ public class DataSevice implements IDataService{
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE aoe_data SET data = ? WHERE name = ?";
-            int result = bridge.update(query, name, data);
+            int result = bridge.update(query, data, name);
             if (result == 0)
                 return BaseResponse.createFullMessageResponse(11, "update_reject");
             return BaseResponse.createFullMessageResponse(0, "success", data);
@@ -46,7 +46,7 @@ public class DataSevice implements IDataService{
             JsonObject data = bridge.queryOne(query, name);
             if (data == null)
                 return BaseResponse.createFullMessageResponse(12, "data_not_found");
-            return BaseResponse.createFullMessageResponse(0, "success", data);
+            return BaseResponse.createFullMessageResponse(0, "success", data.getAsJsonObject("data"));
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
