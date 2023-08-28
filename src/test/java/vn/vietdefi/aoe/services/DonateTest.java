@@ -38,7 +38,9 @@ public class DonateTest {
 //            JsonObject response = AoeServices.donateService.filterListDonate(phone,from,now,service,1,15);
 //            long gap = System.currentTimeMillis()-now;
 //            DebugLogger.info("{} {}", gap, response);
-            JsonObject response = BankServices.bankService.getOneWorkingBankAccount();
+//            JsonObject response = BankServices.bankService.getOneWorkingBankAccount();
+//            DebugLogger.info("{} ", response);
+            JsonObject response = AoeServices.donateService.statisticTotalDonate(0,System.currentTimeMillis());
             DebugLogger.info("{} ", response);
         }
     }
