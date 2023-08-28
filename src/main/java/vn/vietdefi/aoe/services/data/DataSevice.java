@@ -14,11 +14,7 @@ public class DataSevice implements IDataService{
     public JsonObject createData(String name, JsonObject data) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM aoe_data WHERE name = ?";
-            boolean isExist = bridge.queryExist(query, name);
-            if (isExist)
-                return BaseResponse.createFullMessageResponse(10, "data_exist");
-            query = "INSERT INTO aoe_data(name, data) VALUES (?, ?)";
+            String query = "INSERT INTO aoe_data(name, data) VALUES (?, ?)";
             bridge.update(query, name, data);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
@@ -35,7 +31,7 @@ public class DataSevice implements IDataService{
             int result = bridge.update(query, name, data);
             if (result == 0)
                 return BaseResponse.createFullMessageResponse(11, "update_reject");
-            return BaseResponse.createFullMessageResponse(0, "success");
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");

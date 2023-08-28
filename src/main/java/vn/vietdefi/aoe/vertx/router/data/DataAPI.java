@@ -23,10 +23,6 @@ public class DataAPI {
 
     }
     public static void adminAuthApi(Router router) {
-        router.post(ApiConfig.instance().getPath("/data/contact/create"))
-                .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeAdmin)
-                .handler(DataRouter::createContact);
         router.post(ApiConfig.instance().getPath("/data/contact/update"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
