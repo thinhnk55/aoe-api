@@ -47,7 +47,14 @@ public class StarService implements IStarService {
             String query = "SELECT * FROM aoe_star WHERE user_id = ?";
             JsonObject data = bridge.queryOne(query, userId);
             if (data == null) {
-                return createStarWallet(userId);
+                data = createStarWallet(userId);
+            }
+            JsonObject profile = AoeServices.profileService.getUserProfileByUserId(userId);
+            if (BaseResponse.isSuccessFullMessage(profile)) {
+                data.addProperty("nick_name", profile.getAsJsonObject("data")
+                        .get("nick_name").getAsString());
+                data.addProperty("avatar", profile.getAsJsonObject("data")
+                        .get("avatar").getAsString());
             }
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {

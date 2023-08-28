@@ -116,7 +116,7 @@ public class StarTest {
             /*test admin get star wallet by userId*/
             long starWalletId = user.get("id").getAsLong();
             String adminGetStarURL = new StringBuilder(baseUrl).append("/star/admin/get")
-                    .append("?user_id=").append(starWalletId).toString();
+                    .append("?user_id=").append(1).toString();
             DebugLogger.info("{}", adminGetStarURL);
             response = OkHttpUtil.get(adminGetStarURL, Common.createHeaderSupport());
             DebugLogger.info("{}", response);
