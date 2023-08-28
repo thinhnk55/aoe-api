@@ -52,7 +52,7 @@ public class StatisticController {
         statistic.updateTournamentStats();
     }
 
-    public void championshipComplete() {
+    public void matchComplete() {
         statistic.updateMatchStats();
     }
 
