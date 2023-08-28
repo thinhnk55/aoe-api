@@ -151,8 +151,8 @@ public class StarService implements IStarService {
                 data.add("refer", account);
             }
         }
-        response = AoeServices.donateService.getDonateById(referId);
-        data.addProperty("message", response.getAsJsonObject("data").get("message").getAsString());
+//        response = AoeServices.donateService.getDonateById(referId);
+//        data.addProperty("message", response.getAsJsonObject("data").get("message").getAsString());
 //        } else if (service == StarConstant.SERVICE_DONATE_GAMER) {
 //            if (BaseResponse.isSuccessFullMessage(response)) {
 //                long id = response.getAsJsonObject("data").get("target_id").getAsLong();

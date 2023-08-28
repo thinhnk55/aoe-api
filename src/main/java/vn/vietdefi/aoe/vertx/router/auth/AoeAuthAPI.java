@@ -66,5 +66,13 @@ public class AoeAuthAPI {
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeSystemAdmin)
                 .handler(AuthRouter::updateUsername);
+        router.post(ApiConfig.instance().getPath("/auth/admin/get-user"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeAdmin)
+                .handler(AoeAuthRouter::getUserByUsername);
+        router.post(ApiConfig.instance().getPath("/auth/admin/change-status"))
+                .handler(BodyHandler.create(false))
+                .handler(AuthRouter::authorizeAdmin)
+                .handler(AoeAuthRouter::changeStatus);
     }
 }

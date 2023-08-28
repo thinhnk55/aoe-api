@@ -16,11 +16,12 @@ public class AoeAuthRouter {
             JsonObject json = GsonUtil.toJsonObject(data);
             JsonObject response = AoeServices.aoeAuthService.register(json);
             rc.response().end(response.toString());
-        }catch (Exception e){
+        } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
         }
     }
+
     public static void login(RoutingContext rc) {
         try {
             String data = rc.body().asString();
@@ -32,12 +33,40 @@ public class AoeAuthRouter {
             rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
         }
     }
+
     public static void deleteUser(RoutingContext rc) {
         try {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
             long userId = Long.parseLong(json.get("user_id").getAsString());
             JsonObject response = AoeServices.aoeAuthService.deleteUser(userId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
+
+    public static void getUserByUsername(RoutingContext rc) {
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            String username = json.get("username").getAsString();
+            JsonObject response = AoeServices.aoeAuthService.get(username);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(1, "system_error").toString());
+        }
+    }
+
+    public static void changeStatus(RoutingContext rc) {
+        try {
+            String data = rc.body().asString();
+            JsonObject json = GsonUtil.toJsonObject(data);
+            long userId = json.get("user_id").getAsLong();
+            int status = json.get("status").getAsInt();
+            JsonObject response = AoeServices.aoeAuthService.changeStatus(userId, status);
             rc.response().end(response.toString());
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
