@@ -74,9 +74,10 @@ public class MatchSuggestRouter {
     public static void getListMatchSuggested(RoutingContext rc) {
         try {
             long userid = Long.parseLong(rc.request().getHeader("userid"));
+            int state = Integer.parseInt(rc.request().getParam("state"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
 
-            JsonObject response = AoeServices.suggestService.getListMatchSuggested(userid, page, MatchSuggestConstant.DEFAULT_RECORD_PER_PAGE );
+            JsonObject response = AoeServices.suggestService.getListMatchSuggested(userid, state, page, MatchSuggestConstant.DEFAULT_RECORD_PER_PAGE );
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -91,7 +92,7 @@ public class MatchSuggestRouter {
         try {
             long page = Long.parseLong(rc.request().getParam("page", "1"));
             int state = Integer.parseInt(rc.request().getParam("state"));
-            JsonObject response = AoeServices.suggestService.getListMatchSuggested(page, MatchSuggestConstant.DEFAULT_RECORD_PER_PAGE,state );
+            JsonObject response = AoeServices.suggestService.getListMatchSuggested(state, page, MatchSuggestConstant.DEFAULT_RECORD_PER_PAGE );
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

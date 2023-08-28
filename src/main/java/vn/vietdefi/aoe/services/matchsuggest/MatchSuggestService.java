@@ -83,13 +83,13 @@ public class MatchSuggestService implements IMatchSuggestService{
     }
 
 
-    public JsonObject getListMatchSuggested(long userId, long page, long recordPerPage) {
+    public JsonObject getListMatchSuggested(long userId, int state, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
             JsonObject data = new JsonObject();
-            String dataQuery = "SELECT * FROM aoe_match_suggest WHERE suggester_id = ? ORDER BY state DESC LIMIT ? OFFSET ?";
-            JsonArray array = bridge.query(dataQuery, userId, recordPerPage, offset);
+            String dataQuery = "SELECT * FROM aoe_match_suggest WHERE suggester_id = ? AND state = ? ORDER BY state DESC LIMIT ? OFFSET ?";
+            JsonArray array = bridge.query(dataQuery, userId, state, recordPerPage, offset);
             data.add("match", array);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class MatchSuggestService implements IMatchSuggestService{
     }
 
 
-    public JsonObject getListMatchSuggested(long page, long recordPerPage, int state) {
+    public JsonObject getListMatchSuggested(int state, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
