@@ -133,7 +133,7 @@ public class  DonateRouter {
 
     public static void filterListDonate(RoutingContext rc) {
         try {
-            long page = Long.parseLong(rc.request().getParam("page"));
+            long page = Long.parseLong(rc.request().getParam("page","1"));
             String phone = rc.request().getParam("phone","");
             int service = Integer.parseInt(rc.request().getParam("service","0"));
             long from = Long.parseLong(rc.request().getParam("from","0"));
