@@ -23,6 +23,7 @@ public class DonateService implements IDonateService {
             JsonObject profile = response.getAsJsonObject("data");
             String username = profile.get("username").getAsString();
             String nick_name = profile.get("nick_name").getAsString();
+            String avatar = profile.get("avatar").getAsString();
             response = verifyTarget(service, target_id);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(11, "donate_reject");
@@ -41,6 +42,7 @@ public class DonateService implements IDonateService {
             data.addProperty("username", username);
             data.addProperty("nick_name", nick_name);
             data.addProperty("phone", username);
+            data.addProperty("avatar", avatar);
             data.addProperty("amount", star);
             data.addProperty("service", service);
             data.addProperty("target_id", target_id);

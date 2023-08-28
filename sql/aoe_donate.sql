@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS aoe_donate (
     username VARCHAR(256) NOT NULL,
     nick_name VARCHAR(256) NOT NULL,
     phone varchar(256) NOT NULL,
+    avatar VARCHAR(2048) NOT NULL DEFAULT '' ,
     amount INT  NOT NULL,
     service INT NOT NULL,
     target_id BIGINT NOT NULL,
