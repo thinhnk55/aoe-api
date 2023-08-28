@@ -21,13 +21,11 @@ public class LeagueAPI {
                         .instance()
                         .getPath("/league/get"))
                 .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeUser)
                 .handler(LeagueRouter::getInfo);
         router.get(ApiConfig
                         .instance()
                         .getPath("/league/list"))
                 .handler(BodyHandler.create(false))
-                .handler(AuthRouter::authorizeUser)
                 .handler(LeagueRouter::getListByState);
     }
     public static void supportAuthApi(Router router) {
