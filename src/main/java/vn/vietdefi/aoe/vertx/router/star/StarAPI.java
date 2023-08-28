@@ -38,6 +38,9 @@ public class StarAPI {
         router.get(ApiConfig.instance().getPath("/star/admin/transaction/recharge"))
                 .handler(AuthRouter::authorizeSupport)
                 .handler(StarRouter::lookupRechargeHistory);
+        router.get(ApiConfig.instance().getPath("/star/admin/transaction/time"))
+                .handler(AuthRouter::authorizeSupport)
+                .handler(StarRouter::adminListOfUserByTime);
     }
     public static void adminAuthApi(Router router) {
 

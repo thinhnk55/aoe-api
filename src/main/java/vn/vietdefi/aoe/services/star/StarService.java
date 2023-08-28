@@ -102,23 +102,6 @@ public class StarService implements IStarService {
     }
 
     @Override
-    public JsonObject listStarTransactionOfUserByTime(long time, long userId, long page, long recordPerPage) {
-        try {
-            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long offset = (page - 1) * recordPerPage;
-            long currentTime = System.currentTimeMillis();
-            long daysInMillis = time * 24 * 60 * 60 * 1000;
-            currentTime = currentTime + daysInMillis;
-            String query = "SELECT * FROM aoe_star_transaction WHERE user_id = ? AND create_time > ? ORDER BY create_time DESC LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, userId, currentTime, recordPerPage, offset);
-            return BaseResponse.createFullMessageResponse(0, "success", data);
-        } catch (Exception e) {
-            DebugLogger.error(ExceptionUtils.getStackTrace(e));
-            return BaseResponse.createFullMessageResponse(1, "system_error");
-        }
-    }
-
-    @Override
     public JsonObject getStarTransactionById(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();

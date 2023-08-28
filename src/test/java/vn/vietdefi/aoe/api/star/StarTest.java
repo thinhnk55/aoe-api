@@ -133,6 +133,15 @@ public class StarTest {
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertEquals(20, response.getAsJsonObject("data").getAsJsonArray("transaction").size());
+
+            String adminGetTransactionByTimeURL = new StringBuilder(baseUrl).append("/star/admin/transaction/time")
+                    .append("?user_id=").append("6").append("&from=").append("1692349920758").append("&to=").append("1692677189120")
+                    .append("&page=").append(1).toString();
+            DebugLogger.info("{}", adminGetTransactionByTimeURL);
+            response = OkHttpUtil.get(adminGetTransactionByTimeURL, Common.createHeaderSupperAdmin());
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+
         }
         @Test
         public void test1(){

@@ -7,7 +7,6 @@ public interface IStarService {
     JsonObject listStarTransactionOfUserByService(long userId, int service, long page, long recordPerPage);
     JsonObject listStarTransactionOfUserAll(long userId, long page, long recordPerPage);
     JsonObject listStarTransactionOfUserByTime(long userId, long from, long to, long page, long recordPerPage);
-    JsonObject listStarTransactionOfUserByTime(long time, long userId, long page, long recordPerPage);
     JsonObject getStarTransactionById(long id);
     JsonObject exchangeStar(String username, int service, long amount, long referId);
     JsonObject exchangeStar(long userId, int service, long amount, long referId);

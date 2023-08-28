@@ -12,7 +12,7 @@ import vn.vietdefi.util.log.DebugLogger;
 public class StarRouter {
     public static void getStarWallet(RoutingContext rc) {
         try {
-            long id = Long.parseLong(rc.request().getHeader("userId"));
+            long id = Long.parseLong(rc.request().getHeader("userid"));
             JsonObject response = AoeServices.starService.getStarWalletByUserId(id);
             rc.response().end(response.toString());
         } catch (Exception e) {
@@ -36,7 +36,7 @@ public class StarRouter {
 
     public static void listByService(RoutingContext rc) {
         try {
-            long userId = Long.parseLong(rc.request().getHeader("userId"));
+            long userId = Long.parseLong(rc.request().getHeader("userid"));
             int service = Integer.parseInt(rc.request().getParam("service"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
             JsonObject response = AoeServices.starService.listStarTransactionOfUserByService(userId, service, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
@@ -50,7 +50,7 @@ public class StarRouter {
 
     public static void listByTime(RoutingContext rc) {
         try {
-            long userId = Long.parseLong(rc.request().getHeader("userId"));
+            long userId = Long.parseLong(rc.request().getHeader("userid"));
             long from = Long.parseLong(rc.request().getParam("from"));
             long to = Long.parseLong(rc.request().getParam("to"));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
@@ -65,6 +65,22 @@ public class StarRouter {
                                 page, StarConstant.DEFAULT_RECORD_PER_PAGE);
                 rc.response().end(response.toString());
             }
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            rc.response().end(BaseResponse.createFullMessageResponse(
+                    1, "system_error").toString());
+        }
+    }
+
+    public static void adminListOfUserByTime(RoutingContext rc) {
+        try {
+            long userId = Long.parseLong(rc.request().getParam("user_id"));
+            long from = Long.parseLong(rc.request().getParam("from"));
+            long to = Long.parseLong(rc.request().getParam("to"));
+            long page = Long.parseLong(rc.request().getParam("page", "1"));
+            JsonObject response = AoeServices.starService
+                    .listStarTransactionOfUserByTime(userId, from, to, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+            rc.response().end(response.toString());
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             rc.response().end(BaseResponse.createFullMessageResponse(
