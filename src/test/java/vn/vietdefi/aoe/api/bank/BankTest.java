@@ -98,7 +98,7 @@ public class BankTest {
         private JsonObject getListBank(){
             String url = new StringBuilder(baseUrl)
                     .append("/bank/list?page=1").toString();
-            JsonObject response = OkHttpUtil.get(url, Common.createHeaderSupport());
+            JsonObject response = OkHttpUtil.get(url, Common.createHeaderSystemAdmin());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             return response;
