@@ -5,6 +5,7 @@ import vn.vietdefi.aoe.vertx.router.Statistic.StatisticApi;
 import vn.vietdefi.aoe.vertx.router.auth.AoeAuthAPI;
 import vn.vietdefi.aoe.vertx.router.caster.CasterAPI;
 import vn.vietdefi.aoe.vertx.router.clan.ClanAPI;
+import vn.vietdefi.aoe.vertx.router.data.DataAPI;
 import vn.vietdefi.aoe.vertx.router.donate.DonateAPI;
 import vn.vietdefi.aoe.vertx.router.donor.DonorAPI;
 import vn.vietdefi.aoe.vertx.router.event.EventAPI;
@@ -32,6 +33,7 @@ public class AoeAPI {
         EventAPI.configAPI(router);
         LeagueAPI.configAPI(router);
         StatisticApi.configAPI(router);
+        DataAPI.configAPI(router);
         adminApi(router);
     }
     private static void adminApi(Router router) {
