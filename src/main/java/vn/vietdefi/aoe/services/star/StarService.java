@@ -314,6 +314,34 @@ public class StarService implements IStarService {
     }
 
     @Override
+    public JsonObject lookupRechargeHistory(String phoneNumber, long from, long to, long page, long recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            StringBuilder query = new StringBuilder("SELECT * FROM aoe_star_transaction WHERE ");
+            long offset = (page - 1) * recordPerPage;
+            boolean isPhoneExist = false;
+            if (!phoneNumber.isEmpty()) {
+                    query.append("username = ? AND ");
+                    isPhoneExist = true;
+            }
+            query.append("create_time >= ? AND create_time < ? ORDER BY id DESC LIMIT ? OFFSET ?");
+            DebugLogger.info("{}", query);
+            JsonArray transactions;
+            if (isPhoneExist) {
+                transactions = bridge.query(query.toString(), phoneNumber, from, to, recordPerPage, offset);
+            } else {
+                transactions = bridge.query(query.toString(), from, to, recordPerPage, offset);
+            }
+            JsonObject data = new JsonObject();
+            data.add("transaction", transactions);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
     public void updateReferId(long id, long referId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();

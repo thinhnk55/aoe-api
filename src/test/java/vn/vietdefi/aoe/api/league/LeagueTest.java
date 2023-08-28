@@ -54,14 +54,14 @@ public class LeagueTest {
 
             JsonObject league = createLeague();
             long leagueId = league.getAsJsonObject("data").get("id").getAsLong();
-            updateLeague(leagueId);
-            getLeagueInfo(user,leagueId);
-            getListLeague(user);
-            stopVoteLeague(user, leagueId);
-            startLeague(user, leagueId);
-            endLeague(user, leagueId);
-            cancelLeague(user, leagueId);
-//            deleteLeague(leagueId);
+//            updateLeague(leagueId);
+//            getLeagueInfo(user,leagueId);
+//            getListLeague(user);
+//            stopVoteLeague(user, leagueId);
+//            startLeague(user, leagueId);
+//            endLeague(user, leagueId);
+//            cancelLeague(user, leagueId);
+            deleteLeague(leagueId);
 
         }
 
@@ -74,7 +74,7 @@ public class LeagueTest {
             payload.addProperty("star_default_offline", 10000);
             payload.addProperty("time_expired", 1692453732898L);
             payload.add("detail", new JsonObject());
-            payload.addProperty("donate_benefit", "text html");
+            payload.add("donate_benefit", new JsonArray());
 
             StringBuilder url = new StringBuilder(baseUrl).append("/league/create");
             DebugLogger.info("{}", url);

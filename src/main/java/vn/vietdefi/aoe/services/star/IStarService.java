@@ -11,6 +11,7 @@ public interface IStarService {
     JsonObject getStarTransactionById(long id);
     JsonObject exchangeStar(String username, int service, long amount, long referId);
     JsonObject exchangeStar(long userId, int service, long amount, long referId);
+    JsonObject lookupRechargeHistory(String phoneNumber, long from, long to ,long page, long recordPerPage);
     void updateReferId(long id, long referId);
     boolean checkStar(long amount, long userid);
 
