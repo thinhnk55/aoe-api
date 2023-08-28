@@ -316,6 +316,10 @@ public class MatchService implements IMatchService {
             bridge.update(query, MatchConstant.STATE_CANCELLED, System.currentTimeMillis(), matchId);
             //TODO: refund donate
             MatchGamerService.updateStateTeamPlayer(matchId, MatchConstant.STATE_GAMER_MATCH_CANCEL);
+            JsonObject response = AoeServices.donateService.refundStarDonate(matchId);
+            if (!BaseResponse.isSuccessFullMessage(response)) {
+                return response;
+            }
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

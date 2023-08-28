@@ -12,6 +12,10 @@ import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 public class DonateService implements IDonateService {
     @Override
     public JsonObject donate(long sender, long star, int service, long target_id, String message) {
@@ -166,7 +170,10 @@ public class DonateService implements IDonateService {
                 }
                 break;
             case StarConstant.SERVICE_DONATE_LEAGUE:
-                //TODO
+                JsonObject leagueResponse = AoeServices.leagueService.getLeagueInfo(targetId);
+                if (BaseResponse.isSuccessFullMessage(leagueResponse)) {
+                    return leagueResponse.getAsJsonObject("data");
+                }
                 break;
         }
         return null;
@@ -360,6 +367,48 @@ public class DonateService implements IDonateService {
             return BaseResponse.createFullMessageResponse(0, "success", response);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject refundStarDonate(long matchId) {
+        try  {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query ="SELECT * FROM aoe_donate WHERE service = ? AND target_id = ? ";
+            JsonArray data = bridge.query(query,StarConstant.SERVICE_DONATE_MATCH,matchId);
+            for (JsonElement dataElement: data) {
+                long id = dataElement.getAsJsonObject().get("id").getAsLong();
+                long userId = dataElement.getAsJsonObject().get("user_id").getAsLong();
+                long amount = dataElement.getAsJsonObject().get("amount").getAsLong();
+                JsonObject response = AoeServices.starService.exchangeStar(userId,StarConstant.SERVICE_DONATE_MATCH_REFUND,amount,id);
+                if (BaseResponse.isSuccessFullMessage(response)){
+                    response = updateStateDonate(id,DonateState.REFUND);
+                    if (BaseResponse.isSuccessFullMessage(response)){
+                        return response;
+                    }
+                }
+            }
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception exception) {
+            String stacktrace = ExceptionUtils.getStackTrace(exception);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    private JsonObject updateStateDonate(long id, int state) {
+        try  {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query ="UPDATE aoe_donate SET state = ? WHERE id = ? ";
+            int row =  bridge.update(query,state,id);
+            if (row == 0){
+                return  BaseResponse.createFullMessageResponse(10, "not_found");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception exception) {
+            String stacktrace = ExceptionUtils.getStackTrace(exception);
             DebugLogger.error(stacktrace);
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
