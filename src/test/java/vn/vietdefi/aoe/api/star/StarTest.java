@@ -27,8 +27,8 @@ public class StarTest {
 
         @BeforeEach
         void init(){
-            baseUrl = "https://api.godoo.asia/aoe";
-//            baseUrl = "http://192.168.1.18:8000/aoe";
+//            baseUrl = "https://api.godoo.asia/aoe";
+            baseUrl = "http://192.168.1.19:8000/aoe";
 //            baseUrl = "http://192.168.1.99:8000/aoe";
             username = "086888555";
             password = "12344321";
@@ -123,6 +123,16 @@ public class StarTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertEquals(response.getAsJsonObject("data").get("user_id").getAsLong(),
                     starWalletId);DebugLogger.info("{}", response);
+
+            /*lookup recharge transaction*/
+            String lookupRechargeURL = new StringBuilder(baseUrl).append("/star/admin/transaction/recharge")
+                    .append("?from=").append("1692349077941").append("&to=").append("1692960355418")
+                    .append("&page=").append(1).toString();
+            DebugLogger.info("{}", lookupRechargeURL);
+            response = OkHttpUtil.get(lookupRechargeURL, Common.createHeaderSupport());
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            Assertions.assertEquals(20, response.getAsJsonObject("data").getAsJsonArray("transaction").size());
         }
         @Test
         public void test1(){

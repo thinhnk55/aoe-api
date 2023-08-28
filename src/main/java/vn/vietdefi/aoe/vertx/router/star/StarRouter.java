@@ -104,4 +104,20 @@ public class StarRouter {
         }
     }
 
+    public static void lookupRechargeHistory(RoutingContext rc) {
+        try {
+            String phoneNumber = rc.request().getParam("phone_number", "");
+            long from = Long.parseLong(rc.request().getParam("from", "0"));
+            long to = Long.parseLong(rc.request().getParam("to", "0"));
+            long page = Long.parseLong(rc.request().getParam("page", "1"));
+            JsonObject response = AoeServices.starService.lookupRechargeHistory(phoneNumber, from, to, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
 }
