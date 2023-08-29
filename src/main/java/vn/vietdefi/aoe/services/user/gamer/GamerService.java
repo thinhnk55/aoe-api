@@ -22,6 +22,10 @@ public class GamerService implements IGamerService {
             if (BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(13, "nick_name_exists");
             }
+            response = AoeServices.gamerService.getByPhone(phone);
+            if (!BaseResponse.isSuccessFullMessage(response)) {
+                return BaseResponse.createFullMessageResponse(14, "phone_exists");
+            }
             response = ApiServices.authService.get(phone);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 String password = StringUtil.generateRandomStringNumberCharacter(8);
@@ -196,6 +200,23 @@ public class GamerService implements IGamerService {
             int x = bridge.update(query, id);
             if (x == 1) return BaseResponse.createFullMessageResponse(0, "success");
             return BaseResponse.createFullMessageResponse(10, "not_found_gamer");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject getByPhone(String phone) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM aoe_gamer WHERE phone = ?";
+            JsonObject data = bridge.queryOne(query, phone);
+            if (data == null) {
+                return BaseResponse.createFullMessageResponse(11, "gamer_not_exist");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);

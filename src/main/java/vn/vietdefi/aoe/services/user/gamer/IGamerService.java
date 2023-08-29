@@ -13,4 +13,5 @@ public interface IGamerService {
     JsonObject getGamerByNickName(String nickName);
     JsonObject deleteGamerByUserId(long userId);
 
+    JsonObject getByPhone(String phone);
 }
