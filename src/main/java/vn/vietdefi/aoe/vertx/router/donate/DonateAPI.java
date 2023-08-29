@@ -41,7 +41,6 @@ public class DonateAPI {
                 .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::listAllTopDonate);
         router.get(ApiConfig.instance().getPath("/donate/list/filter"))
-                .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::filterListDonate);
 
     }
