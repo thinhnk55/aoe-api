@@ -44,7 +44,7 @@ public class AoeVerticle extends AbstractVerticle {
         allowedMethods.add(HttpMethod.GET);
         allowedMethods.add(HttpMethod.POST);
         allowedMethods.add(HttpMethod.OPTIONS);
-        router.route().handler(CorsHandler.create("*")
+        router.route().handler(CorsHandler.create()
                 .allowedHeaders(allowedHeaders)
                 .allowedMethods(allowedMethods)
                 .allowCredentials(true));
