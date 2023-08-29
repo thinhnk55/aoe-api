@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
+import vn.vietdefi.aoe.services.donate.DonateConstant;
 import vn.vietdefi.aoe.services.star.StarConstant;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.json.GsonUtil;
@@ -110,6 +111,23 @@ public class StarRouter {
         try {
             long id = Long.parseLong(rc.request().getParam("id"));
             JsonObject response = AoeServices.starService.getStarTransactionById(id);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void filterListRefund(RoutingContext rc) {
+        try {
+            long page = Long.parseLong(rc.request().getParam("page","1"));
+            String phone = rc.request().getParam("phone","");
+            long from = Long.parseLong(rc.request().getParam("from","0"));
+            long to = Long.parseLong(rc.request().getParam("to", String.valueOf(System.currentTimeMillis())));
+            JsonObject response = AoeServices.starService.getListRefundDonate(phone,from,to,page, DonateConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

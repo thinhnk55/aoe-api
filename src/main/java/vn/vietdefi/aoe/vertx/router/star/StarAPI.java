@@ -2,6 +2,7 @@ package vn.vietdefi.aoe.vertx.router.star;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import vn.vietdefi.aoe.vertx.router.donate.DonateRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
@@ -41,6 +42,9 @@ public class StarAPI {
         router.get(ApiConfig.instance().getPath("/star/admin/transaction/time"))
                 .handler(AuthRouter::authorizeSupport)
                 .handler(StarRouter::adminListOfUserByTime);
+        router.get(ApiConfig.instance().getPath("/donate/refund/list"))
+                .handler(AuthRouter::authorizeSupport)
+                .handler(StarRouter::filterListRefund);
     }
     public static void adminAuthApi(Router router) {
 

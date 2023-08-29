@@ -15,7 +15,7 @@ public interface IMatchService {
     JsonObject lockMatchForUpcoming(JsonObject json);
     JsonObject startMatch(JsonObject json);
     JsonObject endMatch(JsonObject json);
-    JsonObject cancelMatch(long match);
+    JsonObject cancelMatch(long matchId);
 
     JsonObject addStarCurrentMatch(long matchId, long amount);
     long totalMatch(long userId);

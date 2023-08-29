@@ -1,6 +1,7 @@
 package vn.vietdefi.aoe.services.star;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
@@ -352,6 +353,36 @@ public class StarService implements IStarService {
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return false;
+        }
+    }
+
+    public JsonObject getListRefundDonate(String phoneNumber, long from, long to, long page, long record_per_page) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            long offset = (page - 1) * record_per_page;
+            StringBuilder query = new StringBuilder("SELECT * FROM aoe_star_transaction WHERE ");
+
+            if (!phoneNumber.isEmpty()) {
+                query.append("phone = ? AND ");
+            }
+            query.append("create_time > ? AND create_time < ? AND service = ? ");
+            query.append("ORDER BY create_time DESC LIMIT ? OFFSET ?");
+            JsonArray response;
+
+            if (phoneNumber.isEmpty()) {
+                response = bridge.query(query.toString(), from, to,StarConstant.SERVICE_DONATE_MATCH_REFUND, record_per_page, offset);
+            } else {
+                response = bridge.query(query.toString(), phoneNumber, from, to,StarConstant.SERVICE_DONATE_MATCH_REFUND, record_per_page, offset);
+            }
+            for (JsonElement trans :response) {
+                trans.getAsJsonObject().add("refer_transaction",
+                        AoeServices.donateService.getDonateById(trans.getAsJsonObject().get("refer_id").getAsLong()));
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", response);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
 

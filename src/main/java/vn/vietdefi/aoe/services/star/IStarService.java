@@ -13,6 +13,7 @@ public interface IStarService {
     JsonObject lookupRechargeHistory(String phoneNumber, long from, long to ,long page, long recordPerPage);
     void updateReferId(long id, long referId);
     boolean checkStar(long amount, long userid);
+    JsonObject getListRefundDonate(String phoneNumber,long from, long to, long page, long record_per_page);
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
     JsonObject deleteStarWallet(long userId);
