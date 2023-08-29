@@ -135,7 +135,7 @@ public class  DonateRouter {
             String phone = rc.request().getParam("phone","");
             int service = Integer.parseInt(rc.request().getParam("service","0"));
             long from = Long.parseLong(rc.request().getParam("from","0"));
-            long to = Long.parseLong(rc.request().getParam("to","0"));
+            long to = Long.parseLong(rc.request().getParam("to", String.valueOf(System.currentTimeMillis())));
             JsonObject response = AoeServices.donateService.filterListDonate(phone,from,to,service,page,DonateConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
         } catch (Exception e) {
@@ -146,6 +146,11 @@ public class  DonateRouter {
             rc.response().end(response.toString());
         }
     }
+
+
+
+
+
 
     public static void statisticsDonate(RoutingContext rc){
         try {

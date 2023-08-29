@@ -77,19 +77,19 @@ public class DonateService implements IDonateService {
             }
             if (service == StarConstant.SERVICE_DONATE_MATCH) {
                 AoeServices.matchService.addStarCurrentMatch(target_id, star);
-                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_MATCH,star);
+                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_MATCH, star);
             }
-            if (service == StarConstant.SERVICE_DONATE_LEAGUE ){
+            if (service == StarConstant.SERVICE_DONATE_LEAGUE) {
                 AoeServices.leagueService.addStarForLeague(target_id, star);
-                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_LEAGUE,star);
+                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_LEAGUE, star);
             }
             if (service == StarConstant.SERVICE_DONATE_GAMER) {
                 AoeServices.gamerService.gamerUpdateStatistic(target_id);
-                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_GAMER,star);
+                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_GAMER, star);
             }
             if (service == StarConstant.SERVICE_DONATE_CASTER) {
                 AoeServices.casterService.casterUpdateStatistic(target_id);
-                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_CASTER,star);
+                StatisticController.instance().starDonateToEntity(StarConstant.SERVICE_DONATE_CASTER, star);
             }
             return BaseResponse.createFullMessageResponse(0, "success", donate);
         } catch (Exception e) {
@@ -109,6 +109,7 @@ public class DonateService implements IDonateService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
     @Override
     public JsonObject getDonateById(long id) {
         try {
@@ -253,7 +254,7 @@ public class DonateService implements IDonateService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT COUNT(DISTINCT user_id) AS total_user_donate, COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE create_time > ? AND create_time < ?";
-            JsonObject response = bridge.queryOne(query,from,to);
+            JsonObject response = bridge.queryOne(query, from, to);
             query = new StringBuilder("SELECT service, COALESCE(SUM(amount), 0) as total_star_donate\n")
                     .append("FROM aoe_donate \n ")
                     .append("WHERE service IN (?,?,?,?)\n")
@@ -349,9 +350,6 @@ public class DonateService implements IDonateService {
             if (service != 0) {
                 query.append("service = ? AND ");
             }
-            if (to == 0){
-                to = System.currentTimeMillis();
-            }
             query.append("create_time > ? AND create_time < ? ");
             query.append("ORDER BY create_time DESC LIMIT ? OFFSET ?");
             JsonArray response;
@@ -364,6 +362,22 @@ public class DonateService implements IDonateService {
             } else {
                 response = bridge.query(query.toString(), phoneNumber, service, from, to, record_per_page, offset);
             }
+            JsonObject receiver = new JsonObject();
+            for (JsonElement trans : response) {
+                service = trans.getAsJsonObject().get("service").getAsInt();
+                switch (service) {
+                    case StarConstant.SERVICE_DONATE_GAMER:
+                        receiver = AoeServices.gamerService.getGamerByUserId(trans.getAsJsonObject().get("target_id").getAsLong());
+                        trans.getAsJsonObject().addProperty("receiver_nick_name", receiver.get("data").getAsJsonObject().get("nick_name").getAsString());
+                        trans.getAsJsonObject().addProperty("receiver_avatar", receiver.get("data").getAsJsonObject().get("avatar").getAsString());
+                        break;
+                    case StarConstant.SERVICE_DONATE_CASTER:
+                        receiver = AoeServices.casterService.getCasterByUserId(trans.getAsJsonObject().get("target_id").getAsLong());
+                        trans.getAsJsonObject().addProperty("receiver_nick_name", receiver.get("data").getAsJsonObject().get("nick_name").getAsString());
+                        trans.getAsJsonObject().addProperty("receiver_avatar", receiver.get("data").getAsJsonObject().get("avatar").getAsString());
+                        break;
+                }
+            }
             return BaseResponse.createFullMessageResponse(0, "success", response);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -374,18 +388,18 @@ public class DonateService implements IDonateService {
 
     @Override
     public JsonObject refundStarDonate(long matchId) {
-        try  {
+        try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query ="SELECT * FROM aoe_donate WHERE service = ? AND target_id = ? ";
-            JsonArray data = bridge.query(query,StarConstant.SERVICE_DONATE_MATCH,matchId);
-            for (JsonElement dataElement: data) {
+            String query = "SELECT * FROM aoe_donate WHERE service = ? AND target_id = ? ";
+            JsonArray data = bridge.query(query, StarConstant.SERVICE_DONATE_MATCH, matchId);
+            for (JsonElement dataElement : data) {
                 long id = dataElement.getAsJsonObject().get("id").getAsLong();
                 long userId = dataElement.getAsJsonObject().get("user_id").getAsLong();
                 long amount = dataElement.getAsJsonObject().get("amount").getAsLong();
-                JsonObject response = AoeServices.starService.exchangeStar(userId,StarConstant.SERVICE_DONATE_MATCH_REFUND,amount,id);
-                if (BaseResponse.isSuccessFullMessage(response)){
-                    response = updateStateDonate(id,DonateState.REFUND);
-                    if (BaseResponse.isSuccessFullMessage(response)){
+                JsonObject response = AoeServices.starService.exchangeStar(userId, StarConstant.SERVICE_DONATE_MATCH_REFUND, amount, id);
+                if (BaseResponse.isSuccessFullMessage(response)) {
+                    response = updateStateDonate(id, DonateState.REFUND);
+                    if (BaseResponse.isSuccessFullMessage(response)) {
                         return response;
                     }
                 }
@@ -398,13 +412,16 @@ public class DonateService implements IDonateService {
         }
     }
 
+
+
+
     private JsonObject updateStateDonate(long id, int state) {
-        try  {
+        try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query ="UPDATE aoe_donate SET state = ? WHERE id = ? ";
-            int row =  bridge.update(query,state,id);
-            if (row == 0){
-                return  BaseResponse.createFullMessageResponse(10, "not_found");
+            String query = "UPDATE aoe_donate SET state = ? WHERE id = ? ";
+            int row = bridge.update(query, state, id);
+            if (row == 0) {
+                return BaseResponse.createFullMessageResponse(10, "not_found");
             }
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception exception) {

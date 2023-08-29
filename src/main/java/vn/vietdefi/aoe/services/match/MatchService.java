@@ -315,8 +315,11 @@ public class MatchService implements IMatchService {
             String query = "UPDATE aoe_match SET state = ? ,time_expired = ? WHERE id = ?";
             bridge.update(query, MatchConstant.STATE_CANCELLED, System.currentTimeMillis(), matchId);
             //TODO: refund donate
-            MatchGamerService.updateStateTeamPlayer(matchId, MatchConstant.STATE_GAMER_MATCH_CANCEL);
-            JsonObject response = AoeServices.donateService.refundStarDonate(matchId);
+            JsonObject response = MatchGamerService.updateStateTeamPlayer(matchId, MatchConstant.STATE_GAMER_MATCH_CANCEL);
+            if (!BaseResponse.isSuccessFullMessage(response)) {
+                return response;
+            }
+            response = AoeServices.donateService.refundStarDonate(matchId);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             }

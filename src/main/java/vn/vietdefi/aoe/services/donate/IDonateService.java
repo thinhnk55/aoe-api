@@ -18,6 +18,7 @@ public interface IDonateService {
 
     JsonObject refundStarDonate(long matchId);
 
+
     /*These function user for TEST only. In real situation these actions is prohibited*/
     JsonObject deleteDonateBySenderId(long userId);
 
