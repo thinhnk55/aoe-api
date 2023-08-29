@@ -12,7 +12,7 @@ import vn.vietdefi.util.log.DebugLogger;
 public class AuthRouter {
     public static void authorizeUser(RoutingContext rc) {
         try {
-            int userid = Integer.parseInt(rc.request().getHeader("userid"));
+            long userid = Long.parseLong(rc.request().getHeader("userid"));
             String token = rc.request().getHeader("token");
             JsonObject response = ApiServices.authService.authorize(userid, token);
             if (BaseResponse.isSuccessFullMessage(response)) {
@@ -41,7 +41,7 @@ public class AuthRouter {
     }
     public static void authorizeSuperAdmin(RoutingContext rc) {
         try {
-            int userid = Integer.parseInt(rc.request().getHeader("userid"));
+            long userid = Long.parseLong(rc.request().getHeader("userid"));
             String token = rc.request().getHeader("token");
             JsonObject response = ApiServices.authService.authorize(userid, token);
             if (BaseResponse.isSuccessFullMessage(response)) {
@@ -70,7 +70,7 @@ public class AuthRouter {
     }
     public static void authorizeSystemAdmin(RoutingContext rc) {
         try {
-            int userid = Integer.parseInt(rc.request().getHeader("userid"));
+            long userid = Long.parseLong(rc.request().getHeader("userid"));
             String token = rc.request().getHeader("token");
             JsonObject response = ApiServices.authService.authorize(userid, token);
             if (BaseResponse.isSuccessFullMessage(response)) {
@@ -99,7 +99,7 @@ public class AuthRouter {
     }
     public static void authorizeAdmin(RoutingContext rc) {
         try {
-            int userid = Integer.parseInt(rc.request().getHeader("userid"));
+            long userid = Long.parseLong(rc.request().getHeader("userid"));
             String token = rc.request().getHeader("token");
             JsonObject response = ApiServices.authService.authorize(userid, token);
             if (BaseResponse.isSuccessFullMessage(response)) {
@@ -128,7 +128,7 @@ public class AuthRouter {
     }
     public static void authorizeSupport(RoutingContext rc) {
         try {
-            int userid = Integer.parseInt(rc.request().getHeader("userid"));
+            long userid = Long.parseLong(rc.request().getHeader("userid"));
             String token = rc.request().getHeader("token");
             JsonObject response = ApiServices.authService.authorize(userid, token);
             if (BaseResponse.isSuccessFullMessage(response)) {

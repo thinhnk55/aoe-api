@@ -29,13 +29,9 @@ public class GamerService implements IGamerService {
                 if (!BaseResponse.isSuccessFullMessage(response)) {
                     return response;
                 }
-            } else {
-                long userId = response.getAsJsonObject("data").get("id").getAsLong();
-                String password = StringUtil.generateRandomStringNumberCharacter(8);
-                ApiServices.authService.updatePassword(userId, password);
             }
-            JsonObject user = response.getAsJsonObject("data");
-            data.addProperty("user_id", user.get("id").getAsLong());
+            long userId = response.getAsJsonObject("data").get("id").getAsLong();
+            data.addProperty("user_id", userId);
             long createTime = System.currentTimeMillis();
             data.addProperty("create_time", createTime);
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();

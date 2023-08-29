@@ -30,13 +30,9 @@ public class CasterService implements ICasterService {
                 if (!BaseResponse.isSuccessFullMessage(response)) {
                     return response;
                 }
-            } else {
-                long userId = response.getAsJsonObject("data").get("id").getAsLong();
-                String password = StringUtil.generateRandomStringNumberCharacter(8);
-                ApiServices.authService.updatePassword(userId, password);
             }
-            JsonObject user = response.getAsJsonObject("data");
-            data.addProperty("user_id", user.get("id").getAsLong());
+            long userId = response.getAsJsonObject("data").get("id").getAsLong();
+            data.addProperty("user_id", userId);
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             bridge.insertObjectToDB("aoe_caster", "user_id", data);
             return BaseResponse.createFullMessageResponse(0, "success", data);
