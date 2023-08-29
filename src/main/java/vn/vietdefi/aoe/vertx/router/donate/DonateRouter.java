@@ -57,8 +57,7 @@ public class  DonateRouter {
             JsonObject data = GsonUtil.toJsonObject(request);
             long targetId = data.get("targetId").getAsLong();
             long star = data.get("star").getAsLong();
-            String message = data.get("message").getAsString();
-            JsonObject response = AoeServices.donateService.donate(userId, star, StarConstant.SERVICE_DONATE_MATCH, targetId, message);
+            JsonObject response = AoeServices.donateService.donate(userId, star, StarConstant.SERVICE_DONATE_MATCH, targetId, "");
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -75,8 +74,7 @@ public class  DonateRouter {
             JsonObject data = GsonUtil.toJsonObject(request);
             long targetId = data.get("targetId").getAsLong();
             long star = data.get("star").getAsLong();
-            String message = data.get("message").getAsString();
-            JsonObject response = AoeServices.donateService.donate(userId, star, StarConstant.SERVICE_DONATE_LEAGUE, targetId, message);
+            JsonObject response = AoeServices.donateService.donate(userId, star, StarConstant.SERVICE_DONATE_LEAGUE, targetId, "");
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

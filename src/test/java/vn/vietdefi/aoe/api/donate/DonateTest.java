@@ -140,7 +140,6 @@ public class DonateTest {
             JsonObject payload = new JsonObject();
             payload.addProperty("targetId", matchId);
             payload.addProperty("star", amount);
-            payload.addProperty("message", "Donate match");
             String donateMatchURL = new StringBuilder(baseUrl).append("/donate/match").toString();
             DebugLogger.info("{}", donateMatchURL);
             JsonObject response = OkHttpUtil.postJson(donateMatchURL, payload.toString(), Common.createHeader(user));
@@ -215,7 +214,6 @@ public class DonateTest {
             payload = new JsonObject();
             payload.addProperty("targetId", leagueId);
             payload.addProperty("star", amount);
-            payload.addProperty("message", "Donate league");
             String donateMatchURL = new StringBuilder(baseUrl).append("/donate/league").toString();
             DebugLogger.info("{}", donateMatchURL);
             response = OkHttpUtil.postJson(donateMatchURL, payload.toString(), Common.createHeader(user));
