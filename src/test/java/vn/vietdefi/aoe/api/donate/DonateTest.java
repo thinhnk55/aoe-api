@@ -44,10 +44,10 @@ public class DonateTest {
         }
         @Test
         public void test0(){
-            Common.deleleUser(baseUrl, username, password);
-            JsonObject response = Common.registerUserSuccess(baseUrl, username, password);
-            JsonObject user = response.getAsJsonObject("data");
-            Common.addStarToWallet(baseUrl, user.get("id").getAsLong(), star);
+//            Common.deleleUser(baseUrl, username, password);
+//            JsonObject response = Common.registerUserSuccess(baseUrl, username, password);
+//            JsonObject user = response.getAsJsonObject("data");
+//            Common.addStarToWallet(baseUrl, user.get("id").getAsLong(), star);
 //            testDonateGamer(user);
 //            testDonateCaster(user);
 //            long matchId = createMatch(user).getAsJsonObject("data").get("id").getAsLong();
@@ -56,7 +56,8 @@ public class DonateTest {
 //            testListTopDonateByTarget(user, matchId);
 //            testListTopAllDonate(user);
 //            deleteMatch(matchId);
-            testDonateLeague(user);
+//            testDonateLeague(user);
+            testFilterStatisticDonate();
         }
 
         public void testDonateGamer(JsonObject user) {
@@ -225,6 +226,17 @@ public class DonateTest {
                     .get("amount").getAsInt();
             Assertions.assertEquals(balance, balanceAfterDonate);
             star = balanceAfterDonate;
+        }
+
+        /*filter donate public*/
+        public void testFilterStatisticDonate() {
+            String listTopAllDonateURL = new StringBuilder(baseUrl).append("/donate/statistic/filter")
+                    .append("?service=").append(10).append("&target_id=").append(54)
+                    .append("&page=").append(1).toString();
+            DebugLogger.info("{}", listTopAllDonateURL);
+            JsonObject response = OkHttpUtil.get(listTopAllDonateURL);
+            DebugLogger.info("{}", response);
+            Assertions.assertFalse(response.getAsJsonObject("data").getAsJsonArray("donate").isEmpty());
         }
 
         @Test

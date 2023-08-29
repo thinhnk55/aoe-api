@@ -179,7 +179,7 @@ public class MatchSuggestService implements IMatchSuggestService{
             }
             long match_id = response.get("data").getAsJsonObject().get("id").getAsInt();
             response = AoeServices.donateService.donate(suggester, star,
-                    StarConstant.SERVICE_DONATE_MATCH, match_id, "Donate suggest match");
+                    StarConstant.SERVICE_DONATE_MATCH, match_id, "");
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(16, "donate_match_again_reject");
             }

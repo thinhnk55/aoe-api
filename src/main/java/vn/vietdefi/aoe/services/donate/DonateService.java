@@ -387,23 +387,29 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject filterDonate(int service, long targetId, long page, long recordPerPage) {
+    public JsonObject filterStatisticDonate(int service, long targetId, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             StringBuilder query = new StringBuilder("SELECT * FROM aoe_donate WHERE service = ? ");
-            StringBuilder queryTotal = new StringBuilder();
+            StringBuilder queryTotal = new StringBuilder("SELECT COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE service = ? ");
             if (targetId != 0) {
                 query.append("AND target_id = ? ");
+                queryTotal.append("AND target_id = ?");
             }
             query.append("LIMIT ? OFFSET ?");
             JsonArray donate;
+            long totalStarDonate;
             if (targetId != 0) {
                 donate = bridge.query(query.toString(), service, targetId, recordPerPage, (page - 1) * recordPerPage);
+                totalStarDonate = bridge.queryLong(queryTotal.toString(), service, targetId);
             } else {
                 donate = bridge.query(query.toString(), service, recordPerPage, (page - 1) * recordPerPage);
+                totalStarDonate = bridge.queryLong(queryTotal.toString(), service);
             }
-
-            return null;
+            JsonObject data = new JsonObject();
+            data.addProperty("total_star_donate", totalStarDonate);
+            data.add("donate", donate);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");

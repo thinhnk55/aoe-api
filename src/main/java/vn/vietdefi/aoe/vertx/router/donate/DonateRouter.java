@@ -147,7 +147,21 @@ public class  DonateRouter {
         }
     }
 
-
+    public static void filterStatisticDonate(RoutingContext rc) {
+        try {
+            long page = Long.parseLong(rc.request().getParam("page","1"));
+            int service = Integer.parseInt(rc.request().getParam("service","0"));
+            long targetId = Integer.parseInt(rc.request().getParam("target_id","0"));
+            JsonObject response = AoeServices.donateService.filterStatisticDonate(service, targetId, page, DonateConstant.DEFAULT_RECORD_PER_PAGE);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
 
 
 
