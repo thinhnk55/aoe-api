@@ -184,8 +184,8 @@ public class MatchSuggestService implements IMatchSuggestService{
                 return BaseResponse.createFullMessageResponse(16, "donate_match_again_reject");
             }
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "UPDATE aoe_match_suggest SET state = ? WHERE id = ?";
-            bridge.update(query, MatchSuggestConstant.MATCH_SUGGEST_CONFIRM, id);
+            String query = "UPDATE aoe_match_suggest SET state = ? , match_id = ? WHERE id = ?";
+            bridge.update(query, MatchSuggestConstant.MATCH_SUGGEST_CONFIRM,match_id,id);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
