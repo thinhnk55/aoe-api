@@ -308,20 +308,19 @@ public class StarService implements IStarService {
     public JsonObject lookupRechargeHistory(String phoneNumber, long from, long to, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            StringBuilder query = new StringBuilder("SELECT * FROM aoe_star_transaction WHERE ");
+            StringBuilder query = new StringBuilder("SELECT * FROM aoe_star_transaction WHERE service = ? ");
             long offset = (page - 1) * recordPerPage;
             boolean isPhoneExist = false;
             if (!phoneNumber.isEmpty()) {
-                    query.append("username = ? AND ");
+                    query.append("AND username = ? ");
                     isPhoneExist = true;
             }
-            query.append("create_time >= ? AND create_time < ? ORDER BY id DESC LIMIT ? OFFSET ?");
-            DebugLogger.info("{}", query);
+            query.append("AND create_time >= ? AND create_time < ? ORDER BY id DESC LIMIT ? OFFSET ?");
             JsonArray transactions;
             if (isPhoneExist) {
-                transactions = bridge.query(query.toString(), phoneNumber, from, to, recordPerPage, offset);
+                transactions = bridge.query(query.toString(), StarConstant.SERVICE_STAR_RECHARGE, phoneNumber, from, to, recordPerPage, offset);
             } else {
-                transactions = bridge.query(query.toString(), from, to, recordPerPage, offset);
+                transactions = bridge.query(query.toString(), StarConstant.SERVICE_STAR_RECHARGE, from, to, recordPerPage, offset);
             }
             JsonObject data = new JsonObject();
             data.add("transaction", transactions);
