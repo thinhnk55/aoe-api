@@ -54,13 +54,13 @@ public class LeagueTest {
 
             JsonObject league = createLeague();
             long leagueId = league.getAsJsonObject("data").get("id").getAsLong();
-//            updateLeague(leagueId);
-//            getLeagueInfo(user,leagueId);
-//            getListLeague(user);
-//            stopVoteLeague(user, leagueId);
-//            startLeague(user, leagueId);
-//            endLeague(user, leagueId);
-//            cancelLeague(user, leagueId);
+            updateLeague(leagueId);
+            getLeagueInfo(user,leagueId);
+            getListLeague(user);
+            stopVoteLeague(user, leagueId);
+            startLeague(user, leagueId);
+            endLeague(user, leagueId);
+            cancelLeague(user, leagueId);
             deleteLeague(leagueId);
 
         }
@@ -146,6 +146,7 @@ public class LeagueTest {
         public void startLeague(JsonObject user ,long leagueId) {
             JsonObject payload = new JsonObject();
             payload.addProperty("id", leagueId);
+            payload.addProperty("link_livestream", "https://");
 
             StringBuilder url = new StringBuilder(baseUrl).append("/league/start");
             DebugLogger.info("{}", url);

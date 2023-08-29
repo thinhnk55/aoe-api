@@ -88,8 +88,7 @@ public class LeagueRouter {
         try {
             String body = rc.body().asString();
             JsonObject data = GsonUtil.toJsonObject(body);
-            long leagueId = data.get("id").getAsLong();
-            JsonObject response = AoeServices.leagueService.startLeague(leagueId);
+            JsonObject response = AoeServices.leagueService.startLeague(data);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
