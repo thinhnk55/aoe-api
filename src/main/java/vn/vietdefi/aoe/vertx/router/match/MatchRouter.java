@@ -74,7 +74,7 @@ public class MatchRouter {
 
     public static void getListMatch(RoutingContext rc){
         try {
-            int state =  Integer.parseInt(rc.request().getParam("state"));
+            int state =  Integer.parseInt(rc.request().getParam("state","0"));
             long page = Long.parseLong(rc.request().getParam("page","1"));
             JsonObject response = AoeServices.matchService.getListMatch(state,page, MatchConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());

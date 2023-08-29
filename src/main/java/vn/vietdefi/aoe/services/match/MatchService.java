@@ -103,13 +103,25 @@ public class MatchService implements IMatchService {
 
             long offset = (page - 1) * recordPerPage;
             JsonObject result = new JsonObject();
-            StringBuilder dataQuery = new StringBuilder("SELECT * FROM aoe_match WHERE state = ? ");
-            if (state < MatchConstant.STATE_CANCELLED) {
-                dataQuery.append("ORDER BY ABS(star_current-star_default)  LIMIT ? OFFSET ?");
-            } else {
-                dataQuery.append("ORDER BY time_expired DESC LIMIT ? OFFSET ?");
+            StringBuilder dataQuery = new StringBuilder("SELECT * FROM aoe_match ");
+            if (state != 0) {
+                dataQuery.append("WHERE state = ? ");
+                if (state < MatchConstant.STATE_CANCELLED) {
+                    dataQuery.append("ORDER BY ABS(star_current-star_default) ");
+                } else {
+                    dataQuery.append("ORDER BY id DESC ");
+                }
+            }else {
+                dataQuery.append("ORDER BY id DESC ");
             }
-            JsonArray data = bridge.query(String.valueOf(dataQuery), state, recordPerPage, offset);
+            dataQuery.append("LIMIT ? OFFSET ?");
+            JsonArray data;
+            if (state != 0 ){
+                data = bridge.query(String.valueOf(dataQuery), state, recordPerPage, offset);
+            }else {
+                data = bridge.query(String.valueOf(dataQuery), recordPerPage, offset);
+
+            }
             result.add("match", data);
             return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {

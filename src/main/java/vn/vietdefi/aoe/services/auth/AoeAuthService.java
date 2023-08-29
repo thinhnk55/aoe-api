@@ -6,34 +6,36 @@ import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.api.services.ApiServices;
 import vn.vietdefi.api.services.auth.UserConstant;
 import vn.vietdefi.common.BaseResponse;
+import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
+import vn.vietdefi.util.string.StringUtil;
 
-public class AoeAuthService implements IAoeAuthService{
+public class AoeAuthService implements IAoeAuthService {
     @Override
     public JsonObject register(String username, String password, int role, int status) {
-        try{
+        try {
             JsonObject response = ApiServices.authService.register(username,
                     password, role, status);
-            if(BaseResponse.isSuccessFullMessage(response)){
+            if (BaseResponse.isSuccessFullMessage(response)) {
                 JsonObject user = response.getAsJsonObject("data");
                 long userId = user.get("id").getAsLong();
                 response = AoeServices.profileService.getUserProfileByUserId(userId);
-                if(BaseResponse.isSuccessFullMessage(response)){
+                if (BaseResponse.isSuccessFullMessage(response)) {
                     JsonObject profile = response.getAsJsonObject("data");
                     user.add("profile", profile);
                 }
                 response = AoeServices.starService.getStarWalletByUserId(userId);
-                if(BaseResponse.isSuccessFullMessage(response)){
+                if (BaseResponse.isSuccessFullMessage(response)) {
                     JsonObject star = response.getAsJsonObject("data");
                     user.add("star", star);
                 }
                 return BaseResponse.createFullMessageResponse(0, "success", user);
-            }else{
+            } else {
                 return response;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
@@ -41,12 +43,12 @@ public class AoeAuthService implements IAoeAuthService{
 
     @Override
     public JsonObject register(JsonObject data) {
-        try{
+        try {
             String username = data.get("username").getAsString();
             String password = data.get("password").getAsString();
             return register(username,
                     password, UserConstant.ROLE_USER, UserConstant.STATUS_NORMAL);
-        }catch (Exception e){
+        } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
@@ -54,38 +56,34 @@ public class AoeAuthService implements IAoeAuthService{
 
     @Override
     public JsonObject login(JsonObject data) {
-        try{
+        try {
             String username = data.get("username").getAsString();
             String password = data.get("password").getAsString();
             return ApiServices.authService.login(username,
                     password);
-        }catch (Exception e){
+        } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
-
-    /*These function user for TEST only. In real situation these actions is prohibited*/
     @Override
-    public JsonObject deleteUser(long userId) {
-        try{
-            JsonObject response = ApiServices.authService.delete(userId);
-            if(BaseResponse.isSuccessFullMessage(response)) {
-                response = AoeServices.profileService.deleteProfile(userId);
-                if(!BaseResponse.isSuccessFullMessage(response)){
-                    return response;
-                }
-                response = AoeServices.starService.deleteStarWallet(userId);
-                if(!BaseResponse.isSuccessFullMessage(response)){
-                    return response;
-                }
-                response = AoeServices.donateService.deleteDonateBySenderId(userId);
-                if (!BaseResponse.isSuccessFullMessage(response)) {
-                    return response;
-                }
+    public JsonObject setPasswordByUsername(JsonObject json) {
+        try {
+            String username = json.get("username").getAsString();
+            String randomPassword = StringUtil.randomString(8);
+            String password = StringUtil.sha256(randomPassword);
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE user SET password = ? WHERE username = ?";
+            int row = bridge.update(query, password, username);
+            if(row == 0){
+                return BaseResponse.createFullMessageResponse(10, "update_failure");
+            }else{
+                JsonObject response = new JsonObject();
+                response.addProperty("username", username);
+                response.addProperty("password", randomPassword);
+                return BaseResponse.createFullMessageResponse(0, "success", response);
             }
-            return BaseResponse.createFullMessageResponse(0, "success");
-        }catch (Exception e){
+        } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
@@ -97,9 +95,9 @@ public class AoeAuthService implements IAoeAuthService{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "UPDATE user SET status = ? WHERE id = ?";
             int x = bridge.update(query, status, userId);
-            if(x == 1){
+            if (x == 1) {
                 return BaseResponse.createFullMessageResponse(0, "success");
-            }else{
+            } else {
                 return BaseResponse.createFullMessageResponse(10, "update_failure");
             }
         } catch (Exception e) {
@@ -111,21 +109,47 @@ public class AoeAuthService implements IAoeAuthService{
 
     @Override
     public JsonObject get(String username) {
-        try{
+        try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM user WHERE username = ?";
             JsonObject data = bridge.queryOne(query, username);
-            if(data == null){
+            if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "user_not_exist");
             }
             data.remove("password");
             JsonObject response = AoeServices.profileService.getUserProfileByUserId(data.get("id").getAsLong());
-            if(BaseResponse.isSuccessFullMessage(response)){
+            if (BaseResponse.isSuccessFullMessage(response)) {
                 data.add("profile", response.getAsJsonObject("data"));
             }
             return BaseResponse.createFullMessageResponse(0, "success", data);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    /*These function user for TEST only. In real situation these actions is prohibited*/
+    @Override
+    public JsonObject deleteUser(long userId) {
+        try {
+            JsonObject response = ApiServices.authService.delete(userId);
+            if (BaseResponse.isSuccessFullMessage(response)) {
+                response = AoeServices.profileService.deleteProfile(userId);
+                if (!BaseResponse.isSuccessFullMessage(response)) {
+                    return response;
+                }
+                response = AoeServices.starService.deleteStarWallet(userId);
+                if (!BaseResponse.isSuccessFullMessage(response)) {
+                    return response;
+                }
+                response = AoeServices.donateService.deleteDonateBySenderId(userId);
+                if (!BaseResponse.isSuccessFullMessage(response)) {
+                    return response;
+                }
+            }
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
