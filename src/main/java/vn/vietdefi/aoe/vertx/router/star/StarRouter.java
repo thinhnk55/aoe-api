@@ -138,6 +138,22 @@ public class StarRouter {
         }
     }
 
+    public static void getStatisticRecharge(RoutingContext rc) {
+        try {
+            long from = Long.parseLong(rc.request().getParam("from","0"));
+            long to = Long.parseLong(rc.request().getParam("to", String.valueOf(System.currentTimeMillis())));
+            JsonObject response = AoeServices.starService.getStatisticRecharge(from,to);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+
     public static void lookupRechargeHistory(RoutingContext rc) {
         try {
             String phoneNumber = rc.request().getParam("phone_number", "");

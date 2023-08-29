@@ -45,6 +45,9 @@ public class StarAPI {
         router.get(ApiConfig.instance().getPath("/star/refund/list"))
                 .handler(AuthRouter::authorizeSupport)
                 .handler(StarRouter::filterListRefund);
+        router.get(ApiConfig.instance().getPath("/star/statistic"))
+                .handler(AuthRouter::authorizeSupport)
+                .handler(StarRouter::getStatisticRecharge);
     }
     public static void adminAuthApi(Router router) {
 

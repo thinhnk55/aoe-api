@@ -15,6 +15,8 @@ public interface IStarService {
     boolean checkStar(long amount, long userid);
     JsonObject getListRefundDonate(String phoneNumber,long from, long to, long page, long recordPerPage);
 
+    JsonObject getStatisticRecharge(long from, long to);
+
     /*These function user for TEST only. In real situation these actions is prohibited*/
     JsonObject deleteStarWallet(long userId);
 }

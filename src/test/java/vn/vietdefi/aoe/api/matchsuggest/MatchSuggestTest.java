@@ -94,7 +94,7 @@ public class MatchSuggestTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         }
         public void testListSuggestMatch(JsonObject user) {
-            String listSuggestMatchURL = new StringBuilder(baseUrl).append("/match/user/suggest/list").toString();
+            String listSuggestMatchURL = new StringBuilder(baseUrl).append("/match/user/suggest/list?state=10").toString();
             DebugLogger.info("{}", listSuggestMatchURL);
             JsonObject response = OkHttpUtil.get(listSuggestMatchURL, Common.createHeader(user));
             DebugLogger.info("{}", response);

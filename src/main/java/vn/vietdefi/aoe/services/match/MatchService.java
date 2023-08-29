@@ -129,7 +129,11 @@ public class MatchService implements IMatchService {
                 return BaseResponse.createFullMessageResponse(10, "match_not_found");
             }
             JsonObject user = AoeServices.profileService.getUserProfileByUserId(data.get("suggester_id").getAsLong());
-            data.addProperty("suggester", user.get("data").getAsJsonObject().get("nick_name").getAsString());
+            if (BaseResponse.isSuccessFullMessage(user)) {
+                data.addProperty("suggester", user.get("data").getAsJsonObject().get("nick_name").getAsString());
+            }else {
+                data.addProperty("suggester", "");
+            }
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

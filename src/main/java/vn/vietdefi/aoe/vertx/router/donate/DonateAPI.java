@@ -32,13 +32,10 @@ public class DonateAPI {
                 .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::donateLeague);
         router.get(ApiConfig.instance().getPath("/donate/list"))
-                .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::listDonate);
         router.get(ApiConfig.instance().getPath("/donate/list-top"))
-                .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::listTopDonate);
         router.get(ApiConfig.instance().getPath("/donate/list-top-all"))
-                .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::listAllTopDonate);
         router.get(ApiConfig.instance().getPath("/donate/list/filter"))
                 .handler(DonateRouter::filterListDonate);
