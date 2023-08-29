@@ -15,7 +15,6 @@ public interface IDonateService {
     JsonObject listDonateOfUser(long userId, long page, long recordPerPage);
     JsonObject listGamerFavorites(long userId, long page, long recordPerPage);
     JsonObject filterListDonate(String phoneNumber, long from, long to, int service, long page, long record_per_page);
-
     JsonObject refundStarDonate(long matchId);
 
 
