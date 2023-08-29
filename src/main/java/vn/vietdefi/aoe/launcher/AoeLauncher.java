@@ -4,6 +4,7 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import org.apache.log4j.xml.DOMConfigurator;
+import vn.vietdefi.aoe.services.monitor.MonitorController;
 import vn.vietdefi.aoe.services.statistic.logic.StatisticController;
 import vn.vietdefi.aoe.vertx.AoeVerticle;
 import vn.vietdefi.api.vertx.ApiConfig;
@@ -21,6 +22,7 @@ public class AoeLauncher {
             initConfig();
             BankController.instance().startLoop();
             StatisticController.instance();
+            MonitorController.instance().startLoop();
             startHttpServer();
         } catch (Exception e) {
             e.printStackTrace();
