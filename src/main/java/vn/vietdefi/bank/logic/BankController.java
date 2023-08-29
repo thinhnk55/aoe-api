@@ -49,9 +49,7 @@ public class BankController {
     IBankHandlerService handler = new AoeBankHandlerService();
     private void loop() {
         try {
-            DebugLogger.info("BankController loop {} ", bankWorkers.size());
             for (Map.Entry<Long, BankWorker> entry : bankWorkers.entrySet()) {
-                //update acc
                 BankWorker worker = entry.getValue();
                 worker.loop();
             }
