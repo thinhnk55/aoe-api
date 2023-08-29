@@ -150,6 +150,15 @@ public class StarTest {
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
 
+            /*
+            get list star transaction refund donate
+             */
+            String getStatistic = new StringBuilder(baseUrl).append("/star/statistic")
+                    .toString();
+            DebugLogger.info("{}", getStatistic);
+            response = OkHttpUtil.get(getStatistic, Common.createHeaderSupport());
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         }
         @Test
         public void test1(){

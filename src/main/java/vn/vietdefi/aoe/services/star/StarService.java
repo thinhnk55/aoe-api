@@ -390,8 +390,8 @@ public class StarService implements IStarService {
     public JsonObject getStatisticRecharge(long from, long to) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query =  "SELECT COUNT(DISTINCT user_id) AS total_user_recharge, COALESCE(SUM(amount), 0) AS total_star_recharge FROM aoe_star_transaction WHERE create_time > ? AND create_time < ? ";
-            JsonObject response = bridge.queryOne(query,from,to);
+            String query =  "SELECT COUNT(DISTINCT user_id) AS total_user_recharge, COALESCE(SUM(amount), 0) AS total_star_recharge FROM aoe_star_transaction WHERE  create_time > ? AND create_time < ? AND service = ?  ";
+            JsonObject response = bridge.queryOne(query,from,to,StarConstant.SERVICE_STAR_RECHARGE);
             return BaseResponse.createFullMessageResponse(0, "success", response);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
