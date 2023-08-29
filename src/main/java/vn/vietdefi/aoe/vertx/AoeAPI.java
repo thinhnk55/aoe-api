@@ -14,6 +14,7 @@ import vn.vietdefi.aoe.vertx.router.impresario.ImpresarioAPI;
 import vn.vietdefi.aoe.vertx.router.league.LeagueAPI;
 import vn.vietdefi.aoe.vertx.router.match.MatchAPI;
 import vn.vietdefi.aoe.vertx.router.matchsuggest.MatchSuggestApi;
+import vn.vietdefi.aoe.vertx.router.monitor.MonitorAPI;
 import vn.vietdefi.aoe.vertx.router.profile.ProfileAPI;
 import vn.vietdefi.aoe.vertx.router.star.StarAPI;
 
@@ -34,6 +35,7 @@ public class AoeAPI {
         LeagueAPI.configAPI(router);
         StatisticApi.configAPI(router);
         DataAPI.configAPI(router);
+        MonitorAPI.configAPI(router);
         adminApi(router);
     }
     private static void adminApi(Router router) {
