@@ -2,8 +2,6 @@ package vn.vietdefi.aoe.vertx.router.league;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import vn.vietdefi.aoe.vertx.router.match.MatchRouter;
-import vn.vietdefi.aoe.vertx.router.profile.ProfileRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
@@ -20,13 +18,15 @@ public class LeagueAPI {
         router.get(ApiConfig
                         .instance()
                         .getPath("/league/get"))
-                .handler(BodyHandler.create(false))
                 .handler(LeagueRouter::getInfo);
         router.get(ApiConfig
                         .instance()
                         .getPath("/league/list"))
-                .handler(BodyHandler.create(false))
                 .handler(LeagueRouter::getListByState);
+        router.get(ApiConfig
+                        .instance()
+                        .getPath("/league/list-all"))
+                .handler(LeagueRouter::getListAll);
     }
     public static void supportAuthApi(Router router) {
 

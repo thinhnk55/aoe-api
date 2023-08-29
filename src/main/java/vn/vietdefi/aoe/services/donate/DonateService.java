@@ -390,13 +390,22 @@ public class DonateService implements IDonateService {
     public JsonObject filterStatisticDonate(int service, long targetId, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            StringBuilder query = new StringBuilder("SELECT * FROM aoe_donate WHERE service = ? ");
-            StringBuilder queryTotal = new StringBuilder("SELECT COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE service = ? ");
-            if (targetId != 0) {
-                query.append("AND target_id = ? ");
-                queryTotal.append("AND target_id = ?");
+            StringBuilder query = new StringBuilder("SELECT * FROM aoe_donate ");
+            StringBuilder queryTotal = new StringBuilder("SELECT COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate ");
+            if (targetId != 0 && service != 0) {
+                query.append("WHERE service = ? AND target_id = ? ");
+                queryTotal.append("WHERE service = ? AND target_id = ?");
+            } else if(targetId == 0 && service != 0) {
+                query.append("WHERE service = ? ");
+                queryTotal.append("WHERE service = ?");
+            } else if(targetId != 0 && service == 0){
+                query.append("WHERE service != ? AND target_id = ? ");
+                queryTotal.append("WHERE service != ? AND target_id = ?");
+            } else {
+                query.append("WHERE service != ? ");
+                queryTotal.append("WHERE service != ?");
             }
-            query.append("LIMIT ? OFFSET ?");
+            query.append("ORDER BY id DESC LIMIT ? OFFSET ?");
             JsonArray donate;
             long totalStarDonate;
             if (targetId != 0) {

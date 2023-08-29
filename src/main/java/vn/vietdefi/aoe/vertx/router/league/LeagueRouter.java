@@ -69,6 +69,20 @@ public class LeagueRouter {
         }
     }
 
+    public static void getListAll(RoutingContext rc){
+        try {
+            int page = Integer.parseInt(rc.request().getParam("page"));
+            JsonObject response = AoeServices.leagueService.getListLeague(page, LeagueConstant.DEFAULT_RECORD_PER_PAGE);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
     public static void stopVoteLeague(RoutingContext rc){
         try {
             String body = rc.body().asString();

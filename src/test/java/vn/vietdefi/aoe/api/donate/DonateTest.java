@@ -241,7 +241,7 @@ public class DonateTest {
 
         @Test
         public void test1(){
-
+            testFilterStatisticDonate();
         }
     }
 

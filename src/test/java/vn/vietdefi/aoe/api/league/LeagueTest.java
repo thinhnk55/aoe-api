@@ -57,6 +57,7 @@ public class LeagueTest {
             updateLeague(leagueId);
             getLeagueInfo(user,leagueId);
             getListLeague(user);
+            getListAllLeague();
             stopVoteLeague(user, leagueId);
             startLeague(user, leagueId);
             endLeague(user, leagueId);
@@ -114,6 +115,16 @@ public class LeagueTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertEquals(leagueId, response.getAsJsonObject("data").get("id").getAsLong());
             return response;
+        }
+
+        public void getListAllLeague() {
+            StringBuilder url = new StringBuilder(baseUrl).append("/league/list-all").append("?page=").append(1);
+            DebugLogger.info("{}", url);
+            JsonObject response = OkHttpUtil.get(url.toString());
+            DebugLogger.info("{}", response);
+            assert response != null;
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            Assertions.assertFalse(response.getAsJsonObject("data").getAsJsonArray("league").isEmpty());
         }
 
         public void getListLeague(JsonObject user) {

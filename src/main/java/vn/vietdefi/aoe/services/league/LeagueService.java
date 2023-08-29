@@ -73,6 +73,21 @@ public class LeagueService implements ILeagueService{
     }
 
     @Override
+    public JsonObject getListLeague(int page, int recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM aoe_league ORDER BY id DESC LIMIT ? OFFSET ?";
+            JsonObject data = new JsonObject();
+            JsonArray leagues = bridge.query(query.toString(), recordPerPage, (page - 1) * recordPerPage);
+            data.add("league", leagues);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
     public JsonObject stopVoteLeague(JsonObject data) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
