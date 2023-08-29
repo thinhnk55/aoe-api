@@ -117,7 +117,7 @@ public class StarTest {
                     .append("?from=").append("1693296226789").append("&to=").append("1693297763271")
                     .append("&page=").append(1).toString();
             DebugLogger.info("{}", lookupRechargeURL);
-            JsonObject response = OkHttpUtil.get(lookupRechargeURL, Common.createHeaderSupport());
+            response = OkHttpUtil.get(lookupRechargeURL, Common.createHeaderSupport());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
 
