@@ -28,7 +28,7 @@ public class StarTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.1.19:8000/aoe";
+            baseUrl = "http://127.0.0.1:8000/aoe";
 //            baseUrl = "http://192.168.1.99:8000/aoe";
             username = "086888555";
             password = "12344321";
@@ -129,6 +129,18 @@ public class StarTest {
             response = OkHttpUtil.get(adminGetTransactionByTimeURL, Common.createHeaderSupperAdmin());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+
+            /*
+            get list star transaction refund donate
+             */
+            String getListStarRefundURL = new StringBuilder(baseUrl).append("/star/refund/list")
+                    .toString();
+            DebugLogger.info("{}", getListStarRefundURL);
+            response = OkHttpUtil.get(getListStarRefundURL, Common.createHeaderSupport());
+            DebugLogger.info("{}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+            Assertions.assertTrue(response.get("data").getAsJsonArray().size() > 0);
+
             /*test admin get star wallet by userId*/
             long starWalletId = user.get("id").getAsLong();
             String adminGetStarURL = new StringBuilder(baseUrl).append("/star/admin/get")

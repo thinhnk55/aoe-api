@@ -356,23 +356,23 @@ public class StarService implements IStarService {
         }
     }
 
-    public JsonObject getListRefundDonate(String phoneNumber, long from, long to, long page, long record_per_page) {
+    public JsonObject getListRefundDonate(String phoneNumber, long from, long to, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long offset = (page - 1) * record_per_page;
+            long offset = (page - 1) * recordPerPage;
             StringBuilder query = new StringBuilder("SELECT * FROM aoe_star_transaction WHERE ");
 
             if (!phoneNumber.isEmpty()) {
-                query.append("phone = ? AND ");
+                query.append("username = ? AND ");
             }
             query.append("create_time > ? AND create_time < ? AND service = ? ");
             query.append("ORDER BY create_time DESC LIMIT ? OFFSET ?");
             JsonArray response;
 
             if (phoneNumber.isEmpty()) {
-                response = bridge.query(query.toString(), from, to,StarConstant.SERVICE_DONATE_MATCH_REFUND, record_per_page, offset);
+                response = bridge.query(query.toString(), from, to,StarConstant.SERVICE_DONATE_MATCH_REFUND, recordPerPage, offset);
             } else {
-                response = bridge.query(query.toString(), phoneNumber, from, to,StarConstant.SERVICE_DONATE_MATCH_REFUND, record_per_page, offset);
+                response = bridge.query(query.toString(), phoneNumber, from, to,StarConstant.SERVICE_DONATE_MATCH_REFUND, recordPerPage, offset);
             }
             for (JsonElement trans :response) {
                 trans.getAsJsonObject().add("refer_transaction",

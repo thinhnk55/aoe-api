@@ -42,7 +42,7 @@ public class StarAPI {
         router.get(ApiConfig.instance().getPath("/star/admin/transaction/time"))
                 .handler(AuthRouter::authorizeSupport)
                 .handler(StarRouter::adminListOfUserByTime);
-        router.get(ApiConfig.instance().getPath("/donate/refund/list"))
+        router.get(ApiConfig.instance().getPath("/star/refund/list"))
                 .handler(AuthRouter::authorizeSupport)
                 .handler(StarRouter::filterListRefund);
     }
