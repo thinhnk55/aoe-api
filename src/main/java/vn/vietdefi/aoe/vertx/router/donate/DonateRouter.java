@@ -129,6 +129,19 @@ public class  DonateRouter {
         }
     }
 
+    public static void listDonateOutstanding(RoutingContext rc) {
+        try {
+            JsonObject response = AoeServices.donateService.listDonateOutstanding();
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
     public static void filterListDonate(RoutingContext rc) {
         try {
             long page = Long.parseLong(rc.request().getParam("page","1"));
@@ -146,7 +159,6 @@ public class  DonateRouter {
             rc.response().end(response.toString());
         }
     }
-
     public static void filterStatisticDonate(RoutingContext rc) {
         try {
             long page = Long.parseLong(rc.request().getParam("page","1"));

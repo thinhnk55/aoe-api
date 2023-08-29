@@ -473,4 +473,37 @@ public class DonateService implements IDonateService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
+
+    public JsonObject listDonateOutstanding() {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            StringBuilder query = new StringBuilder("SELECT * FROM aoe_donate WHERE ");
+            query.append("service IN(?,?) ");
+            query.append("ORDER BY create_time DESC LIMIT 10");
+            JsonArray response;
+
+            response = bridge.query(query.toString(),StarConstant.SERVICE_DONATE_GAMER,StarConstant.SERVICE_DONATE_CASTER);
+            JsonObject receiver = new JsonObject();
+            for (JsonElement trans : response) {
+                int service = trans.getAsJsonObject().get("service").getAsInt();
+                switch (service) {
+                    case StarConstant.SERVICE_DONATE_GAMER:
+                        receiver = AoeServices.gamerService.getGamerByUserId(trans.getAsJsonObject().get("target_id").getAsLong());
+                        trans.getAsJsonObject().addProperty("receiver_nick_name", receiver.get("data").getAsJsonObject().get("nick_name").getAsString());
+                        trans.getAsJsonObject().addProperty("receiver_avatar", receiver.get("data").getAsJsonObject().get("avatar").getAsString());
+                        break;
+                    case StarConstant.SERVICE_DONATE_CASTER:
+                        receiver = AoeServices.casterService.getCasterByUserId(trans.getAsJsonObject().get("target_id").getAsLong());
+                        trans.getAsJsonObject().addProperty("receiver_nick_name", receiver.get("data").getAsJsonObject().get("nick_name").getAsString());
+                        trans.getAsJsonObject().addProperty("receiver_avatar", receiver.get("data").getAsJsonObject().get("avatar").getAsString());
+                        break;
+                }
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", response);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 }
