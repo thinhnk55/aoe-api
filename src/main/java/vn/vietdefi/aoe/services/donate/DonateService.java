@@ -338,10 +338,10 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject filterListDonate(String phoneNumber, long from, long to, int service, long page, long record_per_page) {
+    public JsonObject filterListDonate(String phoneNumber, long from, long to, int service, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            long offset = (page - 1) * record_per_page;
+            long offset = (page - 1) * recordPerPage;
             StringBuilder query = new StringBuilder("SELECT * FROM aoe_donate WHERE ");
 
             if (!phoneNumber.isEmpty()) {
@@ -354,13 +354,13 @@ public class DonateService implements IDonateService {
             query.append("ORDER BY create_time DESC LIMIT ? OFFSET ?");
             JsonArray response;
             if (phoneNumber.isEmpty() && service == 0) {
-                response = bridge.query(query.toString(), from, to, record_per_page, offset);
+                response = bridge.query(query.toString(), from, to, recordPerPage, offset);
             } else if (phoneNumber.isEmpty()) {
-                response = bridge.query(query.toString(), service, from, to, record_per_page, offset);
+                response = bridge.query(query.toString(), service, from, to, recordPerPage, offset);
             } else if (service == 0) {
-                response = bridge.query(query.toString(), phoneNumber, from, to, record_per_page, offset);
+                response = bridge.query(query.toString(), phoneNumber, from, to, recordPerPage, offset);
             } else {
-                response = bridge.query(query.toString(), phoneNumber, service, from, to, record_per_page, offset);
+                response = bridge.query(query.toString(), phoneNumber, service, from, to, recordPerPage, offset);
             }
             JsonObject receiver = new JsonObject();
             for (JsonElement trans : response) {
@@ -382,6 +382,30 @@ public class DonateService implements IDonateService {
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject filterDonate(int service, long targetId, long page, long recordPerPage) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            StringBuilder query = new StringBuilder("SELECT * FROM aoe_donate WHERE service = ? ");
+            StringBuilder queryTotal = new StringBuilder();
+            if (targetId != 0) {
+                query.append("AND target_id = ? ");
+            }
+            query.append("LIMIT ? OFFSET ?");
+            JsonArray donate;
+            if (targetId != 0) {
+                donate = bridge.query(query.toString(), service, targetId, recordPerPage, (page - 1) * recordPerPage);
+            } else {
+                donate = bridge.query(query.toString(), service, recordPerPage, (page - 1) * recordPerPage);
+            }
+
+            return null;
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }

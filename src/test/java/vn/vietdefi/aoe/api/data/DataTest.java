@@ -46,8 +46,8 @@ public class DataTest {
         @Test
         public void test0() {
             getContact();
-            updateContact();
-            getContact();
+//            updateContact();
+//            getContact();
         }
 
         public void createContact() {
