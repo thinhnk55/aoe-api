@@ -1,11 +1,10 @@
-package vn.vietdefi.aoe.vertx.router.Statistic;
+package vn.vietdefi.aoe.vertx.router.statistic;
 
 import com.google.gson.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.common.BaseResponse;
-import vn.vietdefi.util.json.GsonUtil;
 import vn.vietdefi.util.log.DebugLogger;
 
 public class StatisticRouter {
