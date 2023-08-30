@@ -12,10 +12,6 @@ import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.sql.HikariClients;
 import vn.vietdefi.util.sql.SQLJavaBridge;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
 public class DonateService implements IDonateService {
     @Override
     public JsonObject donate(long sender, long star, int service, long target_id, String message) {
@@ -387,33 +383,37 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject filterStatisticDonate(int service, long targetId, long page, long recordPerPage) {
+    public JsonObject filterStatisticDonate(long userId, int service, long targetId, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            StringBuilder query = new StringBuilder("SELECT * FROM aoe_donate ");
-            StringBuilder queryTotal = new StringBuilder("SELECT COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate ");
+            StringBuilder query = new StringBuilder("SELECT * FROM aoe_donate WHERE user_id = ? ");
+            StringBuilder queryTotal = new StringBuilder("SELECT COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE user_id = ? ");
             if (targetId != 0 && service != 0) {
-                query.append("WHERE service = ? AND target_id = ? ");
-                queryTotal.append("WHERE service = ? AND target_id = ?");
+                query.append("AND service = ? AND target_id = ? ");
+                queryTotal.append("AND service = ? AND target_id = ?");
             } else if(targetId == 0 && service != 0) {
-                query.append("WHERE service = ? ");
-                queryTotal.append("WHERE service = ?");
+                query.append("AND service = ? ");
+                queryTotal.append("AND service = ?");
             } else if(targetId != 0 && service == 0){
-                query.append("WHERE service != ? AND target_id = ? ");
-                queryTotal.append("WHERE service != ? AND target_id = ?");
-            } else {
-                query.append("WHERE service != ? ");
-                queryTotal.append("WHERE service != ?");
+                query.append("AND target_id = ? ");
+                queryTotal.append("AND target_id = ?");
             }
             query.append("ORDER BY id DESC LIMIT ? OFFSET ?");
             JsonArray donate;
             long totalStarDonate;
-            if (targetId != 0) {
-                donate = bridge.query(query.toString(), service, targetId, recordPerPage, (page - 1) * recordPerPage);
-                totalStarDonate = bridge.queryLong(queryTotal.toString(), service, targetId);
+            if (targetId != 0 && service != 0) {
+                donate = bridge.query(query.toString(), userId, service, targetId, recordPerPage, (page - 1) * recordPerPage);
+                totalStarDonate = bridge.queryLong(queryTotal.toString(), userId, service, targetId);
+            } else if (targetId == 0 && service != 0) {
+                donate = bridge.query(query.toString(), userId, service, recordPerPage, (page - 1) * recordPerPage);
+                totalStarDonate = bridge.queryLong(queryTotal.toString(), userId, service);
+            }
+            else if (targetId != 0 && service == 0){
+                donate = bridge.query(query.toString(), userId, targetId, recordPerPage, (page - 1) * recordPerPage);
+                totalStarDonate = bridge.queryLong(queryTotal.toString(), userId, targetId);
             } else {
-                donate = bridge.query(query.toString(), service, recordPerPage, (page - 1) * recordPerPage);
-                totalStarDonate = bridge.queryLong(queryTotal.toString(), service);
+                donate = bridge.query(query.toString(), userId, recordPerPage, (page - 1) * recordPerPage);
+                totalStarDonate = bridge.queryLong(queryTotal.toString(), userId);
             }
             JsonObject data = new JsonObject();
             data.addProperty("total_star_donate", totalStarDonate);
