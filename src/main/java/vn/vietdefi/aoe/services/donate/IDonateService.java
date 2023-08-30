@@ -10,7 +10,7 @@ public interface IDonateService {
     JsonObject listDonateByTargetId(int service, long targetId, long page, long recordPerPage);
     JsonObject listAllTopDonate(long page, long recordPerPage);
     JsonObject listTopDonateByTargetId(long targetId, long page, long recordPerPage);
-    JsonObject statisticDonateById(int service, long target_id);
+    JsonObject statisticDonateByTargetId(int service, long target_id);
     JsonObject statisticTotalDonate(long from, long to);
     JsonObject listDonateOfUser(long userId, long page, long recordPerPage);
     JsonObject listGamerFavorites(long userId, long page, long recordPerPage);
@@ -18,6 +18,7 @@ public interface IDonateService {
     JsonObject filterStatisticDonate(long userId, int service, long targetId, long page, long recordPerPage);
     JsonObject listDonateOutstanding();
     JsonObject refundStarDonate(long matchId);
+    JsonObject statisticDonateByUserId(long userId);
 
 
 

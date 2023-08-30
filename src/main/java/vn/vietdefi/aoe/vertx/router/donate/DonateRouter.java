@@ -194,4 +194,19 @@ public class  DonateRouter {
         }
     }
 
+
+    public static void statisticDonateByUserId(RoutingContext rc){
+        try {
+            long userId = Long.parseLong(rc.request().getHeader("userid"));
+            JsonObject response = AoeServices.donateService.statisticDonateByUserId(userId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
 }

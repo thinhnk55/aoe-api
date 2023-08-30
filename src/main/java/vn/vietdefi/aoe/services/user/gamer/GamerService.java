@@ -228,7 +228,7 @@ public class GamerService implements IGamerService {
     public JsonObject gamerUpdateStatistic(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject response = AoeServices.donateService.statisticDonateById(StarConstant.SERVICE_DONATE_GAMER, id);
+            JsonObject response = AoeServices.donateService.statisticDonateByTargetId(StarConstant.SERVICE_DONATE_GAMER, id);
             DebugLogger.info("{}", response);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;

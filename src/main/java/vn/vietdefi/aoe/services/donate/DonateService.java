@@ -471,7 +471,7 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject statisticDonateById(int service, long targetId) {
+    public JsonObject statisticDonateByTargetId(int service, long targetId) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT COUNT(DISTINCT user_id) AS total_supporter, COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE target_id = ? AND service = ?";
@@ -512,6 +512,56 @@ public class DonateService implements IDonateService {
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+
+    public JsonObject statisticDonateByUserId(long userid) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = new StringBuilder("SELECT service, COALESCE(SUM(amount), 0) as total_star_donate\n")
+                    .append("FROM aoe_donate \n ")
+                    .append("WHERE service IN (?,?,?,?) AND user_id = ?\n")
+                    .append("GROUP BY service")
+                    .toString();
+            JsonArray array = bridge.query(query,
+                    StarConstant.SERVICE_DONATE_MATCH,
+                    StarConstant.SERVICE_DONATE_GAMER,
+                    StarConstant.SERVICE_DONATE_CASTER,
+                    StarConstant.SERVICE_DONATE_LEAGUE,
+                    userid
+                    );
+            JsonObject response =new JsonObject();
+            response.addProperty("total_star_donate_for_match", 0);
+            response.addProperty("total_star_donate_for_gamer", 0);
+            response.addProperty("total_star_donate_for_caster", 0);
+            response.addProperty("total_star_donate_for_league", 0);
+            long total_star_donate = 0;
+            for (int i = 0; i < array.size(); i++) {
+                switch (array.get(i).getAsJsonObject().get("service").getAsInt()) {
+                    case StarConstant.SERVICE_DONATE_MATCH:
+                        response.addProperty("total_star_donate_for_match", array.get(i).getAsJsonObject().get("total_star_donate").getAsLong());
+                        total_star_donate += array.get(i).getAsJsonObject().get("total_star_donate").getAsLong();
+                        break;
+                    case StarConstant.SERVICE_DONATE_GAMER:
+                        response.addProperty("total_star_donate_for_gamer", array.get(i).getAsJsonObject().get("total_star_donate").getAsLong());
+                        total_star_donate += array.get(i).getAsJsonObject().get("total_star_donate").getAsLong();
+                        break;
+                    case StarConstant.SERVICE_DONATE_CASTER:
+                        response.addProperty("total_star_donate_for_caster", array.get(i).getAsJsonObject().get("total_star_donate").getAsLong());
+                        total_star_donate += array.get(i).getAsJsonObject().get("total_star_donate").getAsLong();
+                        break;
+                    case StarConstant.SERVICE_DONATE_LEAGUE:
+                        response.addProperty("total_star_donate_for_league", array.get(i).getAsJsonObject().get("total_star_donate").getAsLong());
+                        total_star_donate += array.get(i).getAsJsonObject().get("total_star_donate").getAsLong();
+                        break;
+                }
+            }
+            response.addProperty("total_star_donate",total_star_donate);
+            return BaseResponse.createFullMessageResponse(0, "success", response);
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }

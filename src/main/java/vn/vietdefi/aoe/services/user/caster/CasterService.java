@@ -149,7 +149,7 @@ public class CasterService implements ICasterService {
     public JsonObject casterUpdateStatistic(long id) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            JsonObject response = AoeServices.donateService.statisticDonateById(StarConstant.SERVICE_DONATE_CASTER, id);
+            JsonObject response = AoeServices.donateService.statisticDonateByTargetId(StarConstant.SERVICE_DONATE_CASTER, id);
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             }
