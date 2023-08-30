@@ -26,4 +26,5 @@ public interface IDonateService {
     JsonObject deleteDonateBySenderId(long userId);
 
 
+    JsonObject getDetailDonateById(long id);
 }

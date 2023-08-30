@@ -94,12 +94,12 @@ public class EventRouter {
         }
     }
 
-    public static void getListWinning(RoutingContext rc) {
+    public static void getListWinningForAdmin(RoutingContext rc) {
         try {
             int luckyNumber = Integer.parseInt(rc.request().getParam("lucky_number"));
             long evenId = Long.parseLong(rc.request().getParam("event_id"));
             int limit = Integer.parseInt(rc.request().getParam("limit"));
-            JsonObject response = AoeServices.eventService.getListWinning(evenId, luckyNumber, limit);
+            JsonObject response = AoeServices.eventService.getListWinning(evenId, luckyNumber, limit, EventConstant.QUEUED_PARTICIPANT);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -141,6 +141,48 @@ public class EventRouter {
             String data = rc.body().asString();
             JsonObject json = GsonUtil.toJsonObject(data);
             JsonObject response = AoeServices.eventService.awardParticipant(json);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void getEventByMatch(RoutingContext rc) {
+        try {
+            long matchId = Long.parseLong(rc.request().getParam("match_id"));
+            JsonObject response = AoeServices.eventService.getEventByMatch(matchId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void getEventParticipant(RoutingContext rc) {
+        try {
+            long userId = Long.parseLong(rc.request().getHeader("userid"));
+            long eventId = Long.parseLong(rc.request().getParam("event_id"));
+            JsonObject response = AoeServices.eventService.getEventParticipant(userId, eventId);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
+
+    public static void getListWinning(RoutingContext rc) {
+        try {
+            int luckyNumber = Integer.parseInt(rc.request().getParam("lucky_number"));
+            long evenId = Long.parseLong(rc.request().getParam("event_id"));
+            int limit = Integer.parseInt(rc.request().getParam("limit"));
+            JsonObject response = AoeServices.eventService.getListWinning(evenId, luckyNumber, limit, EventConstant.REWARDED_PARTICIPANT);
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

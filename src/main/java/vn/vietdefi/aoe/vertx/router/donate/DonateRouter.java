@@ -209,4 +209,17 @@ public class  DonateRouter {
         }
     }
 
+    public static void detailDonateById(RoutingContext rc) {
+        try {
+            long id = Long.parseLong(rc.request().getParam("id"));
+            JsonObject response = AoeServices.donateService.getDetailDonateById(id);
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
 }
