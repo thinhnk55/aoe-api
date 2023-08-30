@@ -195,8 +195,8 @@ public class MatchService implements IMatchService {
     public JsonObject getOutstandingMatch() {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            String query = "SELECT * FROM aoe_match WHERE star_current < star_default AND state = 1 ORDER BY star_current DESC";
-            JsonObject data = bridge.queryOne(query);
+            String query = "SELECT * FROM aoe_match WHERE star_current < star_default AND state = ? ORDER BY star_current DESC LIMIT 1";
+            JsonObject data = bridge.queryOne(query, MatchConstant.STATE_VOTING);
             if (data == null) {
                 return BaseResponse.createFullMessageResponse(10, "not_found");
             }

@@ -29,7 +29,7 @@ public class MatchTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.250.1:8000/aoe";
+            baseUrl = "http://192.168.1.14:8000/aoe";
             username = "0352555556";
             password = "12344321";
         }
@@ -39,10 +39,6 @@ public class MatchTest {
         }
         @Test
         public void test0(){
-
-        }
-        @Test
-        public void test1(){
             JsonObject response = Common.deleleUser(baseUrl, username, password);
             DebugLogger.info("{}", response);
             response = Common.registerUserSuccess(baseUrl, username, password);
@@ -158,13 +154,6 @@ public class MatchTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertFalse(response.getAsJsonObject("data").getAsJsonArray("match").isEmpty());
 
-            /*Test get outstanding match*/
-            String getOutstandingMatchURL = new StringBuilder(baseUrl).append("/match/outstanding")
-                    .append("?state=").append(state).append("&page=").append(page).toString();
-            response = OkHttpUtil.get(getOutstandingMatchURL);
-            DebugLogger.info("Outstanding match {}", response);
-            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-
             /*Delete match after test*/
             payload = new JsonObject();
             payload.addProperty("match_id", matchId);
@@ -173,6 +162,18 @@ public class MatchTest {
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
 
+        }
+        public void getOutStandingMatch() {
+            /*Test get outstanding match*/
+            String getOutstandingMatchURL = new StringBuilder(baseUrl).append("/match/outstanding").toString();
+            JsonObject response = OkHttpUtil.get(getOutstandingMatchURL);
+            DebugLogger.info("Outstanding match {}", response);
+            Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
+        }
+
+        @Test
+        public void test1(){
+            getOutStandingMatch();
         }
     }
 

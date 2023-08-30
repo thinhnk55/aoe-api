@@ -159,4 +159,17 @@ public class LeagueRouter {
             rc.response().end(response.toString());
         }
     }
+
+    public static void getOutstandingLeague(RoutingContext rc){
+        try {
+            JsonObject response = AoeServices.leagueService.getOutstandingLeague();
+            rc.response().end(response.toString());
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            JsonObject response = BaseResponse.createFullMessageResponse(
+                    1, "system_error");
+            rc.response().end(response.toString());
+        }
+    }
 }

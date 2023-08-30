@@ -179,17 +179,31 @@ public class LeagueService implements ILeagueService{
 
     @Override
     public JsonObject addStarForLeague(long leagueId, long amount) {
-            try {
-                SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-                String query = "UPDATE aoe_league SET star_current = star_current + ? WHERE id = ?";
-                bridge.update(query, amount, leagueId);
-                return BaseResponse.createFullMessageResponse(0, "success");
-            } catch (Exception e) {
-                String stacktrace = ExceptionUtils.getStackTrace(e);
-                DebugLogger.error(stacktrace);
-                return BaseResponse.createFullMessageResponse(1, "system_error");
-            }
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "UPDATE aoe_league SET star_current = star_current + ? WHERE id = ?";
+            bridge.update(query, amount, leagueId);
+            return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 
+    @Override
+    public JsonObject getOutstandingLeague() {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            StringBuilder query = new StringBuilder("SELECT * FROM aoe_league WHERE state = ? ")
+                    .append("AND star_current < star_default_offline ORDER BY star_current DESC LIMIT 1");
+            JsonObject data = bridge.queryOne(query.toString(), LeagueConstant.STATE_VOTING);
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
     }
 
     public JsonObject checkState (long id, int state) {

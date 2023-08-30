@@ -27,6 +27,10 @@ public class LeagueAPI {
                         .instance()
                         .getPath("/league/list-all"))
                 .handler(LeagueRouter::getListAll);
+        router.get(ApiConfig
+                        .instance()
+                        .getPath("/league/outstanding"))
+                .handler(LeagueRouter::getOutstandingLeague);
     }
     public static void supportAuthApi(Router router) {
 
