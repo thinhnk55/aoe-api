@@ -177,9 +177,14 @@ public class EventService implements IEventService {
             if(row == 0){
                 return BaseResponse.createFullMessageResponse(10, "award_failure");
             }
+            query = "SELECT * FROM aoe_event_participants WHERE event_id = ? AND user_id = ?";
+            JsonObject eventParticipant = bridge.queryOne(query, eventId, userId);
             JsonObject detail = new JsonObject();
+            detail.addProperty("lucky_number", eventParticipant.get("lucky_number").getAsInt());
             detail.addProperty("amount", amount);
-            detail.addProperty("user_id", userId);
+            JsonObject profile = AoeServices.profileService.getPartialProfile(userId).getAsJsonObject("data");
+            detail.addProperty("nick_name", profile.get("nick_name").getAsString());
+            detail.addProperty("avatar", profile.get("avatar").getAsString());
             query = "UPDATE aoe_event SET detail = ? WHERE id = ?";
             row = bridge.update(query, detail, eventId);
             if(row == 0){
@@ -206,6 +211,11 @@ public class EventService implements IEventService {
             JsonObject data = bridge.queryOne(query, eventId);
             query = "SELECT * FROM aoe_event_participants WHERE event_id = ? LIMIT ? OFFSET ?";
             JsonArray json = bridge.query(query, eventId, recordPerPage, offset);
+            for (JsonElement element : json) {
+                long userId = element.getAsJsonObject().get("user_id").getAsLong();
+                JsonObject profile = AoeServices.profileService.getUserProfileByUserId(userId);
+                element.getAsJsonObject().add("profile", profile.getAsJsonObject("data"));
+            }
             data.add("participant", json);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -237,33 +247,50 @@ public class EventService implements IEventService {
         }
     }
 
-//    @Override
-//    public JsonObject getEventByMatch(long match_id) {
-//        try {
-//            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-//            JsonObject response = AoeServices.matchService.getById(match_id);
-//            if (!BaseResponse.isSuccessFullMessage(response)) {
-//                return response;
-//            }
-//            JsonObject match = response.getAsJsonObject("data");
-//            String link = match.getAsJsonObject("detail").get("link_livestream").getAsString();
-//            String query = "SELECT * FROM aoe_event WHERE match_id = ? AND state = ?";
-//            JsonObject data = bridge.queryOne(query, match_id, EventConstants.EVENT_ON_GOING);
-//            if (data == null) {
-//                return BaseResponse.createFullMessageResponse(11, "event_unavailable");
-//            }
-//            data.addProperty("link_livestream", link);
-//            data.add("participants", getNumberOfParticipant(data.get("id").getAsLong()).get("total"));
-//            return BaseResponse.createFullMessageResponse(0, "success", data);
-//        } catch (Exception e) {
-//            String stacktrace = ExceptionUtils.getStackTrace(e);
-//            DebugLogger.error(stacktrace);
-//            return BaseResponse.createFullMessageResponse(1, "system_error");
-//        }
-//    }
+    @Override
+    public JsonObject getEventByMatch(long match_id) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            JsonObject response = AoeServices.matchService.getById(match_id);
+            if (!BaseResponse.isSuccessFullMessage(response)) {
+                return response;
+            }
+            JsonObject match = response.getAsJsonObject("data");
+            String link = match.getAsJsonObject("detail").get("link_livestream").getAsString();
+            String query = "SELECT * FROM aoe_event WHERE match_id = ? AND state = ?";
+            JsonObject data = bridge.queryOne(query, match_id, EventConstant.EVENT_ON_GOING);
+            if (data == null) {
+                return BaseResponse.createFullMessageResponse(11, "event_unavailable");
+            }
+            data.addProperty("link_livestream", link);
+            data.add("participants", getNumberOfParticipant(data.get("id").getAsLong()).get("total"));
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
 
     @Override
-    public JsonObject getListWinning(long eventId, int luckyNumber, int limit) {
+    public JsonObject getEventParticipant(long userId, long eventId) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM aoe_event_participants WHERE user_id = ? AND event_id = ?";
+            JsonObject data = bridge.queryOne(query, userId, eventId);
+            if (data == null) {
+                return BaseResponse.createFullMessageResponse(10, "event_not_found");
+            }
+            return BaseResponse.createFullMessageResponse(0, "success", data);
+        } catch (Exception e) {
+            String stacktrace = ExceptionUtils.getStackTrace(e);
+            DebugLogger.error(stacktrace);
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject getListWinning(long eventId, int luckyNumber, int limit, int state) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query =
@@ -272,7 +299,7 @@ public class EventService implements IEventService {
                             .append("WHERE event_id = ? AND state = ?\n")
                             .append("ORDER BY ABS(? - lucky_number), create_time\n")
                             .append("LIMIT ?").toString();
-            JsonArray data = bridge.query(query, luckyNumber, eventId, EventConstant.QUEUED_PARTICIPANT, luckyNumber, limit);
+            JsonArray data = bridge.query(query, luckyNumber, eventId, state, luckyNumber, limit);
             for (JsonElement element : data) {
                 long userId = element.getAsJsonObject().get("user_id").getAsLong();
                 JsonObject profile = AoeServices.profileService.getUserProfileByUserId(userId);

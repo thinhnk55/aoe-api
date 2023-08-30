@@ -2,7 +2,6 @@ package vn.vietdefi.aoe.vertx.router.event;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import vn.vietdefi.aoe.vertx.router.gamer.GamerRouter;
 import vn.vietdefi.api.vertx.ApiConfig;
 import vn.vietdefi.api.vertx.router.AuthRouter;
 
@@ -18,12 +17,18 @@ public class EventAPI {
     public static void userAuthApi(Router router) {
         router.get(ApiConfig.instance().getPath("/event/get"))
                 .handler(EventRouter::getEvent);
+        router.get(ApiConfig.instance().getPath("/event/get-by-match"))
+                .handler(EventRouter::getEventByMatch);
         router.get(ApiConfig.instance().getPath("/event/list-participant"))
                 .handler(EventRouter::getListParticipants);
         router.get(ApiConfig.instance().getPath("/event/list-by-state"))
                 .handler(EventRouter::getListEventByState);
-//        router.get(ApiConfig.instance().getPath("/event/get-by-match"))
-//                .handler(EventRouter::getEventByMatch);
+        router.get(ApiConfig.instance().getPath("/event-participant/get"))
+                .handler(AuthRouter::authorizeUser)
+                .handler(EventRouter::getEventParticipant);
+        router.get(ApiConfig.instance().getPath("/event-participant/list-winning"))
+                .handler(AuthRouter::authorizeUser)
+                .handler(EventRouter::getListWinning);
         router.post(ApiConfig.instance().getPath("/event/join"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeUser)
@@ -45,7 +50,7 @@ public class EventAPI {
                 .handler(EventRouter::updateStateEvent);
         router.get(ApiConfig.instance().getPath("/event/list-winning"))
                 .handler(AuthRouter::authorizeAdmin)
-                .handler(EventRouter::getListWinning);
+                .handler(EventRouter::getListWinningForAdmin);
         router.post(ApiConfig.instance().getPath("/event/cancel"))
                 .handler(BodyHandler.create(false))
                 .handler(AuthRouter::authorizeAdmin)
