@@ -160,12 +160,6 @@ public class DonateService implements IDonateService {
                     return matchResponse.getAsJsonObject("data");
                 }
                 break;
-            case StarConstant.SERVICE_SUGGEST_MATCH:
-                JsonObject matchSuggestResponse = AoeServices.suggestService.getMatchSuggest(targetId);
-                if (BaseResponse.isSuccessFullMessage(matchSuggestResponse)) {
-                    return matchSuggestResponse.getAsJsonObject("data");
-                }
-                break;
             case StarConstant.SERVICE_DONATE_LEAGUE:
                 JsonObject leagueResponse = AoeServices.leagueService.getLeagueInfo(targetId);
                 if (BaseResponse.isSuccessFullMessage(leagueResponse)) {
@@ -239,6 +233,40 @@ public class DonateService implements IDonateService {
             String query = "DELETE FROM aoe_donate WHERE user_id = ?";
             bridge.update(query, userId);
             return BaseResponse.createFullMessageResponse(0, "success");
+        } catch (Exception e) {
+            DebugLogger.error(ExceptionUtils.getStackTrace(e));
+            return BaseResponse.createFullMessageResponse(1, "system_error");
+        }
+    }
+
+    @Override
+    public JsonObject getDetailDonateById(long id) {
+        try {
+            SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
+            String query = "SELECT * FROM aoe_donate WHERE id = ?";
+            JsonObject response = bridge.queryOne(query, id);
+            if (response == null){
+                return BaseResponse.createFullMessageResponse(10, "not_found");
+            }
+            int service = response.get("service").getAsInt();
+            switch (service) {
+                case StarConstant.SERVICE_DONATE_MATCH:
+                    response.addProperty("target","");
+                    break;
+                case StarConstant.SERVICE_DONATE_GAMER:
+                    response.addProperty("target",AoeServices.gamerService.getPartialGamer(response.get("target_id").getAsLong())
+                            .get("data").getAsJsonObject().get("nick_name").getAsString());
+                    break;
+                case StarConstant.SERVICE_DONATE_CASTER:
+                    response.addProperty("target",AoeServices.casterService.getPartialCaster(response.get("target_id").getAsLong())
+                            .get("data").getAsJsonObject().get("nick_name").getAsString());
+                    break;
+                case StarConstant.SERVICE_DONATE_LEAGUE:
+                    response.addProperty("target",AoeServices.leagueService.getLeagueInfo(response.get("target_id").getAsLong())
+                            .get("data").getAsJsonObject().get("name").getAsString());
+                    break;
+            }
+            return BaseResponse.createFullMessageResponse(0, "success",response);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
