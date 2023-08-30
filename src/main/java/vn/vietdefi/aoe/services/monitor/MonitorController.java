@@ -3,7 +3,6 @@ package vn.vietdefi.aoe.services.monitor;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import vn.vietdefi.aoe.services.AoeServices;
 import vn.vietdefi.common.BaseResponse;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.thread.ThreadPoolWorker;
@@ -16,6 +15,7 @@ public class MonitorController {
     public ScheduledFuture<?> loopTask;
     public SystemInfo systemInfo;
     JsonArray cacheSystemInfo;
+    public long idIndex = 0;
 
     public static MonitorController instance() {
         if (ins == null) {
@@ -43,7 +43,9 @@ public class MonitorController {
     }
 
     private void addSystemInfoToCache() {
-        cacheSystemInfo.add(systemInfo.toJsonObject());
+        JsonObject system = systemInfo.toJsonObject();
+        system.addProperty("idIndex", ++idIndex);
+        cacheSystemInfo.add(system);
         if(cacheSystemInfo.size() > 100){
             cacheSystemInfo.remove(0);
         }
