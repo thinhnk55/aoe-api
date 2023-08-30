@@ -209,11 +209,11 @@ public class EventService implements IEventService {
             }
             String query = "SELECT COUNT(*) AS total FROM aoe_event_participants WHERE event_id = ? ";
             JsonObject data = bridge.queryOne(query, eventId);
-            query = "SELECT * FROM aoe_event_participants WHERE event_id = ? LIMIT ? OFFSET ?";
+            query = "SELECT user_id, lucky_number FROM aoe_event_participants WHERE event_id = ? LIMIT ? OFFSET ?";
             JsonArray json = bridge.query(query, eventId, recordPerPage, offset);
             for (JsonElement element : json) {
                 long userId = element.getAsJsonObject().get("user_id").getAsLong();
-                JsonObject profile = AoeServices.profileService.getUserProfileByUserId(userId);
+                JsonObject profile = AoeServices.profileService.getPartialProfile(userId);
                 element.getAsJsonObject().add("profile", profile.getAsJsonObject("data"));
             }
             data.add("participant", json);
@@ -302,7 +302,7 @@ public class EventService implements IEventService {
             JsonArray data = bridge.query(query, luckyNumber, eventId, state, luckyNumber, limit);
             for (JsonElement element : data) {
                 long userId = element.getAsJsonObject().get("user_id").getAsLong();
-                JsonObject profile = AoeServices.profileService.getUserProfileByUserId(userId);
+                JsonObject profile = AoeServices.profileService.getPartialProfile(userId);
                 element.getAsJsonObject().add("profile", profile.getAsJsonObject("data"));
             }
             JsonObject result = new JsonObject();
