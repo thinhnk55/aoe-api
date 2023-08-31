@@ -58,7 +58,7 @@ public class LeagueService implements ILeagueService{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             StringBuilder query = new StringBuilder("SELECT * FROM aoe_league WHERE state = ? ");
             if (state != LeagueConstant.STATE_CANCELLED) {
-                query.append("ORDER BY (star_default_offline - star_current) DESC LIMIT ? OFFSET ?");
+                query.append("ORDER BY (star_current / star_default_offline * 100) DESC LIMIT ? OFFSET ?");
             } else {
                 query.append("ORDER BY id DESC LIMIT ? OFFSET ?");
             }
@@ -133,12 +133,8 @@ public class LeagueService implements ILeagueService{
             JsonObject checkState = checkState(leagueId, LeagueConstant.STATE_FINISHED);
             if (!BaseResponse.isSuccessFullMessage(checkState))
                 return checkState;
-            JsonArray result = data.get("result").getAsJsonArray();
-            JsonObject league = getLeagueInfo(leagueId);
-            JsonObject detail = league.getAsJsonObject("data").get("detail").getAsJsonObject();
-            detail.add("result", result);
-            String query = "UPDATE aoe_league SET detail = ?, state = ? WHERE id = ?";
-            bridge.update(query, detail, LeagueConstant.STATE_FINISHED, leagueId);
+            String query = "UPDATE aoe_league SET state = ? WHERE id = ?";
+            bridge.update(query, LeagueConstant.STATE_FINISHED, leagueId);
             StatisticController.instance().tournamentComplete();
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {

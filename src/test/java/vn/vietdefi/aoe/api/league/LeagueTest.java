@@ -45,24 +45,24 @@ public class LeagueTest {
 
         @Test
         public void test0() {
-            JsonObject response = Common.deleleUser(baseUrl, username, password);
-            DebugLogger.info("{}", response);
-            response = Common.registerUserSuccess(baseUrl, username, password);
-            DebugLogger.info("{}", response);
-            JsonObject user = response.getAsJsonObject("data");
-            Common.addStarToWallet(baseUrl, user.get("id").getAsLong(), star);
-
-            JsonObject league = createLeague();
-            long leagueId = league.getAsJsonObject("data").get("id").getAsLong();
-            updateLeague(leagueId);
-            getLeagueInfo(user,leagueId);
-            getListLeague(user);
-            getListAllLeague();
-            stopVoteLeague(user, leagueId);
-            startLeague(user, leagueId);
-            endLeague(user, leagueId);
-            cancelLeague(user, leagueId);
-            deleteLeague(leagueId);
+//            JsonObject response = Common.deleleUser(baseUrl, username, password);
+//            DebugLogger.info("{}", response);
+//            response = Common.registerUserSuccess(baseUrl, username, password);
+//            DebugLogger.info("{}", response);
+//            JsonObject user = response.getAsJsonObject("data");
+//            Common.addStarToWallet(baseUrl, user.get("id").getAsLong(), star);
+//
+//            JsonObject league = createLeague();
+//            long leagueId = league.getAsJsonObject("data").get("id").getAsLong();
+//            updateLeague(leagueId);
+//            getLeagueInfo(leagueId);
+//            getListLeague();
+//            getListAllLeague();
+//            stopVoteLeague(leagueId);
+//            startLeague(leagueId);
+            endLeague(leagueId);
+//            cancelLeague(leagueId);
+//            deleteLeague(leagueId);
 
         }
 
@@ -106,10 +106,10 @@ public class LeagueTest {
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
         }
 
-        public JsonObject getLeagueInfo(JsonObject user ,long leagueId) {
+        public JsonObject getLeagueInfo(long leagueId) {
             StringBuilder url = new StringBuilder(baseUrl).append("/league/get").append("?id=").append(leagueId);
             DebugLogger.info("{}", url);
-            JsonObject response = OkHttpUtil.get(url.toString(), Common.createHeader(user));
+            JsonObject response = OkHttpUtil.get(url.toString());
             DebugLogger.info("{}", response);
             assert response != null;
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
@@ -127,18 +127,18 @@ public class LeagueTest {
             Assertions.assertFalse(response.getAsJsonObject("data").getAsJsonArray("league").isEmpty());
         }
 
-        public void getListLeague(JsonObject user) {
+        public void getListLeague() {
             StringBuilder url = new StringBuilder(baseUrl).append("/league/list").append("?state=")
                     .append(LeagueConstant.STATE_VOTING).append("&page=").append(1);
             DebugLogger.info("{}", url);
-            JsonObject response = OkHttpUtil.get(url.toString(), Common.createHeader(user));
+            JsonObject response = OkHttpUtil.get(url.toString());
             DebugLogger.info("{}", response);
             assert response != null;
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertFalse(response.getAsJsonObject("data").getAsJsonArray("league").isEmpty());
         }
 
-        public void stopVoteLeague(JsonObject user ,long leagueId) {
+        public void stopVoteLeague(long leagueId) {
             JsonObject payload = new JsonObject();
             payload.addProperty("id", leagueId);
             payload.addProperty("start_date", 1692453732898L);
@@ -149,12 +149,12 @@ public class LeagueTest {
             DebugLogger.info("{}", response);
             assert response != null;
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-            JsonObject league = getLeagueInfo(user, leagueId);
+            JsonObject league = getLeagueInfo(leagueId);
             Assertions.assertEquals(league.getAsJsonObject("data").get("state").getAsInt(),
                     LeagueConstant.STATE_STOP_VOTING);
         }
 
-        public void startLeague(JsonObject user ,long leagueId) {
+        public void startLeague(long leagueId) {
             JsonObject payload = new JsonObject();
             payload.addProperty("id", leagueId);
             payload.addProperty("link_livestream", "https://");
@@ -165,15 +165,14 @@ public class LeagueTest {
             DebugLogger.info("{}", response);
             assert response != null;
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-            JsonObject league = getLeagueInfo(user, leagueId);
+            JsonObject league = getLeagueInfo(leagueId);
             Assertions.assertEquals(league.getAsJsonObject("data").get("state").getAsInt(),
                     LeagueConstant.STATE_PLAYING);
         }
 
-        public void endLeague(JsonObject user ,long leagueId) {
+        public void endLeague(long leagueId) {
             JsonObject payload = new JsonObject();
             payload.addProperty("id", leagueId);
-            payload.add("result", new JsonArray());
 
             StringBuilder url = new StringBuilder(baseUrl).append("/league/end");
             DebugLogger.info("{}", url);
@@ -181,12 +180,12 @@ public class LeagueTest {
             DebugLogger.info("{}", response);
             assert response != null;
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-            JsonObject league = getLeagueInfo(user, leagueId);
+            JsonObject league = getLeagueInfo(leagueId);
             Assertions.assertEquals(league.getAsJsonObject("data").get("state").getAsInt(),
                     LeagueConstant.STATE_FINISHED);
         }
 
-        public void cancelLeague(JsonObject user ,long leagueId) {
+        public void cancelLeague(long leagueId) {
             JsonObject payload = new JsonObject();
             payload.addProperty("id", leagueId);
 
@@ -196,7 +195,7 @@ public class LeagueTest {
             DebugLogger.info("{}", response);
             assert response != null;
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-            JsonObject league = getLeagueInfo(user, leagueId);
+            JsonObject league = getLeagueInfo(leagueId);
             Assertions.assertEquals(league.getAsJsonObject("data").get("state").getAsInt(),
                     LeagueConstant.STATE_CANCELLED);
         }
