@@ -45,24 +45,24 @@ public class LeagueTest {
 
         @Test
         public void test0() {
-//            JsonObject response = Common.deleleUser(baseUrl, username, password);
-//            DebugLogger.info("{}", response);
-//            response = Common.registerUserSuccess(baseUrl, username, password);
-//            DebugLogger.info("{}", response);
-//            JsonObject user = response.getAsJsonObject("data");
-//            Common.addStarToWallet(baseUrl, user.get("id").getAsLong(), star);
-//
-//            JsonObject league = createLeague();
-//            long leagueId = league.getAsJsonObject("data").get("id").getAsLong();
-//            updateLeague(leagueId);
-//            getLeagueInfo(leagueId);
-//            getListLeague();
-//            getListAllLeague();
-//            stopVoteLeague(leagueId);
-//            startLeague(leagueId);
+            JsonObject response = Common.deleleUser(baseUrl, username, password);
+            DebugLogger.info("{}", response);
+            response = Common.registerUserSuccess(baseUrl, username, password);
+            DebugLogger.info("{}", response);
+            JsonObject user = response.getAsJsonObject("data");
+            Common.addStarToWallet(baseUrl, user.get("id").getAsLong(), star);
+
+            JsonObject league = createLeague();
+            long leagueId = league.getAsJsonObject("data").get("id").getAsLong();
+            updateLeague(leagueId);
+            getLeagueInfo(leagueId);
+            getListLeague();
+            getListAllLeague();
+            stopVoteLeague(leagueId);
+            startLeague(leagueId);
             endLeague(leagueId);
-//            cancelLeague(leagueId);
-//            deleteLeague(leagueId);
+            cancelLeague(leagueId);
+            deleteLeague(leagueId);
 
         }
 
