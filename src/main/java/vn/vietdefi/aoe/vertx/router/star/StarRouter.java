@@ -76,12 +76,20 @@ public class StarRouter {
     public static void adminListOfUserByTime(RoutingContext rc) {
         try {
             long userId = Long.parseLong(rc.request().getParam("user_id"));
-            long from = Long.parseLong(rc.request().getParam("from"));
-            long to = Long.parseLong(rc.request().getParam("to"));
+            long from = Long.parseLong(rc.request().getParam("from", "0"));
+            long to = Long.parseLong(rc.request().getParam("to", String.valueOf(System.currentTimeMillis())));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
-            JsonObject response = AoeServices.starService
-                    .listStarTransactionOfUserByTime(userId, from, to, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
-            rc.response().end(response.toString());
+            if(from != 0) {
+                JsonObject response = AoeServices.starService
+                        .listStarTransactionOfUserByTime(userId, from, to,
+                                page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+                rc.response().end(response.toString());
+            }else{
+                JsonObject response = AoeServices.starService
+                        .listStarTransactionOfUserAll(userId,
+                                page, StarConstant.DEFAULT_RECORD_PER_PAGE);
+                rc.response().end(response.toString());
+            }
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             rc.response().end(BaseResponse.createFullMessageResponse(
