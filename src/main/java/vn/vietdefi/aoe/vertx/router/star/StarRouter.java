@@ -158,7 +158,7 @@ public class StarRouter {
         try {
             String phoneNumber = rc.request().getParam("phone_number", "");
             long from = Long.parseLong(rc.request().getParam("from", "0"));
-            long to = Long.parseLong(rc.request().getParam("to", "0"));
+            long to = Long.parseLong(rc.request().getParam("to", String.valueOf(System.currentTimeMillis())));
             long page = Long.parseLong(rc.request().getParam("page", "1"));
             JsonObject response = AoeServices.starService.lookupRechargeHistory(phoneNumber, from, to, page, StarConstant.DEFAULT_RECORD_PER_PAGE);
             rc.response().end(response.toString());
