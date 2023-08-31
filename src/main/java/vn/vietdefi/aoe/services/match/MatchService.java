@@ -17,7 +17,6 @@ public class MatchService implements IMatchService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonObject data = new JsonObject();
 
-            DebugLogger.info("{}", json);
             data.addProperty("format", json.get("format").getAsInt());
             data.addProperty("type", json.get("type").getAsInt());
             data.addProperty("star_default", json.get("star_default").getAsLong());
@@ -46,27 +45,6 @@ public class MatchService implements IMatchService {
         }
     }
 
-//    private JsonObject createDetail(JsonObject json) {
-//        JsonObject detail = new JsonObject();
-//        detail.addProperty("description", json.get("description").getAsString());//
-//        detail.addProperty("percent_for_gamer", json.get("percent_for_gamer").getAsString());
-//        detail.addProperty("percent_for_viewer", json.get("percent_for_viewer").getAsString());
-//        detail.addProperty("percent_for_organizers", json.get("percent_for_organizers").getAsString());
-//        detail.addProperty("link_livestream", "");
-//        if (json.has("link_livestream")) {
-//            detail.addProperty("link_livestream", json.get("link_livestream").getAsString());
-//        }
-//        detail.add("result", new JsonArray());
-//        if (json.has("result")) {
-//            detail.add("result", json.get("result"));
-//        }
-//        detail.addProperty("match_date", 0);
-//        if (json.has("match_date")) {
-//            detail.addProperty("match_date", json.get("match_date").getAsLong());
-//        }
-//        return detail;
-//    }
-
 
     public JsonObject updateMatch(JsonObject json) {
         try {
@@ -87,7 +65,6 @@ public class MatchService implements IMatchService {
             if (!BaseResponse.isSuccessFullMessage(response)){
                 return response;
             }
-            DebugLogger.info("{}",data);
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);

@@ -23,7 +23,7 @@ public class GamerService implements IGamerService {
                 return BaseResponse.createFullMessageResponse(13, "nick_name_exists");
             }
             response = AoeServices.gamerService.getByPhone(phone);
-            if (!BaseResponse.isSuccessFullMessage(response)) {
+            if (BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(14, "phone_exists");
             }
             response = ApiServices.authService.get(phone);
