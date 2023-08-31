@@ -554,20 +554,19 @@ public class DonateService implements IDonateService {
     }
 
 
-    public JsonObject statisticDonateByUserId(long userid) {
+    public JsonObject statisticDonateByUserId() {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = new StringBuilder("SELECT service, COALESCE(SUM(amount), 0) as total_star_donate\n")
                     .append("FROM aoe_donate \n ")
-                    .append("WHERE service IN (?,?,?,?) AND user_id = ?\n")
+                    .append("WHERE service IN (?,?,?,?)\n")
                     .append("GROUP BY service")
                     .toString();
             JsonArray array = bridge.query(query,
                     StarConstant.SERVICE_DONATE_MATCH,
                     StarConstant.SERVICE_DONATE_GAMER,
                     StarConstant.SERVICE_DONATE_CASTER,
-                    StarConstant.SERVICE_DONATE_LEAGUE,
-                    userid
+                    StarConstant.SERVICE_DONATE_LEAGUE
             );
             JsonObject response = new JsonObject();
             response.addProperty("total_star_donate_for_match", 0);

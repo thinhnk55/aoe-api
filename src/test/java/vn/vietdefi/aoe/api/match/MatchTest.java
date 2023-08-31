@@ -29,9 +29,9 @@ public class MatchTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.1.14:8000/aoe";
-            username = "0352555556";
-            password = "12344321";
+            baseUrl = "http://127.0.0.1:8000/aoe";
+            username = "0915434549";
+            password = "123456";
         }
         @RepeatedTest(1)
         void repeatTest1(){
@@ -113,6 +113,8 @@ public class MatchTest {
             payload.addProperty("match_id", matchId);
             payload.add("result", new JsonArray());
             String endMatchURL = new StringBuilder(baseUrl).append("/match/end").toString();
+            DebugLogger.info("{}", endMatchURL);
+
             response = OkHttpUtil.postJson(endMatchURL, payload.toString(), Common.createHeaderAdmin());
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));

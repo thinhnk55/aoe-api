@@ -18,7 +18,7 @@ public interface IDonateService {
     JsonObject filterStatisticDonate(int service, long targetId, long page, long recordPerPage);
     JsonObject listDonateOutstanding();
     JsonObject refundStarDonate(long matchId);
-    JsonObject statisticDonateByUserId(long userId);
+    JsonObject statisticDonateByUserId();
 
 
 

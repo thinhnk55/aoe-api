@@ -197,8 +197,7 @@ public class  DonateRouter {
 
     public static void statisticDonateByUserId(RoutingContext rc){
         try {
-            long userId = Long.parseLong(rc.request().getHeader("userid"));
-            JsonObject response = AoeServices.donateService.statisticDonateByUserId(userId);
+            JsonObject response = AoeServices.donateService.statisticDonateByUserId();
             rc.response().end(response.toString());
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
