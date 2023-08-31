@@ -58,7 +58,7 @@ public class LeagueService implements ILeagueService{
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             StringBuilder query = new StringBuilder("SELECT * FROM aoe_league WHERE state = ? ");
             if (state != LeagueConstant.STATE_CANCELLED) {
-                query.append("ORDER BY (star_current - star_default_online) LIMIT ? OFFSET ?");
+                query.append("ORDER BY (star_default_offline - star_current) DESC LIMIT ? OFFSET ?");
             } else {
                 query.append("ORDER BY id DESC LIMIT ? OFFSET ?");
             }
