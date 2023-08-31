@@ -118,6 +118,11 @@ public class StarService implements IStarService {
             if (data == null)
                 return BaseResponse.createFullMessageResponse(10, "star_transaction_not_exit");
             addReferToTransaction(data);
+            long referId = data.get("refer_id").getAsLong();
+            JsonObject referData = AoeServices.donateService.getDonateById(referId);
+            if (BaseResponse.isSuccessFullMessage(referData)) {
+                data.addProperty("message", referData.getAsJsonObject("data").get("message").getAsString());
+            }
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));

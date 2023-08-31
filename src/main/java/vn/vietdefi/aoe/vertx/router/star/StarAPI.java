@@ -25,7 +25,7 @@ public class StarAPI {
                 .handler(StarRouter::listByService);
 
         router.get(ApiConfig.instance().getPath("/star/transaction/get"))
-                .handler(AuthRouter::authorizeUser)
+                //.handler(AuthRouter::authorizeUser)
                 .handler(StarRouter::getTransaction);
 
         router.get(ApiConfig.instance().getPath("/star/transaction/time"))
