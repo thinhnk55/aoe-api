@@ -27,13 +27,13 @@ public class MatchService implements IMatchService {
             data.addProperty("create_time", System.currentTimeMillis());
             data.add("team_player", json.get("team_player").getAsJsonArray());
             bridge.insertObjectToDB("aoe_match", data);
-            JsonObject response =  MatchGamerService.createTeamPlayer(data.get("id").getAsLong(),
+            JsonObject response = MatchGamerService.createTeamPlayer(data.get("id").getAsLong(),
                     data.get("team_player").getAsJsonArray());
-            if (!BaseResponse.isSuccessFullMessage(response)){
+            if (!BaseResponse.isSuccessFullMessage(response)) {
                 response = updateState(data.get("id").getAsLong(), MatchConstant.STATE_ERROR_CREATE_TEAM);
-                if (!BaseResponse.isSuccessFullMessage(response)){
+                if (!BaseResponse.isSuccessFullMessage(response)) {
                     return response;
-                }else {
+                } else {
                     return BaseResponse.createFullMessageResponse(15, "create_team_error");
                 }
             }
@@ -62,7 +62,7 @@ public class MatchService implements IMatchService {
             JsonArray teamPlayers = json.get("team_player").getAsJsonArray();
             long matchId = json.get("id").getAsLong();
             JsonObject response = MatchGamerService.updateTeamPlayer(matchId, teamPlayers);
-            if (!BaseResponse.isSuccessFullMessage(response)){
+            if (!BaseResponse.isSuccessFullMessage(response)) {
                 return response;
             }
             return BaseResponse.createFullMessageResponse(0, "success");
@@ -88,14 +88,14 @@ public class MatchService implements IMatchService {
                 } else {
                     dataQuery.append("ORDER BY id DESC ");
                 }
-            }else {
+            } else {
                 dataQuery.append("ORDER BY id DESC ");
             }
             dataQuery.append("LIMIT ? OFFSET ?");
             JsonArray data;
-            if (state != 0 ){
+            if (state != 0) {
                 data = bridge.query(String.valueOf(dataQuery), state, recordPerPage, offset);
-            }else {
+            } else {
                 data = bridge.query(String.valueOf(dataQuery), recordPerPage, offset);
 
             }
@@ -120,7 +120,7 @@ public class MatchService implements IMatchService {
             JsonObject user = AoeServices.profileService.getUserProfileByUserId(data.get("suggester_id").getAsLong());
             if (BaseResponse.isSuccessFullMessage(user)) {
                 data.addProperty("suggester", user.get("data").getAsJsonObject().get("nick_name").getAsString());
-            }else {
+            } else {
                 data.addProperty("suggester", "");
             }
             return BaseResponse.createFullMessageResponse(0, "success", data);
@@ -211,8 +211,8 @@ public class MatchService implements IMatchService {
             }
             data = data.get("data").getAsJsonObject();
             JsonObject updateIntoDb = new JsonObject();
-            updateIntoDb.addProperty("id",matchId);
-            updateIntoDb.add("detail",data.get("detail"));
+            updateIntoDb.addProperty("id", matchId);
+            updateIntoDb.add("detail", data.get("detail"));
             updateIntoDb.get("detail").getAsJsonObject().addProperty("match_date", json.get("match_date").getAsLong());
             updateIntoDb.addProperty("state", MatchConstant.STATE_STOP_VOTING);
             updateIntoDb.addProperty("time_expired", System.currentTimeMillis());
@@ -251,8 +251,8 @@ public class MatchService implements IMatchService {
             }
             data = data.get("data").getAsJsonObject();
             JsonObject updateIntoDb = new JsonObject();
-            updateIntoDb.addProperty("id",matchId);
-            updateIntoDb.add("detail",data.get("detail"));
+            updateIntoDb.addProperty("id", matchId);
+            updateIntoDb.add("detail", data.get("detail"));
             updateIntoDb.get("detail").getAsJsonObject().addProperty("link_livestream", json.get("link_livestream").getAsString());
             updateIntoDb.addProperty("state", MatchConstant.STATE_PLAYING);
             updateIntoDb.addProperty("time_expired", System.currentTimeMillis());
@@ -276,14 +276,15 @@ public class MatchService implements IMatchService {
             if (!BaseResponse.isSuccessFullMessage(res)) {
                 return res;
             }
-            JsonObject updateDb =new JsonObject();
+            JsonObject updateDb = new JsonObject();
             data = data.get("data").getAsJsonObject();
             data.get("detail").getAsJsonObject().add("result", json.get("result").getAsJsonArray());
-            updateDb.addProperty("id",data.get("id").getAsLong());
-            updateDb.add("detail",data.get("detail").getAsJsonObject());
+            updateDb.addProperty("id", matchId);
+            updateDb.add("detail", data.get("detail").getAsJsonObject());
             updateDb.addProperty("state", MatchConstant.STATE_FINISHED);
             bridge.updateObjectToDb("aoe_match", "id", updateDb);
             StatisticController.instance().matchComplete();
+            JsonObject response = MatchGamerService.updateResultMatch(matchId, data.get("format").getAsInt(), json.get("result").getAsJsonArray());
             return BaseResponse.createFullMessageResponse(0, "success");
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
@@ -346,15 +347,15 @@ public class MatchService implements IMatchService {
     public JsonObject checkAcceptDonate(long matchId) {
         try {
             JsonObject response = getById(matchId);
-            if(BaseResponse.isSuccessFullMessage(response)){
+            if (BaseResponse.isSuccessFullMessage(response)) {
                 int state = response.getAsJsonObject("data")
                         .get("state").getAsInt();
-                if(state == MatchConstant.STATE_VOTING){
+                if (state == MatchConstant.STATE_VOTING) {
                     return response;
-                }else{
+                } else {
                     return BaseResponse.createFullMessageResponse(10, "donate_reject");
                 }
-            }else{
+            } else {
                 return response;
             }
         } catch (Exception e) {
@@ -363,7 +364,6 @@ public class MatchService implements IMatchService {
             return BaseResponse.createFullMessageResponse(1, "system_error");
         }
     }
-
 
 
     /*These function user for TEST only. In real situation these actions is prohibited*/
@@ -387,7 +387,7 @@ public class MatchService implements IMatchService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT COUNT(*) AS total_match_complete FROM aoe_match WHERE state = ?";
             JsonObject result = bridge.queryOne(query, MatchConstant.STATE_FINISHED);
-            return BaseResponse.createFullMessageResponse(0, "success",result);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
@@ -400,21 +400,21 @@ public class MatchService implements IMatchService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             JsonArray matchId = MatchGamerService.getListMatchByGamerId(gamerId).get("data").getAsJsonArray();
-            if (matchId.isEmpty()){
+            if (matchId.isEmpty()) {
                 return BaseResponse.createFullMessageResponse(10, "not_found");
             }
-            StringBuilder query = new StringBuilder("SElECT * FROM aoe_match WHERE id IN(") ;
+            StringBuilder query = new StringBuilder("SElECT * FROM aoe_match WHERE id IN(");
             for (int i = 0; i < matchId.size(); i++) {
-                if (i != matchId.size() - 1){
+                if (i != matchId.size() - 1) {
                     query.append(matchId.get(i).getAsJsonObject().get("match_id").getAsLong()).append(",");
-                }else {
+                } else {
                     query.append(matchId.get(i).getAsJsonObject().get("match_id").getAsLong());
                 }
             }
             query.append(")")
                     .append(" ORDER BY create_time DESC");
             JsonArray result = bridge.query(query.toString());
-            return BaseResponse.createFullMessageResponse(0, "success",result);
+            return BaseResponse.createFullMessageResponse(0, "success", result);
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             DebugLogger.error(stacktrace);
