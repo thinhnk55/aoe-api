@@ -175,7 +175,7 @@ public class DonateService implements IDonateService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT user_id, username,avatar, SUM(amount) as total_star, phone, nick_name FROM aoe_donate GROUP BY user_id ORDER BY total_star DESC LIMIT ? OFFSET ?";
+            String query = "SELECT user_id,avatar, SUM(amount) as total_star, phone, nick_name FROM aoe_donate GROUP BY user_id ORDER BY total_star DESC LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
@@ -189,7 +189,7 @@ public class DonateService implements IDonateService {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT user_id, username, SUM(amount) as total_star, phone, nick_name FROM aoe_donate WHERE target_id = ? GROUP BY user_id ORDER BY total_star DESC LIMIT ? OFFSET ?";
+            String query = "SELECT user_id, SUM(amount) as total_star, phone, nick_name FROM aoe_donate WHERE target_id = ? GROUP BY user_id ORDER BY total_star DESC LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, targetId, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {

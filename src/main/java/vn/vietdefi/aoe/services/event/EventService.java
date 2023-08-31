@@ -177,14 +177,9 @@ public class EventService implements IEventService {
             if(row == 0){
                 return BaseResponse.createFullMessageResponse(10, "award_failure");
             }
-            query = "SELECT * FROM aoe_event_participants WHERE event_id = ? AND user_id = ?";
-            JsonObject eventParticipant = bridge.queryOne(query, eventId, userId);
             JsonObject detail = new JsonObject();
-            detail.addProperty("lucky_number", eventParticipant.get("lucky_number").getAsInt());
             detail.addProperty("amount", amount);
-            JsonObject profile = AoeServices.profileService.getPartialProfile(userId).getAsJsonObject("data");
-            detail.addProperty("nick_name", profile.get("nick_name").getAsString());
-            detail.addProperty("avatar", profile.get("avatar").getAsString());
+            detail.addProperty("user_id", userId);
             query = "UPDATE aoe_event SET detail = ? WHERE id = ?";
             row = bridge.update(query, detail, eventId);
             if(row == 0){
