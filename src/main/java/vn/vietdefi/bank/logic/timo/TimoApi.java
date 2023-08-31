@@ -44,7 +44,7 @@ public class TimoApi {
         if(BaseResponse.isSuccessFullMessage(response)){
             JsonObject data = response.getAsJsonObject("data");
             JsonArray notificationList = TimoUtil.getNotificationListFromResponse(data);
-            if(lastNotificationId == 0){
+            if(lastNotificationId == 0 && notificationList.size() > 0){
                 lastNotificationId = notificationList.get(0).getAsJsonObject().get("iD").getAsLong();
                 TimoUtil.updateLastNofiticationId(account, lastNotificationId);
                 TimoUtil.cancelForceUpdate(account);

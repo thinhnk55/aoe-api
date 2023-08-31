@@ -9,6 +9,7 @@ import vn.vietdefi.api.services.auth.UserConstant;
 import vn.vietdefi.util.log.DebugLogger;
 import vn.vietdefi.util.network.OkHttpUtil;
 import vn.vietdefi.util.sql.HikariClients;
+import vn.vietdefi.util.string.StringUtil;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,8 +19,7 @@ public class AuthTest {
     static void init(){
         try {
             DOMConfigurator.configure("config/aoe/log/log4j.xml");
-            HikariClients.instance().init("config/aoe/sql/databases.json"
-                    ,"config/aoe/sql/hikari.properties");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,6 +69,9 @@ public class AuthTest {
                 data = matcher.group(0);
             }
             DebugLogger.info(data);
+        }
+        @Test public void test3(){
+            DebugLogger.info("{}", StringUtil.sha256("95@hobg"));
         }
     }
 
