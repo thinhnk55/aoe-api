@@ -28,7 +28,7 @@ public class StarTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.1.19:8000/aoe";
+            baseUrl = "http://192.168.1.14:8000/aoe";
 //            baseUrl = "http://192.168.1.99:8000/aoe";
             username = "086888555";
             password = "12344321";
@@ -106,7 +106,7 @@ public class StarTest {
             String getTransactionByIdURL = new StringBuilder(baseUrl).append("/star/transaction/get")
                     .append("?id=").append(transactionId).toString();
             DebugLogger.info("{}", getTransactionByIdURL);
-            response = OkHttpUtil.get(getTransactionByIdURL, Common.createHeader(user));
+            response = OkHttpUtil.get(getTransactionByIdURL);
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             Assertions.assertNotNull(response.getAsJsonObject("data"));
