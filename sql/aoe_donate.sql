@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS aoe_donate (
     amount INT  NOT NULL,
     service INT NOT NULL,
     target_id BIGINT NOT NULL,
+    target_name VARCHAR(128),
     message VARCHAR(256) NOT NULL DEFAULT '',
     sub_star_transaction_id BIGINT NOT NULL,
     add_star_transaction_id BIGINT NOT NULL DEFAULT 0,

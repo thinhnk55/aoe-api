@@ -32,7 +32,7 @@ public class DonateTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.1.19:8000/aoe";
+            baseUrl = "http://192.168.1.14:8000/aoe";
             username = "0384556555";
             password = "12344321";
             star = 100000;

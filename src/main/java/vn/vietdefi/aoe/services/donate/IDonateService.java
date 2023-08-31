@@ -9,13 +9,13 @@ public interface IDonateService {
     public JsonObject getDonateById(long id);
     JsonObject listDonateByTargetId(int service, long targetId, long page, long recordPerPage);
     JsonObject listAllTopDonate(long page, long recordPerPage);
-    JsonObject listTopDonateByTargetId(long targetId, long page, long recordPerPage);
+    JsonObject listTopDonateByTargetId(int service, long targetId, long page, long recordPerPage);
     JsonObject statisticDonateByTargetId(int service, long target_id);
     JsonObject statisticTotalDonate(long from, long to);
     JsonObject listDonateOfUser(long userId, long page, long recordPerPage);
     JsonObject listGamerFavorites(long userId, long page, long recordPerPage);
     JsonObject filterListDonate(String phoneNumber, long from, long to, int service, long page, long recordPerPage);
-    JsonObject filterStatisticDonate(long userId, int service, long targetId, long page, long recordPerPage);
+    JsonObject filterStatisticDonate(int service, long targetId, long page, long recordPerPage);
     JsonObject listDonateOutstanding();
     JsonObject refundStarDonate(long matchId);
     JsonObject statisticDonateByUserId(long userId);

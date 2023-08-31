@@ -128,7 +128,7 @@ public class DonateService implements IDonateService {
             JsonObject target = getTargetById(service, targetId);
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT * FROM aoe_donate WHERE target_id = ? AND service = ? ORDER BY id DESC LIMIT ? OFFSET ?";
+            String query = "SELECT * FROM aoe_donate WHERE target_id = ? AND service = ? ORDER BY amount DESC LIMIT ? OFFSET ?";
             JsonArray data = bridge.query(query, targetId, service, recordPerPage, offset);
             JsonObject result = new JsonObject();
             result.add("donate", data);
@@ -185,12 +185,12 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject listTopDonateByTargetId(long targetId, long page, long recordPerPage) {
+    public JsonObject listTopDonateByTargetId(int service, long targetId, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             long offset = (page - 1) * recordPerPage;
-            String query = "SELECT user_id, SUM(amount) as total_star, nick_name FROM aoe_donate WHERE target_id = ? GROUP BY user_id ORDER BY total_star DESC LIMIT ? OFFSET ?";
-            JsonArray data = bridge.query(query, targetId, recordPerPage, offset);
+            String query = "SELECT user_id, SUM(amount) as total_star, nick_name FROM aoe_donate WHERE target_id = ? AND service = ? GROUP BY user_id ORDER BY total_star DESC LIMIT ? OFFSET ?";
+            JsonArray data = bridge.query(query, targetId, service, recordPerPage, offset);
             return BaseResponse.createFullMessageResponse(0, "success", data);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
@@ -411,37 +411,37 @@ public class DonateService implements IDonateService {
     }
 
     @Override
-    public JsonObject filterStatisticDonate(long userId, int service, long targetId, long page, long recordPerPage) {
+    public JsonObject filterStatisticDonate(int service, long targetId, long page, long recordPerPage) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
-            StringBuilder query = new StringBuilder("SELECT * FROM aoe_donate WHERE user_id = ? ");
-            StringBuilder queryTotal = new StringBuilder("SELECT COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate WHERE user_id = ? ");
+            StringBuilder query = new StringBuilder("SELECT * FROM aoe_donate ");
+            StringBuilder queryTotal = new StringBuilder("SELECT COALESCE(SUM(amount), 0) AS total_star_donate FROM aoe_donate ");
             if (targetId != 0 && service != 0) {
-                query.append("AND service = ? AND target_id = ? ");
-                queryTotal.append("AND service = ? AND target_id = ?");
+                query.append("WHERE service = ? AND target_id = ? ");
+                queryTotal.append("WHERE service = ? AND target_id = ?");
             } else if(targetId == 0 && service != 0) {
-                query.append("AND service = ? ");
-                queryTotal.append("AND service = ?");
+                query.append("WHERE service = ? ");
+                queryTotal.append("WHERE service = ?");
             } else if(targetId != 0 && service == 0){
-                query.append("AND target_id = ? ");
-                queryTotal.append("AND target_id = ?");
+                query.append("WHERE target_id = ? ");
+                queryTotal.append("WHERE target_id = ?");
             }
             query.append("ORDER BY id DESC LIMIT ? OFFSET ?");
             JsonArray donate;
             long totalStarDonate;
             if (targetId != 0 && service != 0) {
-                donate = bridge.query(query.toString(), userId, service, targetId, recordPerPage, (page - 1) * recordPerPage);
-                totalStarDonate = bridge.queryLong(queryTotal.toString(), userId, service, targetId);
+                donate = bridge.query(query.toString(), service, targetId, recordPerPage, (page - 1) * recordPerPage);
+                totalStarDonate = bridge.queryLong(queryTotal.toString(), service, targetId);
             } else if (targetId == 0 && service != 0) {
-                donate = bridge.query(query.toString(), userId, service, recordPerPage, (page - 1) * recordPerPage);
-                totalStarDonate = bridge.queryLong(queryTotal.toString(), userId, service);
+                donate = bridge.query(query.toString(), service, recordPerPage, (page - 1) * recordPerPage);
+                totalStarDonate = bridge.queryLong(queryTotal.toString(), service);
             }
             else if (targetId != 0 && service == 0){
-                donate = bridge.query(query.toString(), userId, targetId, recordPerPage, (page - 1) * recordPerPage);
-                totalStarDonate = bridge.queryLong(queryTotal.toString(), userId, targetId);
+                donate = bridge.query(query.toString(), targetId, recordPerPage, (page - 1) * recordPerPage);
+                totalStarDonate = bridge.queryLong(queryTotal.toString(), targetId);
             } else {
-                donate = bridge.query(query.toString(), userId, recordPerPage, (page - 1) * recordPerPage);
-                totalStarDonate = bridge.queryLong(queryTotal.toString(), userId);
+                donate = bridge.query(query.toString(), recordPerPage, (page - 1) * recordPerPage);
+                totalStarDonate = bridge.queryLong(queryTotal.toString());
             }
             JsonObject data = new JsonObject();
             data.addProperty("total_star_donate", totalStarDonate);
