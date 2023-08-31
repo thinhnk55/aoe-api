@@ -45,7 +45,6 @@ public class DonateAPI {
         router.get(ApiConfig.instance().getPath("/donate/list/outstanding"))
                 .handler(DonateRouter::listDonateOutstanding);
         router.get(ApiConfig.instance().getPath("/donate/statistic/user"))
-                .handler(AuthRouter::authorizeUser)
                 .handler(DonateRouter::statisticDonateByUserId);
         router.get(ApiConfig.instance().getPath("/donate/detail"))
                 .handler(AuthRouter::authorizeUser)

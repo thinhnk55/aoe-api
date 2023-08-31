@@ -28,6 +28,16 @@ public class DonateService implements IDonateService {
             if (!BaseResponse.isSuccessFullMessage(response)) {
                 return BaseResponse.createFullMessageResponse(11, "donate_reject");
             }
+            String targetName = "";
+            if (service == StarConstant.SERVICE_DONATE_GAMER || service == StarConstant.SERVICE_DONATE_CASTER) {
+                targetName = response.get("data").getAsJsonObject().get("nick_name").getAsString();
+            }
+            if ( service==StarConstant.SERVICE_DONATE_MATCH){
+                targetName = new StringBuilder("kd").append(response.get("data").getAsJsonObject().get("id").getAsString()).toString();
+            }
+            if (service==StarConstant.SERVICE_DONATE_LEAGUE ){
+                 targetName = new StringBuilder("gd").append(response.get("data").getAsJsonObject().get("id").getAsString()).toString();
+            }
             //Tru sao trong tai khoan message.sender
             response = AoeServices.starService.exchangeStar(username, service, -star,
                     0);
@@ -46,6 +56,7 @@ public class DonateService implements IDonateService {
             data.addProperty("amount", star);
             data.addProperty("service", service);
             data.addProperty("target_id", target_id);
+            data.addProperty("target_name", targetName);
             data.addProperty("message", message);
             data.addProperty("sub_star_transaction_id", sub_star_transaction_id);
             data.addProperty("add_star_transaction_id", 0);
@@ -245,28 +256,28 @@ public class DonateService implements IDonateService {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
             String query = "SELECT * FROM aoe_donate WHERE id = ?";
             JsonObject response = bridge.queryOne(query, id);
-            if (response == null){
+            if (response == null) {
                 return BaseResponse.createFullMessageResponse(10, "not_found");
             }
             int service = response.get("service").getAsInt();
             switch (service) {
                 case StarConstant.SERVICE_DONATE_MATCH:
-                    response.addProperty("target","");
+                    response.addProperty("target", "");
                     break;
                 case StarConstant.SERVICE_DONATE_GAMER:
-                    response.addProperty("target",AoeServices.gamerService.getPartialGamer(response.get("target_id").getAsLong())
+                    response.addProperty("target", AoeServices.gamerService.getPartialGamer(response.get("target_id").getAsLong())
                             .get("data").getAsJsonObject().get("nick_name").getAsString());
                     break;
                 case StarConstant.SERVICE_DONATE_CASTER:
-                    response.addProperty("target",AoeServices.casterService.getPartialCaster(response.get("target_id").getAsLong())
+                    response.addProperty("target", AoeServices.casterService.getPartialCaster(response.get("target_id").getAsLong())
                             .get("data").getAsJsonObject().get("nick_name").getAsString());
                     break;
                 case StarConstant.SERVICE_DONATE_LEAGUE:
-                    response.addProperty("target",AoeServices.leagueService.getLeagueInfo(response.get("target_id").getAsLong())
+                    response.addProperty("target", AoeServices.leagueService.getLeagueInfo(response.get("target_id").getAsLong())
                             .get("data").getAsJsonObject().get("name").getAsString());
                     break;
             }
-            return BaseResponse.createFullMessageResponse(0, "success",response);
+            return BaseResponse.createFullMessageResponse(0, "success", response);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));
             return BaseResponse.createFullMessageResponse(1, "system_error");
@@ -419,10 +430,10 @@ public class DonateService implements IDonateService {
             if (targetId != 0 && service != 0) {
                 query.append("AND service = ? AND target_id = ? ");
                 queryTotal.append("AND service = ? AND target_id = ?");
-            } else if(targetId == 0 && service != 0) {
+            } else if (targetId == 0 && service != 0) {
                 query.append("AND service = ? ");
                 queryTotal.append("AND service = ?");
-            } else if(targetId != 0 && service == 0){
+            } else if (targetId != 0 && service == 0) {
                 query.append("AND target_id = ? ");
                 queryTotal.append("AND target_id = ?");
             }
@@ -435,8 +446,7 @@ public class DonateService implements IDonateService {
             } else if (targetId == 0 && service != 0) {
                 donate = bridge.query(query.toString(), userId, service, recordPerPage, (page - 1) * recordPerPage);
                 totalStarDonate = bridge.queryLong(queryTotal.toString(), userId, service);
-            }
-            else if (targetId != 0 && service == 0){
+            } else if (targetId != 0 && service == 0) {
                 donate = bridge.query(query.toString(), userId, targetId, recordPerPage, (page - 1) * recordPerPage);
                 totalStarDonate = bridge.queryLong(queryTotal.toString(), userId, targetId);
             } else {
@@ -480,8 +490,6 @@ public class DonateService implements IDonateService {
     }
 
 
-
-
     private JsonObject updateStateDonate(long id, int state) {
         try {
             SQLJavaBridge bridge = HikariClients.instance().defaulSQLJavaBridge();
@@ -519,7 +527,7 @@ public class DonateService implements IDonateService {
             query.append("ORDER BY create_time DESC LIMIT 10");
             JsonArray response;
 
-            response = bridge.query(query.toString(),StarConstant.SERVICE_DONATE_GAMER,StarConstant.SERVICE_DONATE_CASTER);
+            response = bridge.query(query.toString(), StarConstant.SERVICE_DONATE_GAMER, StarConstant.SERVICE_DONATE_CASTER);
             JsonObject receiver = new JsonObject();
             for (JsonElement trans : response) {
                 int service = trans.getAsJsonObject().get("service").getAsInt();
@@ -559,8 +567,8 @@ public class DonateService implements IDonateService {
                     StarConstant.SERVICE_DONATE_CASTER,
                     StarConstant.SERVICE_DONATE_LEAGUE,
                     userid
-                    );
-            JsonObject response =new JsonObject();
+            );
+            JsonObject response = new JsonObject();
             response.addProperty("total_star_donate_for_match", 0);
             response.addProperty("total_star_donate_for_gamer", 0);
             response.addProperty("total_star_donate_for_caster", 0);
@@ -586,7 +594,7 @@ public class DonateService implements IDonateService {
                         break;
                 }
             }
-            response.addProperty("total_star_donate",total_star_donate);
+            response.addProperty("total_star_donate", total_star_donate);
             return BaseResponse.createFullMessageResponse(0, "success", response);
         } catch (Exception e) {
             DebugLogger.error(ExceptionUtils.getStackTrace(e));

@@ -32,9 +32,9 @@ public class DonateTest {
         @BeforeEach
         void init(){
 //            baseUrl = "https://api.godoo.asia/aoe";
-            baseUrl = "http://192.168.1.19:8000/aoe";
-            username = "0384556555";
-            password = "12344321";
+            baseUrl = "http://127.0.0.1:8000/aoe";
+            username = "0915434549";
+            password = "123456";
             star = 100000;
             amount = 1000;
         }
@@ -44,19 +44,19 @@ public class DonateTest {
         }
         @Test
         public void test0(){
-//            Common.deleleUser(baseUrl, username, password);
-//            JsonObject response = Common.registerUserSuccess(baseUrl, username, password);
-//            JsonObject user = response.getAsJsonObject("data");
-//            Common.addStarToWallet(baseUrl, user.get("id").getAsLong(), star);
-//            testDonateGamer(user);
-//            testDonateCaster(user);
-//            long matchId = createMatch(user).getAsJsonObject("data").get("id").getAsLong();
-//            testDonateMatch(user, matchId);
+            Common.deleleUser(baseUrl, username, password);
+            JsonObject response = Common.registerUserSuccess(baseUrl, username, password);
+            JsonObject user = response.getAsJsonObject("data");
+            Common.addStarToWallet(baseUrl, user.get("id").getAsLong(), star);
+            testDonateGamer(user);
+            testDonateCaster(user);
+            long matchId = createMatch(user).getAsJsonObject("data").get("id").getAsLong();
+            testDonateMatch(user, matchId);
 //            testListDonateByTarget(user, matchId);
-//            testListTopDonateByTarget(user, matchId);
-//            testListTopAllDonate(user);
-//            deleteMatch(matchId);
-//            testDonateLeague(user);
+            testListTopDonateByTarget(user, matchId);
+            testListTopAllDonate(user);
+            deleteMatch(matchId);
+            testDonateLeague(user);
             testFilterStatisticDonate();
         }
 
@@ -95,7 +95,7 @@ public class DonateTest {
             DebugLogger.info("{}", url);
             JsonObject response = OkHttpUtil.get(url);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
-            JsonArray casters = response.getAsJsonObject("data").getAsJsonArray("casters");
+            JsonArray casters = response.getAsJsonObject("data").getAsJsonArray("caster");
             Assertions.assertTrue(casters.size() > 0);
             DebugLogger.info("{}", response);
 
@@ -124,14 +124,19 @@ public class DonateTest {
             payload.addProperty("star_default", 1000);
             payload.add("detail", new JsonObject());
             payload.addProperty("time_expired", System.currentTimeMillis() + 6220800000L);
-            payload.addProperty("suggester_id", user.get("id").getAsLong());
-            payload.addProperty("state", MatchConstant.STATE_VOTING);
-            payload.addProperty("create_time", System.currentTimeMillis());
-            payload.add("team_player", new JsonArray());
+            JsonObject player1 = new JsonObject();
+            player1.addProperty("user_id", 4);
+            player1.addProperty("team", 1);
+            player1.addProperty("nick_name", "A");
+            player1.addProperty("avatar", "A");
+            JsonArray teamPlayer = new JsonArray();
+            teamPlayer.add(player1);
+            teamPlayer.add(player1);
+            payload.add("team_player",teamPlayer);
 
-            String startMatchURL = new StringBuilder(baseUrl).append("/admin/match/create").toString();
-            DebugLogger.info("{}", startMatchURL);
-            JsonObject response = OkHttpUtil.postJson(startMatchURL, payload.toString(), Common.createHeaderAdmin());
+            String createMatchURL = new StringBuilder(baseUrl).append("/match/create").toString();
+             JsonObject response = OkHttpUtil.postJson(createMatchURL, payload.toString(), Common.createHeaderAdmin());
+            long matchId = response.getAsJsonObject("data").get("id").getAsLong();
             DebugLogger.info("{}", response);
             Assertions.assertTrue(BaseResponse.isSuccessFullMessage(response));
             return response;
@@ -157,7 +162,7 @@ public class DonateTest {
         public void deleteMatch(long matchId) {
             JsonObject payload = new JsonObject();
             payload.addProperty("match_id", matchId);
-            String deleteMatchURL = new StringBuilder(baseUrl).append("/admin/match/delete").toString();
+            String deleteMatchURL = new StringBuilder(baseUrl).append("/match/delete").toString();
             DebugLogger.info("{}", deleteMatchURL);
             JsonObject response = OkHttpUtil.postJson(deleteMatchURL, payload.toString(), Common.createHeaderSystemAdmin());
             DebugLogger.info("{}", response);
@@ -231,10 +236,10 @@ public class DonateTest {
         /*filter donate public*/
         public void testFilterStatisticDonate() {
             String listTopAllDonateURL = new StringBuilder(baseUrl).append("/donate/statistic/filter")
-                    .append("?service=").append(10).append("&target_id=").append(54)
+                    .append("?service=").append(10).append("&target_id=").append(100)
                     .append("&page=").append(1).toString();
             DebugLogger.info("{}", listTopAllDonateURL);
-            JsonObject response = OkHttpUtil.get(listTopAllDonateURL);
+            JsonObject response = OkHttpUtil.get(listTopAllDonateURL,Common.createHeaderSupport());
             DebugLogger.info("{}", response);
             Assertions.assertFalse(response.getAsJsonObject("data").getAsJsonArray("donate").isEmpty());
         }
